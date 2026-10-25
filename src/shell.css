@@ -168,7 +168,7 @@ input.sel::-moz-range-thumb { border-color: #e8890c; }
   position: absolute; top: 0; bottom: 0; right: 0; width: var(--pw, 400px);
   background: var(--surface); border-radius: 18px; box-shadow: var(--shadow);
   padding: clamp(10px, 1.6vh, 18px) clamp(12px, 1.2vw, 18px);
-  display: flex; flex-direction: column; gap: clamp(8px, 1.4vh, 14px); overflow: auto;
+  display: flex; flex-direction: column; gap: clamp(8px, 1.4vh, 14px); overflow-x: hidden; overflow-y: auto;
   opacity: 0; transform: translateX(28px); transition: opacity 0.22s ease, transform 0.42s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .page.panel-open .pnl { opacity: 1; transform: none; transition: opacity 0.3s ease 0.1s, transform 0.46s cubic-bezier(0.4, 0, 0.2, 1); }
@@ -180,7 +180,8 @@ input.sel::-moz-range-thumb { border-color: #e8890c; }
 .pbody { display: flex; flex-direction: column; gap: clamp(8px, 1.4vh, 14px); min-width: 0; }
 .steps { display: grid; grid-template-columns: max-content minmax(0, 1fr); align-items: center; column-gap: 0.8em; row-gap: clamp(6px, 1.1vh, 12px); font-size: clamp(16px, 2.5vh, 22px); }
 .steps .lbl { font-size: 0.6em; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
-.steps .rb { min-width: 0; overflow-x: auto; }
+.steps .rb { min-width: 0; }
+.tw { white-space: nowrap; }
 .steps .ans { justify-self: start; background: color-mix(in srgb, var(--sel) 22%, transparent); padding: 0 0.35em; border-radius: 6px; }
 .display-working { display: flex; flex-direction: column; gap: clamp(6px, 1.1vh, 12px); min-width: 0; }
 .work-block { min-width: 0; }
@@ -191,7 +192,7 @@ input.sel::-moz-range-thumb { border-color: #e8890c; }
 .watch { margin: 0; font-size: clamp(13px, 1.8vh, 16px); line-height: 1.45; border-left: 4px solid var(--sel); background: color-mix(in srgb, var(--sel) 10%, transparent); padding: 6px 10px; border-radius: 0 8px 8px 0; }
 .watch b { color: var(--sel-ink); }
 .casio { display: flex; flex-direction: column; gap: clamp(4px, 0.9vh, 9px); font-size: clamp(14px, 2.1vh, 18px); margin: 0; padding: 0; list-style: none; counter-reset: s; }
-.casio li { display: grid; grid-template-columns: 22px 1fr; gap: 6px; align-items: baseline; counter-increment: s; line-height: 1.6; }
+.casio li { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 6px; align-items: baseline; counter-increment: s; line-height: 1.6; }
 .casio li::before { content: counter(s); font-weight: 700; color: var(--muted); }
 .goal-block { display: flex; flex-direction: column; gap: clamp(4px, 0.9vh, 9px); margin-bottom: clamp(8px, 1.6vh, 14px); }
 .goal { margin: 0; font-size: clamp(13px, 1.9vh, 17px); font-weight: 800; color: var(--sel-ink); border-bottom: 2px solid color-mix(in srgb, var(--sel) 35%, transparent); padding-bottom: 2px; }

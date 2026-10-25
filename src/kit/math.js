@@ -69,15 +69,22 @@ export function splitAtBreaks(latex) {
 // One <span class="tx"> per piece, with a <wbr> between pieces so that the line can wrap there.
 // A piece that starts with an operator gets an empty group in front, so the operator keeps its
 // binary spacing exactly as in the unbroken expression.
-function wrapMath(latex, display) {
+function wrapMath(latex, display, cls = 'tx') {
   const parts = splitAtBreaks(latex)
-  if (parts.length < 2) return `<span class="tx${display ? ' tx-d' : ''}">${tex(latex, display)}</span>`
+  const c = cls + (display ? ' tx-d' : '')
+  if (parts.length < 2) return `<span class="${c}">${tex(latex, display)}</span>`
   return parts
     .map((p, i) => {
       const src = i > 0 && !/^,/.test(parts[i - 1].slice(-1)) ? `{}${p}` : p
-      return `<span class="tx${display ? ' tx-d' : ''}">${tex(src, display)}</span>`
+      return `<span class="${c}">${tex(src, display)}</span>`
     })
     .join('<wbr>')
+}
+
+// Inline maths for the working panel rows: same line breaking as md({ wrap: true }), but without
+// the .tx size bump, so the rows look exactly as before when they fit.
+export function texWrap(latex) {
+  return wrapMath(latex, false, 'tw')
 }
 
 // md(text, { wrap: true }) lets long maths break at natural points instead of forcing one

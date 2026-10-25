@@ -7,7 +7,7 @@
 import 'mathlive/fonts.css'
 import 'mathlive/static.css'
 import './shell.css'
-import { md, tex } from './kit/math.js'
+import { md, tex, texWrap } from './kit/math.js'
 import { makeSvgGraph } from './kit/svg.js'
 import { makeThreeGraph } from './kit/three.js'
 import { makeInfoBoard } from './components/info-board/index.js'
@@ -204,19 +204,19 @@ function renderPanel() {
   const rows = w?.blocks
     ? `<div class="display-working">${w.blocks.map(([label, latex, answer]) => `<section class="work-block${answer ? ' answer' : ''}">
       <h3>${label}</h3><div class="work-equation">${tex(`\\begin{aligned}${latex}\\end{aligned}`, true)}</div>
-    </section>`).join('')}</div>${w.note ? `<p class="note">${md(w.note)}</p>` : ''}`
+    </section>`).join('')}</div>${w.note ? `<p class="note">${md(w.note, { wrap: true })}</p>` : ''}`
     : w
     ? `<div class="steps">${w.rows
-        .map(([lbl, l, ans]) => `<span class="lbl">${lbl}</span><span class="rb${ans ? ' ans' : ''}">${tex(l)}</span>`)
-        .join('')}</div>${w.note ? `<p class="note">${md(w.note)}</p>` : ''}`
+        .map(([lbl, l, ans]) => `<span class="lbl">${lbl}</span><span class="rb${ans ? ' ans' : ''}">${texWrap(l)}</span>`)
+        .join('')}</div>${w.note ? `<p class="note">${md(w.note, { wrap: true })}</p>` : ''}`
     : '<p class="note">No working for this scene.</p>'
   const keys = k
     ? `${(k.sections || [{ steps: k.steps }]).map((sec) => `<section class="goal-block">
-         ${sec.goal ? `<h3 class="goal">${md(sec.goal)}</h3>` : ''}
-         <ol class="casio">${sec.steps.map((s) => `<li><span>${md(s)}</span></li>`).join('')}</ol>
+         ${sec.goal ? `<h3 class="goal">${md(sec.goal, { wrap: true })}</h3>` : ''}
+         <ol class="casio">${sec.steps.map((s) => `<li><span>${md(s, { wrap: true })}</span></li>`).join('')}</ol>
        </section>`).join('')}
        ${k.out ? `<p class="out-line">Display <span class="out">${k.out}</span></p>` : ''}
-       ${k.watch ? `<p class="watch"><b>Watch out.</b> ${md(k.watch)}</p>` : ''}`
+       ${k.watch ? `<p class="watch"><b>Watch out.</b> ${md(k.watch, { wrap: true })}</p>` : ''}`
     : ''
   setHTML(
     $('pnl'),
