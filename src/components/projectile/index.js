@@ -21,11 +21,11 @@ export function flightGraph({ shots, time, guides = [], revealPeaks = false, rev
       if (revealPeaks) {
         const t = peakTime(shot), h = peakHeight(shot)
         items.push({ type: 'points', pts: [[t, h]], color: shot.color })
-        labels.push({ id: `peak-${shot.id}`, x: t, y: h, html: `${shot.id}: $${+h.toFixed(2)}$ m`, color: shot.color, pos: 'n' })
+        labels.push({ id: `peak-${shot.id}`, x: t, y: h, html: `${shot.id}: $${+h.toFixed(2)}$ m`, color: shot.color, leader: true, rail: { group: 'vertices', side: 'above' } })
       }
       if (revealLandings) {
         items.push({ type: 'points', pts: [[land, 0]], color: shot.color })
-        labels.push({ id: `land-${shot.id}`, x: land, y: 0, html: `${shot.id}: $${land.toFixed(2)}$ s`, color: shot.color, pos: 'ne' })
+        labels.push({ id: `land-${shot.id}`, x: land, y: 0, html: `${shot.id}: $${land.toFixed(2)}$ s`, color: shot.color, leader: true, rail: { group: 'roots', side: 'below' } })
       }
     }
     for (const [i, observation] of (shot.known || []).entries()) {
@@ -35,7 +35,7 @@ export function flightGraph({ shots, time, guides = [], revealPeaks = false, rev
     }
   }
   return {
-    bounds: { left: -0.18, right: 1.95, bottom: -0.55, top: 4.95 },
+    bounds: { left: -0.18, right: 1.95, bottom: revealLandings ? -1.5 : -0.55, top: 4.95 },
     axes: { x: 't (s)', y: 'h (m)', aspect: 3, xStep: 0.5, yStep: 1, nonnegative: true },
     description: 'Ball height in metres against time in seconds since the flight began. Each curve stops at its next ground contact.',
     items, labels,

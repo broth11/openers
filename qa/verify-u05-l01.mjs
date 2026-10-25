@@ -57,6 +57,22 @@ assert((await page.locator('#qa').innerText()).includes('3.61'))
 await page.click('[data-reveal="longest"]')
 await page.waitForTimeout(100)
 assert((await page.locator('#qa').innerText()).includes('1.59'))
+assert.equal(await page.locator('.label-leaders line[data-label^="land-"]').count(), 3)
+assert.equal(await page.locator('.label-leaders line[data-label^="peak-"]').count(), 3)
+const rootRail = await page.locator('.dl[data-label^="land-"]').evaluateAll((nodes) => nodes.map((n) => {
+  const b = n.getBoundingClientRect()
+  const line = document.querySelector(`.label-leaders line[data-label="${n.dataset.label}"]`)
+  const graphTop = n.closest('.graph').getBoundingClientRect().top
+  return { id: n.dataset.label, left: b.left, top: b.top, below: b.top > graphTop + Number(line.getAttribute('y1')) }
+}).sort((a,b) => a.left-b.left))
+assert.deepEqual(rootRail.map((n) => n.id), ['land-A','land-B','land-C'])
+assert(rootRail.every((n) => n.below))
+assert(Math.max(...rootRail.map((n) => n.top))-Math.min(...rootRail.map((n) => n.top)) < 1)
+await page.click('#workBtn')
+await page.waitForTimeout(550)
+await page.screenshot({ path: 'qa/out/ordered-features.png' })
+await page.click('#pclose')
+await page.waitForTimeout(500)
 const flightHeights = await page.evaluate(() => {
   const input = document.getElementById('r-time')
   input.value = '1.5'

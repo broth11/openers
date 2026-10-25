@@ -86,9 +86,8 @@ export function createLabeller(ov, renderLabel) {
       if (r.l < 4 || r.t < 4 || r.r > w - 4 || r.b > h - 4) n += 200
       return n
     }
-    const ordered = [...(labels || [])].sort((a, b) => (b.fixed ? 1 : 0) - (a.fixed ? 1 : 0) || (b.attached ? 1 : 0) - (a.attached ? 1 : 0))
-    for (const lb of ordered) {
-      seen.add(lb.id)
+    const ordered = [...(labels || [])].sort((a, b) => (b.rail ? 1 : 0) - (a.rail ? 1 : 0) || (b.fixed ? 1 : 0) - (a.fixed ? 1 : 0) || (b.attached ? 1 : 0) - (a.attached ? 1 : 0))
+    function prepare(lb) {
       let node = labelEls.get(lb.id)
       if (!node) {
         node = document.createElement('div')
@@ -102,6 +101,40 @@ export function createLabeller(ov, renderLabel) {
       }
       node.style.color = lb.color || '#0e2233'
       node.classList.toggle('plain', !!lb.plain)
+      node.classList.toggle('rail-label', !!lb.rail)
+      node.dataset.label = lb.id
+      return node
+    }
+    // An ordered rail keeps clustered features legible without changing their true anchors.
+    // Reserve its boxes first, then let ordinary function labels avoid the rail.
+    const rails = new Map()
+    for (const lb of ordered) {
+      prepare(lb)
+      if (lb.rail) {
+        const group = rails.get(lb.rail.group) || []
+        group.push(lb)
+        rails.set(lb.rail.group, group)
+      }
+    }
+    const positions = new Map()
+    for (const group of rails.values()) {
+      group.sort((a, b) => a.x - b.x)
+      const nodes = group.map((lb) => labelEls.get(lb.id))
+      const widths = nodes.map((node) => node.offsetWidth)
+      const total = widths.reduce((a, b) => a + b, 0)
+      const gap = group.length > 1 ? Math.max(0, (w - 16 - total) / (group.length - 1)) : 0
+      const tallest = Math.max(...nodes.map((node) => node.offsetHeight))
+      const below = group[0].rail.side === 'below'
+      const top = below ? toPx(0, 0).y + 36 : Math.min(...group.map((lb) => toPx(lb.x, lb.y).y)) - tallest - 22
+      let left = group.length > 1 ? 8 : (w - total) / 2
+      for (let i = 0; i < group.length; i++) {
+        positions.set(group[i].id, { l: left, t: top, r: left + widths[i], b: top + nodes[i].offsetHeight })
+        left += widths[i] + gap
+      }
+    }
+    for (const lb of ordered) {
+      seen.add(lb.id)
+      const node = labelEls.get(lb.id)
       const ex = view ? edge(lb.x, view.left, view.right) : lb.x
       const ey = view ? edge(lb.y, view.bottom, view.top) : lb.y
       if (typeof ex !== 'number' || typeof ey !== 'number') continue
@@ -116,8 +149,8 @@ export function createLabeller(ov, renderLabel) {
       const order = lb.fixed ? [pref] : lb.attached
         ? [pref, ...DIRS.slice(0, 8).filter((q) => q !== pref), ...DIRS.slice(8).filter((q) => q !== pref)]
         : [pref, ...DIRS.filter((q) => q !== pref && q[0] === pref[0]), ...DIRS.filter((q) => q[0] !== pref[0])]
-      let best = null
-      for (const dir of order) {
+      let best = positions.has(lb.id) ? { r: positions.get(lb.id), n: 0 } : null
+      for (const dir of positions.has(lb.id) ? [] : order) {
         const [l, t] = candidate(dir, p.x, p.y, nw, nh, gap)
         const r = { l, t, r: l + nw, b: t + nh }
         const n = clash(r, lb.attached ? p : null)
@@ -128,12 +161,13 @@ export function createLabeller(ov, renderLabel) {
       const top = Math.max(4, Math.min(h - nh - 4, best.r.t))
       node.style.transform = `translate(${Math.round(left)}px, ${Math.round(top)}px)`
       const r = { l: left, t: top, r: left + nw, b: top + nh }
-      if (lb.attached) {
-        const ex = Math.max(r.l, Math.min(r.r, p.x))
-        const ey = Math.max(r.t, Math.min(r.b, p.y))
-        if (Math.hypot(ex - p.x, ey - p.y) > 22) {
+      if (lb.attached || lb.leader) {
+        const ex = lb.rail ? (r.l + r.r) / 2 : Math.max(r.l, Math.min(r.r, p.x))
+        const ey = lb.rail ? lb.rail.side === 'below' ? r.t : r.b : Math.max(r.t, Math.min(r.b, p.y))
+        if (lb.leader || Math.hypot(ex - p.x, ey - p.y) > 22) {
           const line = document.createElementNS('http://www.w3.org/2000/svg', 'line')
           for (const [key, value] of Object.entries({ x1: p.x, y1: p.y, x2: ex, y2: ey, stroke: lb.color || '#55697b', 'stroke-width': 1.2 })) line.setAttribute(key, value)
+          line.dataset.label = lb.id
           leaders.append(line)
         }
       }
