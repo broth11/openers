@@ -119,3 +119,16 @@ The check drives every scene, reveal, slider end, and switch at 1366x768, 1440x8
 - **Codex** (or Ben) previews with `npm run dev`.
 - **Pushing a branch** builds a Cloudflare preview; merging into `main` puts it live on `openers.bensnotes.app`. Work on a branch; merge only when Ben approves.
 - When you build something reusable, update its component README and `docs/CATALOG.md` in the same commit.
+
+## Revolution rules (U11 L10/L11, October 2026)
+
+- Coordinate-system viewing rotation and mathematical revolution are separate controls.
+- For discs, keep signed profiles separate from nonnegative radii.
+- A horizontal scale p and vertical scale q multiply volume by pq² about x and qp² about y.
+- A full semicircle about its diameter generates a sphere. For the upright hemisphere bowl,
+  show its full semicircular cross-section but shade only the quarter-disc generating region.
+- Three exact parabolic design points are interpolation, not statistical regression.
+- A cutaway explicitly states that values refer to the complete solid.
+- Cavity bottoms can change washers into discs. Keep partition boundaries aligned there.
+- Midpoint sums are not always changing approximations: sqrt(x) disc sums are exact for all n.
+- Per-axis nonnegative arrow options support negative x with nonnegative y.

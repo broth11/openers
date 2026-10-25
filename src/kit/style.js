@@ -5,6 +5,8 @@
 // Values started from the SVG comparison version (2026-10-25) and are tuned by eye on the projector.
 
 export const COLORS = {
+  solid: '#659aab', // shaded material
+  face: '#98c89c', // circular and cut faces, Pearson hybrid
   teal: '#0f8b8d', // curves (Haese variant)
   coral: '#e4572e', // second boundary
   sel: '#e8890c', // typical strip, its slider, answers

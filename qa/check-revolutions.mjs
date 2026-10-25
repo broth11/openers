@@ -1,0 +1,96 @@
+// Focused checks beyond the shared layout matrix: reveal discipline, orbit, animation,
+// paired slice identity, hollow geometry, interpolation, and both stretch directions.
+import { createRequire } from 'node:module'
+import assert from 'node:assert/strict'
+import { mkdirSync } from 'node:fs'
+const require = createRequire(import.meta.url)
+const { chromium } = require('playwright')
+const browser = await chromium.launch({ executablePath: process.env.OPENERS_CHROME })
+const base = process.env.OPENERS_URL || 'http://127.0.0.1:4173/'
+const dir = new URL('./out/focused/', import.meta.url)
+mkdirSync(dir, { recursive: true })
+const page = await browser.newPage({ viewport: { width: 1440, height: 860 } })
+const errors = []
+page.on('pageerror', (e) => errors.push(e.message))
+await page.route('**/fonts.googleapis.com/**', (r) => r.fulfill({ status: 200, contentType: 'text/css', body: '' }))
+const wait = () => page.waitForTimeout(180)
+const scene = async (i) => { await page.click(`[data-scene="${i}"]`); await wait() }
+const reveal = async (id) => { await page.click(`[data-reveal="${id}"]`); await wait() }
+const value = async (id, v) => { await page.locator(`#r-${id}`).evaluate((el, x) => { el.value = x; el.dispatchEvent(new Event('input', { bubbles: true })) }, v); await wait() }
+const data = () => page.locator('.solid-viewport').evaluate((el) => ({ ...el.dataset }))
+try {
+  await page.goto(base + '#mai-hl-u11-l10'); await wait()
+  await scene(1)
+  assert.equal(await page.locator('.solid-viewport canvas').isVisible(), false)
+  await page.click('#workBtn'); await wait()
+  assert(!/25\.1|8π/.test(await page.locator('#pnl').innerText()))
+  await page.click('#pclose'); await wait()
+  await reveal('disc')
+  assert.equal(await page.locator('.solid-viewport canvas').isVisible(), true)
+  const before = (await data()).camera
+  const box = await page.locator('.solid-viewport canvas').boundingBox()
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2)
+  await page.mouse.down(); await page.mouse.move(box.x + box.width / 2 + 80, box.y + box.height / 2 + 30, { steps: 8 }); await page.mouse.up(); await wait()
+  assert.notEqual((await data()).camera, before)
+  await page.click('[data-view="reset"]'); await wait()
+  assert.equal((await data()).camera, before)
+  await value('angle', 0)
+  await page.click('[data-view="play"]'); await page.waitForTimeout(400)
+  assert(Number((await data()).angle) > 0)
+  await page.click('[data-view="play"]'); await value('angle', 360)
+  for (const n of [2, 8, 40]) {
+    await value('n', n)
+    for (const p of [0, 0.5, 1]) {
+      await value('selected', p)
+      const d = await data()
+      assert.equal(+d.selected, Math.min(n - 1, Math.floor(p * n)))
+      assert.equal(+d.outerRadius, Math.sqrt((+d.selected + 0.5) * 4 / n))
+    }
+  }
+  await scene(2); await reveal('negative-same'); await reveal('negative-radius')
+  assert(!await page.locator('.ML__error').count())
+  await scene(3)
+  assert.equal(await page.locator('.solid-viewport canvas').isVisible(), false)
+  await reveal('y-disc'); assert.equal((await data()).axis, 'y')
+  await scene(4); await reveal('stretch-compare'); await reveal('stretch-rule')
+  await value('p', 2); await value('q', 1)
+  assert((await page.locator('#readout').innerText()).includes('2'))
+  await page.click('[data-seg="axis"][data-val="y"]'); await wait()
+  assert((await page.locator('#readout').innerText()).includes('4'))
+  await page.goto(base + '#mai-hl-u11-l11'); await wait()
+  await scene(1)
+  assert.equal(await page.locator('.profile-graph svg path[stroke="#e4572e"]').count(), 1) // only zero-radius boundary, no fitted parabola
+  await page.click('#workBtn'); await wait()
+  assert(!/a =|a=|0\.5/.test(await page.locator('#pnl').innerText()))
+  await page.click('#pclose'); await wait()
+  await reveal('parabola'); await reveal('inner-radius')
+  assert((await page.locator('.profile-graph').innerText()).includes('1'))
+  await scene(2); await reveal('cavity'); await reveal('material')
+  assert.equal((await data()).cutaway, 'true')
+  await page.click('[data-seg="cut"][data-val="whole"]'); await wait()
+  assert.equal((await data()).cutaway, 'false')
+  await page.click('[data-seg="cut"][data-val="open"]'); await wait()
+  await page.screenshot({ path: new URL('bowl-cutaway.png', dir).pathname })
+  await scene(3); await reveal('slice-kind'); await reveal('washer-area'); await reveal('split-volume')
+  await value('selected', 0)
+  assert.equal(+(await data()).innerRadius, 0)
+  await value('selected', 1)
+  assert(+(await data()).innerRadius > 0)
+  assert(+(await data()).outerRadius > +(await data()).innerRadius)
+  assert(!await page.locator('.ML__error').count())
+  // Reproduce the entire mobile interaction, including every segmented control.
+  await page.setViewportSize({ width: 412, height: 900 })
+  for (let i = 0; i < 4; i++) {
+    await scene(i)
+    while (await page.locator('.reveal').count()) { await page.locator('.reveal').first().click(); await wait() }
+    await wait()
+    for (const button of await page.locator('.controls .seg button').all()) { await button.click({ timeout: 3000 }); await wait() }
+    await page.screenshot({ path: new URL(`phone-l11-s${i + 1}.png`, dir).pathname, fullPage: true })
+  }
+  assert.deepEqual(errors, [])
+  console.log('Reveal, orbit, animation, slice matching, both stretch axes, cavity and mobile controls passed')
+} catch (error) {
+  await page.screenshot({ path: new URL('failure.png', dir).pathname, fullPage: true })
+  console.log(await page.evaluate(() => Object.fromEntries(['.stage','.controls','.qa','.graph'].map((s) => { const r = document.querySelector(s).getBoundingClientRect(); return [s,{top:r.top,bottom:r.bottom,height:r.height}] }))))
+  throw error
+} finally { await browser.close() }

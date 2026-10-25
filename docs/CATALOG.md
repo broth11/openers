@@ -8,7 +8,7 @@ Everything the kit can already do. Read this before building a new opener, and a
 |---|---|---|---|
 | SVG | Ready (default) | Graphs of functions, regions, strips, dragging, diagrams that are not graphs | `src/kit/svg.js` |
 | JSXGraph | Planned | Live geometry constructions, points on curves, implicit curves (`implicitcurve`), slope fields | add on first use, see `docs/ENGINES.md` |
-| three.js | Planned | Shaded 3D solids, volumes of revolution, planes | add on first use, see `docs/ENGINES.md` |
+| three.js | Ready (0.180.0, bundled) | Shaded solids of revolution, orbit, partial turns, cutaways | `src/kit/three.js` |
 
 ## Shared kit
 
@@ -27,6 +27,7 @@ Everything the kit can already do. Read this before building a new opener, and a
 | Strips | Riemann and midpoint strips, vertical or horizontal; the snapped typical strip; midpoint sums; SVG items | U11 L9 | `src/components/strips/README.md` |
 | Information board | Given-information cards before a graph/model reveal | U5 L1 | `src/components/info-board/README.md` |
 | Projectile height graph | Observations, revealed flights, time cursors, maxima, and ground-contact comparisons | U5 L1 | `src/components/projectile/README.md` |
+| Solid of revolution | Paired SVG profiles and shaded discs, washers, cavities, partial turns and orbit | U11 L10/L11 | `src/components/solid-of-revolution/README.md` |
 
 ## Openers
 
@@ -34,8 +35,10 @@ Everything the kit can already do. Read this before building a new opener, and a
 |---|---|---|---|
 | MAI HL U11 L9 | Area between a curve and the y-axis | SVG | Strips |
 | MAI HL U5 L1 | Three flights, three forms | SVG | Information board, Projectile height graph |
+| MAI HL U11 L10 | Discs and stretches | three.js + SVG | Solid of revolution, Strips |
+| MAI HL U11 L11 | A hemisphere bowl | three.js + SVG | Solid of revolution, Strips |
 
 ## Wanted next (from the syllabus survey, 2026-10-25)
 
 Build each one the first time a lesson needs it, as a component with its own README:
-volumes of revolution (three.js), 3D lines and planes, Voronoi diagrams (d3-delaunay), networks and graph algorithms, Markov state diagrams, slope fields and Euler's method, sampling distributions and confidence intervals, tree and Venn diagrams, log-log and semi-log axes, unit circle and the ambiguous case, complex plane rotations, matrix transformations, typed equations (MathLive input to JSXGraph).
+3D lines and planes, Voronoi diagrams (d3-delaunay), networks and graph algorithms, Markov state diagrams, slope fields and Euler's method, sampling distributions and confidence intervals, tree and Venn diagrams, log-log and semi-log axes, unit circle and the ambiguous case, complex plane rotations, matrix transformations, typed equations (MathLive input to JSXGraph).

@@ -9,11 +9,12 @@ import 'mathlive/static.css'
 import './shell.css'
 import { md, tex } from './kit/math.js'
 import { makeSvgGraph } from './kit/svg.js'
+import { makeThreeGraph } from './kit/three.js'
 import { makeInfoBoard } from './components/info-board/index.js'
 
 // Graph engines by name. A lesson sets engine: 'svg' (the default). New engines (jsxgraph, three)
 // are added here when a lesson first needs them, with the same apply/clear/destroy interface.
-const ENGINES = { svg: makeSvgGraph }
+const ENGINES = { svg: makeSvgGraph, three: makeThreeGraph }
 import { COURSES, EXPLORERS } from './lessons/courses.js'
 
 const $ = (id) => document.getElementById(id)

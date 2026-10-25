@@ -40,3 +40,16 @@ Useful parts: `functiongraph`, `curve`, `glider` (point locked to a curve), `int
 ## Artifacts
 
 Every engine must work in a single-file artifact build: no network requests at run time (bundle libraries, do not load them from a CDN), fonts from Google Fonts only.
+
+## three.js (ready, October 2026)
+
+`src/kit/three.js`, exact dependency `three@0.180.0`, registered as `three`.
+Consumes paired `{ profile, solid }` specs from `components/solid-of-revolution`.
+SVG renders the 2D profile; WebGL renders real shaded geometry with OrbitControls and
+projected labels using the shared placer. The adapter implements the standard lifecycle.
+Drag orbits the camera. Play/angle performs the mathematical revolution. Front, End-on,
+and Reset view preserve mathematical state. Cutaways expose real inner surfaces and
+annular/radial faces; they do not change the calculated full-solid volume.
+
+See the component README for options and verified pitfalls. The standard single-file
+artifact build bundles three.js, OrbitControls and MathLive fonts without runtime CDNs.

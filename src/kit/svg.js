@@ -76,21 +76,23 @@ export function makeSvgGraph(host, { renderLabel, onDrag }) {
   }
 
   function axes(g, step) {
+    const nonnegativeX = spec.axes?.nonnegative === true || spec.axes?.nonnegative?.x
+    const nonnegativeY = spec.axes?.nonnegative === true || spec.axes?.nonnegative?.y
     const ox = X(0)
     const oy = Y(0)
     const a = el('g', { stroke: AXIS, 'stroke-width': ROLES.axis.lineWidth, fill: 'none' }, g)
-    el('line', { x1: spec.axes?.nonnegative ? ox : 6, y1: oy, x2: view.w - 6, y2: oy, 'marker-start': spec.axes?.nonnegative ? null : 'url(#ar)', 'marker-end': 'url(#ar)' }, a)
-    el('line', { x1: ox, y1: spec.axes?.nonnegative ? oy : view.h - 6, x2: ox, y2: 6, 'marker-start': spec.axes?.nonnegative ? null : 'url(#ar)', 'marker-end': 'url(#ar)' }, a)
+    el('line', { x1: nonnegativeX ? ox : 6, y1: oy, x2: view.w - 6, y2: oy, 'marker-start': nonnegativeX ? null : 'url(#ar)', 'marker-end': 'url(#ar)' }, a)
+    el('line', { x1: ox, y1: nonnegativeY ? oy : view.h - 6, x2: ox, y2: 6, 'marker-start': nonnegativeY ? null : 'url(#ar)', 'marker-end': 'url(#ar)' }, a)
     const t = el('g', { fill: TICK, 'font-family': 'STIX Two Text, Cambria Math, serif', 'font-size': 17 }, g)
     const tk = el('g', { stroke: AXIS, 'stroke-width': 1.4 }, g)
     for (let x = Math.ceil(view.left / step.x) * step.x; x <= view.right; x += step.x) {
-      if (x === 0 || X(x) < 18 || X(x) > view.w - 38 || (spec.axes?.nonnegative && x < 0)) continue
+      if (x === 0 || X(x) < 18 || X(x) > view.w - 38 || (nonnegativeX && x < 0)) continue
       el('line', { x1: X(x), y1: oy - 4, x2: X(x), y2: oy + 4 }, tk)
       const n = el('text', { class: 'sg-tick', x: X(x), y: oy + 22, 'text-anchor': 'middle', 'paint-order': 'stroke', stroke: '#fff', 'stroke-width': 4 }, t)
       n.textContent = minus(r2(x))
     }
     for (let y = Math.ceil(view.bottom / step.y) * step.y; y <= view.top; y += step.y) {
-      if (y === 0 || Y(y) > view.h - 18 || Y(y) < 38 || (spec.axes?.nonnegative && y < 0)) continue
+      if (y === 0 || Y(y) > view.h - 18 || Y(y) < 38 || (nonnegativeY && y < 0)) continue
       el('line', { x1: ox - 4, y1: Y(y), x2: ox + 4, y2: Y(y) }, tk)
       const n = el('text', { class: 'sg-tick', x: ox - 9, y: Y(y) + 6, 'text-anchor': 'end', 'paint-order': 'stroke', stroke: '#fff', 'stroke-width': 4 }, t)
       n.textContent = minus(r2(y))
