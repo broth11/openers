@@ -17,12 +17,17 @@ for (const [number, name, scenes] of [[10,'Discs and Stretches',5],[11,'A Hemisp
   await page.goto(pathToFileURL(resolve(`../../outputs/Unit 11 - Lesson ${number} - Opener - ${name}.html`)).href)
   await page.waitForTimeout(300)
   assert((await page.locator('#eyebrow').innerText()).includes(`LESSON ${number}`))
+  assert.equal(await page.locator('.solid-pane h3').isVisible(), false)
+  await page.screenshot({ path: new URL(`l${number}-initial.png`, out).pathname })
   for (let i = 0; i < scenes; i++) {
     await page.click(`[data-scene="${i}"]`); await page.waitForTimeout(120)
     while (await page.locator('.reveal').count()) { await page.locator('.reveal').first().click(); await page.waitForTimeout(100) }
     await page.waitForTimeout(200)
     assert.equal(await page.locator('.ML__error').count(), 0)
     await page.screenshot({ path: new URL(`l${number}-s${i + 1}.png`, out).pathname })
+    await page.click('#workBtn'); await page.waitForTimeout(600)
+    await page.screenshot({ path: new URL(`l${number}-s${i + 1}-working.png`, out).pathname })
+    await page.click('#pclose'); await page.waitForTimeout(600)
     if (await page.locator('.solid-viewport canvas').isVisible()) {
       const png = await page.locator('.solid-viewport canvas').evaluate((c) => c.toDataURL())
       assert(png.length > 10000, 'The genuine WebGL canvas must contain rendered geometry')

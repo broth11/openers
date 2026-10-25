@@ -25,7 +25,7 @@ const spec = revolution({
 - `sign: -1`: start the generating profile on the negative side of the axis.
 - `a`, `b`, `n`, `selected`: interval, partition, actual selected piece.
 - `angle`: mathematical sweep, degrees. `turnEnabled: false` hides Play in fixed full-turn scenes.
-- `revealed`: hides generated geometry AND its view controls until the prediction reveal.
+- `revealed`: keeps the entire 3D pane blank until the prediction reveal, including heading, labels, hints and controls. Layout space is preserved.
 - `stack`: draw actual midpoint discs/washers; otherwise show a smooth swept solid.
 - `pieces`: show matching representative strip and slice. Disable when they add no information.
 - `cutaway`: omit a quarter of the displayed revolution and draw radial material faces.

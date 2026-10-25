@@ -11,7 +11,7 @@ export function makeThreeGraph(host, { renderLabel, onDrag }) {
   root.className = 'revolution-stage'
   root.innerHTML = `<section class="profile-pane"><h3>Generating region</h3><div class="profile-graph"></div></section>
     <section class="solid-pane"><h3>Revolution <span class="axis-name"></span></h3>
-    <div class="solid-viewport"><div class="solid-labels dg-ov"></div><p class="solid-predict">Predict first, then reveal the revolution.</p></div>
+    <div class="solid-viewport"><div class="solid-labels dg-ov"></div></div>
     <div class="solid-tools"><button type="button" data-view="play" aria-pressed="false">Play turn</button><button type="button" data-view="reset">Reset view</button><button type="button" data-view="front">Front</button><button type="button" data-view="end">End-on</button></div>
     <p class="orbit-hint">Drag to look around · scroll to zoom</p></section>`
   host.append(root)
@@ -130,7 +130,10 @@ export function makeThreeGraph(host, { renderLabel, onDrag }) {
   function resize() {
     const w = viewport.clientWidth, h = viewport.clientHeight
     if (!w || !h) return
-    renderer.setSize(w, h); camera.aspect = w / h; camera.updateProjectionMatrix(); render()
+    renderer.setSize(w, h); camera.aspect = w / h
+    // Preserve the full solid when the working drawer makes the pane narrow.
+    camera.zoom = Math.min(1, camera.aspect)
+    camera.updateProjectionMatrix(); render()
   }
   const ro = new ResizeObserver(resize)
   ro.observe(viewport)
@@ -140,7 +143,7 @@ export function makeThreeGraph(host, { renderLabel, onDrag }) {
       const changed = spec?.id !== next.solid.id || spec?.axis !== next.solid.axis
       spec = next.solid; root.hidden = false; root.dataset.scene = spec.id
       root.querySelector('.axis-name').textContent = `about ${spec.axis}`
-      root.querySelector('.solid-predict').hidden = spec.revealed
+      root.querySelector('.solid-pane').style.visibility = spec.revealed ? 'visible' : 'hidden'
       renderer.domElement.style.visibility = spec.revealed ? 'visible' : 'hidden'
       root.querySelector('.solid-tools').style.visibility = spec.revealed ? 'visible' : 'hidden'
       root.querySelector('[data-view="play"]').hidden = !spec.turnEnabled

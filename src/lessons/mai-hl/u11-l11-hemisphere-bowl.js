@@ -2,7 +2,7 @@
 // Data are interpolation points, not regression observations. Verified in qa/verify-u11-l10-l11.py.
 // Calculator guidance uses only the integral template and exponent exit verified in docs/OPENERS.md.
 import { revolution } from '../../components/solid-of-revolution/index.js'
-import { commonParams, T, emptyWork, noKeys, integralKeys, sliceReadout } from '../../components/solid-of-revolution/lesson-tools.js'
+import { commonParams, T, noKeys, integralKeys, sliceReadout } from '../../components/solid-of-revolution/lesson-tools.js'
 import { COLORS as C } from '../../kit/style.js'
 import { snap } from '../../components/strips/index.js'
 
@@ -37,15 +37,22 @@ export default {
       controls: ({ shown }) => shown('hemisphere') ? ['angle', 'selected'] : ['selected'],
       prompts: [
         { id: 'hemisphere', q: 'Revolve the shaded right half about the y-axis. What solid will it make?', a: 'A hemisphere of radius 3 cm. The generating region is a quarter-disc.' },
+        { id: 'outer-radius', q: T`Use $x^2+(y-3)^2=9$ to express the squared radius $x^2$ in terms of $y$.`, a: T`$x^2=9-(y-3)^2$ $=9-(y^2-6y+9)$ $=6y-y^2$.` },
         { id: 'outer-volume', q: 'Find its volume using discs. Check with the familiar solid formula.', a: T`$V_{\mathrm{outer}}=\pi\int_0^3(6y-y^2)\,dy$ $=18\pi\text{ cm}^3$.` },
       ],
       graph: ({ v, shown }) => bowl(v, { id: 'hemisphere', revealed: shown('hemisphere') }),
       readout: ({ shown }) => shown('outer-volume') ? T`$V_{\mathrm{outer}}=18\pi\approx56.5\text{ cm}^3$` : 'Only the shaded right half is revolved about y.',
-      working: ({ shown }) => shown('outer-volume') ? { blocks: [
-        ['Radius squared from the circle', T`x^2&=9-(y-3)^2\\&=6y-y^2`],
-        ['Add horizontal discs', T`V_{\mathrm{outer}}&=\pi\int_0^3(6y-y^2)\,dy\\&=18\pi\text{ cm}^3`, true],
-        ['Check', T`V&=\frac23\pi(3)^3\\&=18\pi\text{ cm}^3`],
-      ] } : emptyWork(),
+      working: ({ shown }) => ({ blocks: [
+        ...(shown('outer-radius') ? [
+          ['Circle equation', T`x^2+(y-3)^2&=9`],
+          ['Isolate the squared radius', T`x^2&=9-(y-3)^2`],
+          ['Expand and simplify', T`x^2&=9-(y^2-6y+9)\\&=9-y^2+6y-9\\&=6y-y^2`],
+        ] : []),
+        ...(shown('outer-volume') ? [
+          ['Add horizontal discs', T`V_{\mathrm{outer}}&=\pi\int_0^3(6y-y^2)\,dy\\&=18\pi\text{ cm}^3`, true],
+          ['Check', T`V&=\frac23\pi(3)^3\\&=18\pi\text{ cm}^3`],
+        ] : []),
+      ], note: shown('outer-radius') ? 'The horizontal radius is x. For disc area we need x², so no square root is required.' : 'Use the circle equation to obtain the squared radius before finding a volume.' }),
       keys: ({ shown }) => shown('outer-volume') ? integralKeys({ integrand: '6X-X^2', lo: '0', hi: '3', out: '56.54866776 cm³' }) : noKeys(),
     },
     {
@@ -73,7 +80,7 @@ export default {
           ['Substitute the three points', T`4a-2b+c&=3\\c&=1\\4a+2b+c&=3`],
           ['Solve and write the profile', T`a&=\frac12,\quad b=0,\quad c=1\\y&=\frac12x^2+1`, true],
         ] : []),
-        ...(shown('inner-radius') ? [['Squared radius', T`x^2&=2y-2\\1&\le y\le3`]] : []),
+        ...(shown('inner-radius') ? [['Rearrange the parabola', T`y&=\frac12x^2+1\\y-1&=\frac12x^2\\2(y-1)&=x^2\\x^2&=2y-2`], ['Cavity height interval', T`1&\le y\le3`]] : []),
       ], note: 'These three points define an exact quadratic. This is interpolation, rather than regression from noisy measurements.' }),
       keys: noKeys,
     },

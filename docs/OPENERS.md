@@ -132,3 +132,14 @@ The check drives every scene, reveal, slider end, and switch at 1366x768, 1440x8
 - Cavity bottoms can change washers into discs. Keep partition boundaries aligned there.
 - Midpoint sums are not always changing approximations: sqrt(x) disc sums are exact for all n.
 - Per-axis nonnegative arrow options support negative x with nonnegative y.
+
+### U11 preview corrections (Ben, October 2026)
+
+- An unrevealed 3D pane is entirely blank: hide its heading, labels, axis, hint, controls and
+  placeholder together, preserving layout space. Do not show partial rendering furniture.
+- Start L10 from the height of the function actually displayed, sqrt(x). Rotate that strip,
+  identify radius sqrt(x), derive its circular face area, and then form the disc volume.
+  Do not retrieve an unrelated radius expression such as x²+1.
+- L10 stretch exploration is vertical only: q² about x and q about y, with appropriate intervals.
+- L11 explicitly reveals the circle rearrangement and expansion before the volume integral.
+  Likewise show the steps rearranging the cavity parabola into radius squared.
