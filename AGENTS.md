@@ -8,6 +8,16 @@ Before changing anything, read:
 2. `docs/CATALOG.md`: what already exists. Reuse it before writing anything new.
 3. `docs/ENGINES.md`: the engine interface, and how to add JSXGraph or three.js.
 
+Setup (once per environment):
+
+```bash
+npm install
+npx playwright install --with-deps chromium   # browser for the layout check
+pip install sympy                             # exact-value checks
+```
+
+Previews: push the branch; Cloudflare builds it at `https://<branch-name>.openers.pages.dev/`. Give Ben that link with the lesson's deep link (for example `#mai-hl-u11-l09`). Merging to `main` puts it live at `openers.pages.dev` and `openers.bensnotes.app`.
+
 Working rules:
 
 - Work on a branch, never on `main`. Ben approves every merge; merging puts an opener live.
