@@ -28,10 +28,14 @@ const spec = revolution({
 - `revealed`: keeps the entire 3D pane blank until the prediction reveal, including heading, labels, hints and controls. Layout space is preserved.
 - `stack`: draw actual midpoint discs/washers; otherwise show a smooth swept solid.
 - `pieces`: show matching representative strip and slice. Disable when they add no information.
+- `isolated`: show only the selected strip/disc, keeping curve outlines for context but removing
+  region fill, other strips, full solid and reference outlines. It has no effect without `pieces`.
+  The shared `pieceView` control keeps both views linked. The selected mesh is opaque, with
+  dashed circular rims and thickness edges; context surfaces and end faces have lower opacity.
 - `cutaway`: omit a quarter of the displayed revolution and draw radial material faces.
   It is a display section, not a change to the mathematical volume. State that on screen.
 - `scale`, `center`: fixed camera framing, in world units. Do not refit on slider changes.
-- `reference`: optional original profile/interval drawn as a faint reference mesh.
+- `reference`: optional original profile/interval drawn as clean dashed outlines, without triangle wireframes.
 - `profile`, `bounds`, `labels`, `extra`: SVG profile visibility, fixed bounds, shared labels,
   and additional SVG items. Reveal any completed models and calculated labels explicitly.
 
@@ -61,3 +65,9 @@ the approved Pearson hybrid: blue generating profile, green faces, shaded materi
 - Run `qa/verify-u11-l10-l11.py`, the shared layout matrix for both keys, and
   `qa/check-revolutions.mjs` (orbit, animation, reveal gating, slice matching, cavity and mobile).
   Browser tests accept OPENERS_CHROME; Playwright must be available locally or via NODE_PATH.
+
+### L10 classroom comparison
+
+The stretch scene supplies f(x)=sqrt(x) and g(x)=2f(x) together in 2D, then lets the teacher
+toggle the generated 3D profile at a fixed camera scale. It revolves about x only. The scene
+starts from the area integral in the earlier recall scene and squares the doubled radius.

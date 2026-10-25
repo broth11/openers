@@ -32,6 +32,12 @@ for (const [number, name, scenes] of [[10,'Discs and Stretches',5],[11,'A Hemisp
       const png = await page.locator('.solid-viewport canvas').evaluate((c) => c.toDataURL())
       assert(png.length > 10000, 'The genuine WebGL canvas must contain rendered geometry')
       for (const view of ['front','end','reset']) { await page.click(`[data-view="${view}"]`); await page.waitForTimeout(80) }
+      if (number === 10 && i === 4) {
+        await page.click('[data-seg="model"][data-val="g"]'); await page.waitForTimeout(180)
+        await page.screenshot({path:new URL('l10-doubled-profile.png',out).pathname})
+        await page.click('[data-seg="pieceView"][data-val="one"]'); await page.waitForTimeout(180)
+        await page.screenshot({path:new URL('l10-doubled-piece.png',out).pathname})
+      }
     }
   }
   assert.deepEqual(errors, [])

@@ -143,3 +143,15 @@ The check drives every scene, reveal, slider end, and switch at 1366x768, 1440x8
 - L10 stretch exploration is vertical only: q² about x and q about y, with appropriate intervals.
 - L11 explicitly reveals the circle rearrangement and expansion before the volume integral.
   Likewise show the steps rearranging the cavity parabola into radius squared.
+
+### Selected pieces and doubled profiles (Ben, October 2026)
+
+- L10's recall includes the area integral from 0 to 4. Its stretch scene focuses on x only,
+  with f(x)=sqrt(x) and g(x)=2f(x) both sketched before the volume prediction. The generated
+  solids toggle between f and g at the same camera scale. This supersedes the two-axis
+  vertical-stretch comparison in the preceding preview.
+- A shared All pieces / Selected only switch isolates the same actual partition slice in
+  2D and 3D. Keep curve outlines as context; remove other strips, region fill and solids.
+- Selected orange discs/washers are opaque with dashed circular rims and thickness edges.
+  Keep surrounding surfaces faint and their end faces very faint to avoid many overlapping
+  translucent caps obscuring the selected piece. Avoid triangulated reference wireframes.

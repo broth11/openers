@@ -17,7 +17,7 @@ const outerLabels = [{ id: 'circle', x: 2.5, y: 1.3, html: T`$x^2+(y-3)^2=9$`, c
 function bowl(v, changes = {}) {
   const a = changes.a ?? 0, b = changes.b ?? 3
   const result = revolution({ id: 'bowl', axis: 'y', a, b, outer, inner: () => 0,
-    n: v.n, selected: a + (b - a) * v.selected, angle: v.angle, bounds: B, scale: 5,
+    n: v.n, selected: a + (b - a) * v.selected, angle: v.angle, isolated: v.pieceView === 'one', bounds: B, scale: 5,
     center: [0, 1.5, 0], labels: outerLabels, extra: wholeSection, ...changes })
   result.profile.axes = { nonnegative: { x: false, y: true } }
   return result
@@ -34,7 +34,7 @@ export default {
   scenes: [
     {
       id: 'hemisphere', short: 'Make the solid', heading: 'Start with a semicircular cross-section. All lengths are in cm.',
-      controls: ({ shown }) => shown('hemisphere') ? ['angle', 'selected'] : ['selected'],
+      controls: ({ shown }) => shown('hemisphere') ? ['angle', 'selected', 'pieceView'] : ['selected', 'pieceView'],
       prompts: [
         { id: 'hemisphere', q: 'Revolve the shaded right half about the y-axis. What solid will it make?', a: 'A hemisphere of radius 3 cm. The generating region is a quarter-disc.' },
         { id: 'outer-radius', q: T`Use $x^2+(y-3)^2=9$ to express the squared radius $x^2$ in terms of $y$.`, a: T`$x^2=9-(y-3)^2$ $=9-(y^2-6y+9)$ $=6y-y^2$.` },
@@ -111,7 +111,7 @@ export default {
     },
     {
       id: 'washers', short: 'Inside the bowl', heading: 'Move a horizontal slice from the base towards the rim.',
-      controls: ({ shown }) => shown('slice-kind') ? ['selected', 'n', 'cut'] : ['selected'],
+      controls: ({ shown }) => shown('slice-kind') ? ['selected', 'n', 'cut', 'pieceView'] : ['selected', 'pieceView'],
       prompts: [
         { id: 'slice-kind', q: 'Is every cross-section a washer? Move the selected slice and predict.', a: 'Below y = 1: a solid disc. Above y = 1: a washer. The cavity starts at y = 1.' },
         { id: 'washer-area', q: 'Above y = 1, write the area of a material cross-section.', a: T`$A=\pi(R^2-r^2)$ $=\pi[(6y-y^2)-(2y-2)]$. Subtract circle areas.` },

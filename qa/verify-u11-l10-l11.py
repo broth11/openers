@@ -7,6 +7,8 @@ checks = []
 def check(name, actual, expected):
     assert s.simplify(actual - expected) == 0, (name, actual, expected)
     checks.append(name)
+check('area integral',s.integrate(s.sqrt(x),(x,0,4)),s.Rational(16,3))
+check('doubled x profile volume',s.integrate(s.pi*(2*s.sqrt(x))**2,(x,0,4)),32*s.pi)
 check('x disc volume', s.integrate(s.pi*x, (x,0,4)), 8*s.pi)
 check('negative profile squared', (-s.sqrt(x))**2, x)
 check('midpoint sum already exact', s.summation(s.pi*(i-s.Rational(1,2))*4/n*4/n,(i,1,n)),8*s.pi)

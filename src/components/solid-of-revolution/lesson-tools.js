@@ -2,6 +2,7 @@ import { snap } from '../strips/index.js'
 import { fmt } from '../../kit/math.js'
 export const T = String.raw
 export const commonParams = {
+  pieceView: { type: 'seg', label: 'Show pieces', options: [['all', 'All pieces'], ['one', 'Selected only']], value: 'all' },
   n: { type: 'range', label: 'Pieces', min: 2, max: 40, step: 1, value: 8 },
   selected: { type: 'range', label: 'Selected piece', min: 0, max: 1, step: 0.01, value: 0.55, sel: true,
     show: (v, all) => `${snap(0, 1, all.n, v).i + 1} of ${all.n}` },

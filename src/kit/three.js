@@ -61,15 +61,20 @@ export function makeThreeGraph(host, { renderLabel, onDrag }) {
     body.traverse((o) => { o.geometry?.dispose(); if (Array.isArray(o.material)) o.material.forEach((m) => m.dispose()); else o.material?.dispose() })
     body.clear()
   }
-  function line(points, color, dashed = false) {
+  function line(points, color, dashed = false, opacity = 1, overlay = false) {
     const g = new THREE.BufferGeometry().setFromPoints(points)
     const m = dashed ? new THREE.LineDashedMaterial({ color, dashSize: 0.1, gapSize: 0.07 }) : new THREE.LineBasicMaterial({ color })
+    m.transparent = opacity < 1; m.opacity = opacity
+    m.depthTest = !overlay; m.depthWrite = false
     const l = new THREE.Line(g, m)
+    if (overlay) l.renderOrder = 10
     if (dashed) l.computeLineDistances()
     body.add(l)
   }
   function mesh(s, angle, color, opacity = 1, selected = false, longitudinal = 40) {
-    body.add(new THREE.Mesh(sweptGeometry(s, angle, longitudinal, 48), [material(color, opacity), material(selected ? C.sel : C.face, opacity)]))
+    const faceOpacity = opacity < 1 ? Math.min(opacity, 0.035) : 1
+    const face = material(selected ? C.sel : C.face, faceOpacity)
+    body.add(new THREE.Mesh(sweptGeometry(s, angle, longitudinal, 64), [material(color, opacity), face]))
   }
   function draw() {
     disposeBody()
@@ -80,28 +85,43 @@ export function makeThreeGraph(host, { renderLabel, onDrag }) {
     const direction = end.clone().sub(start).normalize()
     body.add(new THREE.ArrowHelper(direction, end.clone().addScaledVector(direction, -0.2), 0.2, C.ink, 0.16, 0.08))
     if (!spec.revealed) { render(); return }
-    if (spec.reference) {
-      const g = sweptGeometry({ ...spec, ...spec.reference }, Math.PI * 2, 16, 16)
-      body.add(new THREE.LineSegments(new THREE.WireframeGeometry(g), new THREE.LineBasicMaterial({ color: C.muted, transparent: true, opacity: 0.12 }))); g.dispose()
+    if (spec.reference && !spec.isolated) {
+      // Clean profile outlines, rather than a distracting triangulated wire mesh.
+      const ref = spec.reference
+      const refPoint = (t, r, phi) => spec.axis === 'x' ? new THREE.Vector3(t, r*Math.cos(phi), r*Math.sin(phi)) : new THREE.Vector3(r*Math.cos(phi), t, r*Math.sin(phi))
+      for (const phi of [0, Math.PI]) line(Array.from({length:65},(_,i)=> {const t=ref.a+(ref.b-ref.a)*i/64; return refPoint(t,ref.outer(t),phi)}), C.muted, true, 0.35)
     }
-    if (spec.stack) {
+    const ring = (t, r, color, dashed = false, opacity = 1, overlay = false) => {
+      const phi = spec.sign < 0 ? Math.PI : 0
+      line(Array.from({length:129},(_,i)=>point(t,r,phi+sweep*i/128)),color,dashed,opacity,overlay)
+    }
+    if (!spec.isolated && spec.stack) {
       const h = (spec.b - spec.a) / spec.n
       for (let i = 0; i < spec.n; i++) {
         if (i === spec.typical.i && spec.pieces) continue
         const lo = spec.a + i * h, mid = lo + h / 2
-        mesh({ ...spec, a: lo, b: lo + h, outer: () => spec.outer(mid), inner: () => spec.inner(mid) }, sweep, C.strip, 0.65, false, 1)
+        mesh({ ...spec, a: lo, b: lo + h, outer: () => spec.outer(mid), inner: () => spec.inner(mid) }, sweep, C.strip, 0.16, false, 1)
+        ring(lo, spec.outer(mid), C.strip, false, 0.28)
       }
-    } else mesh(spec, sweep, C.solid, spec.pieces ? 0.46 : 0.92)
+    } else if (!spec.isolated) mesh(spec, sweep, C.solid, spec.pieces ? 0.16 : 1)
     const phi = spec.sign < 0 ? Math.PI : 0
     const sample = (f) => Array.from({ length: 97 }, (_, i) => { const t = spec.a + (spec.b - spec.a) * i / 96; return point(t, f(t), phi) })
-    line(sample(spec.outer), C.strip)
-    if (spec.inner(spec.b) > 0) line(sample(spec.inner), C.coral)
+    if (!spec.isolated) {
+      line(sample(spec.outer), C.strip)
+      if (spec.inner(spec.b) > 0) line(sample(spec.inner), C.coral)
+    }
     if (spec.pieces) {
       const t = spec.typical
-      mesh({ ...spec, a: t.lo, b: t.hi, outer: () => spec.outer(t.m), inner: () => spec.inner(t.m) }, sweep, C.sel, 0.95, true, 1)
-      line([point(t.m, spec.inner(t.m), phi), point(t.m, spec.outer(t.m), phi)], C.sel)
+      mesh({ ...spec, a: t.lo, b: t.hi, outer: () => spec.outer(t.m), inner: () => spec.inner(t.m) }, sweep, C.sel, 1, true, 1)
+      line([point(t.m, spec.inner(t.m), phi), point(t.m, spec.outer(t.m), phi)], C.ink, true, 1, true)
+      // Dashed circular rims and thickness edges make the selected disc readable in 3D.
+      for (const end of [t.lo,t.hi]) {
+        ring(end,spec.outer(t.m),C.ink,true,1,true)
+        if (spec.inner(t.m)>0) ring(end,spec.inner(t.m),C.ink,true,1,true)
+      }
+      for (const u of [0,0.25,0.5,0.75]) line([point(t.lo,spec.outer(t.m),phi+u*sweep),point(t.hi,spec.outer(t.m),phi+u*sweep)],C.ink,true,1,true)
     }
-    Object.assign(viewport.dataset, { axis: spec.axis, angle: String(spec.angle), cutaway: String(spec.cutaway), selected: String(spec.typical.i), innerRadius: String(spec.inner(spec.typical.m)), outerRadius: String(spec.outer(spec.typical.m)), triangles: String(body.children.reduce((n, o) => n + (o.isMesh ? o.geometry.attributes.position.count / 3 : 0), 0)) })
+    Object.assign(viewport.dataset, { isolated: String(spec.isolated), selectedOpacity: spec.pieces ? '1' : '', meshes: String(body.children.filter((o)=>o.isMesh).length), dashedOutlines: String(body.children.filter((o)=>o.isLine && o.material.isLineDashedMaterial && o.renderOrder===10).length), axis: spec.axis, angle: String(spec.angle), cutaway: String(spec.cutaway), selected: String(spec.typical.i), innerRadius: String(spec.inner(spec.typical.m)), outerRadius: String(spec.outer(spec.typical.m)), triangles: String(body.children.reduce((n, o) => n + (o.isMesh ? o.geometry.attributes.position.count / 3 : 0), 0)) })
     render()
   }
   function stop() {

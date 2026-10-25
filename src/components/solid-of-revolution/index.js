@@ -4,8 +4,9 @@ import { COLORS as C } from '../../kit/style.js'
 
 export function revolution({ id, axis = 'x', a = 0, b = 4, outer = Math.sqrt, inner = () => 0,
   n = 8, selected = 2, sign = 1, angle = 360, revealed = true, stack = false,
-  cutaway = false, dimensions = false, bounds, labels = [], extra = [], profile = true, pieces = true,
+  cutaway = false, isolated = false, dimensions = false, bounds, labels = [], extra = [], profile = true, pieces = true,
   reference = null, turnEnabled = true, scale = 5, center = null, description = '' }) {
+  isolated = isolated && pieces && profile
   const t = snap(a, b, n, selected)
   const { L, m, h } = midpoints(a, b, n)
   const xy = (s, r) => axis === 'x' ? [s, sign * r] : [sign * r, s]
@@ -23,11 +24,11 @@ export function revolution({ id, axis = 'x', a = 0, b = 4, outer = Math.sqrt, in
       description: description || 'Generating region and a matching representative slice',
       items: [
         ...(profile ? [
-          { type: 'area', var: axis, from: a, to: b, lo: low, hi, color: C.teal, opacity: 0.14 },
+          ...(!isolated ? [{ type: 'area', var: axis, from: a, to: b, lo: low, hi, color: C.teal, opacity: 0.14 }] : []),
           { type: 'curve', f: (s) => xy(s, outer(s)), t: [a, b], color: C.strip },
           { type: 'curve', f: (s) => xy(s, inner(s)), t: [a, b], color: C.coral, width: 2 },
           ...(pieces ? [
-            { type: 'rects', items: m.map((s, i) => rect(L[i], L[i] + h, s)) },
+            ...(!isolated ? [{ type: 'rects', items: m.map((s, i) => rect(L[i], L[i] + h, s)) }] : []),
             { type: 'rect', x1, x2, y1, y2, drag: { param: 'selected', axis } },
           ] : []),
         ] : []),
@@ -43,7 +44,7 @@ export function revolution({ id, axis = 'x', a = 0, b = 4, outer = Math.sqrt, in
       ] : [])],
     },
     solid: { id, axis, a, b, outer, inner, n, typical: t, sign, angle,
-      revealed, stack, cutaway, reference, turnEnabled, scale, center: center || (axis === 'x' ? [(a + b) / 2, 0, 0] : [0, (a + b) / 2, 0]),
+      revealed, stack, cutaway, isolated, reference, turnEnabled, scale, center: center || (axis === 'x' ? [(a + b) / 2, 0, 0] : [0, (a + b) / 2, 0]),
       pieces: pieces && profile, description },
   }
 }
