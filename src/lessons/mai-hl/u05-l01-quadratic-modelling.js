@@ -90,7 +90,6 @@ export default {
       id: 'challenge', short: 'Three shots',
       heading: 'Two shots and a bounce. Which ball goes highest? Which stays in the air longest?',
       board: () => givens,
-      readout: () => 'Only the measurements are known. Build a model for each shot.',
       prompts: [
         { id: 'predict-height', q: 'Whose ball reached the greatest height? Make a prediction.', a: 'Keep your prediction. Compare the three models in Scene 5.' },
         { id: 'predict-time', q: 'Whose ball stayed airborne longest? Will it be the same player?', a: 'Record a reason for your prediction. Compare A and B with C’s known airtime.' },

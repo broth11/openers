@@ -24,11 +24,15 @@
   .board-card p { margin: 4px 0; font-size: 16px; }
 }
 
-/* Clips: one row above the cards, same columns as the cards, every clip at one shared height. */
-.board-clips { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; --clip-h: clamp(84px, 17vh, 190px); }
-.board-clip { margin: 0; display: flex; justify-content: center; min-width: 0; }
-.board-clip video { display: block; height: var(--clip-h); width: auto; max-width: 100%; object-fit: contain; border-radius: 10px; background: #e8eff4; }
-.page.panel-open .board-clips { --clip-h: clamp(64px, 11vh, 110px); gap: 8px; }
+/* Clips: one row above the cards, same columns as the cards. The row takes all the height the intro,
+   cards, and note leave free, and every clip is drawn at that one height. */
+.board-clips { flex: 1 1 0; min-height: 84px; container-type: size; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-rows: minmax(0, 1fr); gap: 12px; }
+.board-clip { margin: 0; display: flex; justify-content: center; align-items: center; min-width: 0; min-height: 0; }
+.board-clip video { display: block; height: 100cqh; width: auto; max-width: 100%; object-fit: contain; border-radius: 10px; background: #e8eff4; }
+.page.panel-open .board-clips { min-height: 64px; gap: 8px; }
+/* A board scene with no readout line gives that row back to the board. */
+.stage:has(.graph.has-board) .readout:empty { display: none; }
 @media (max-width: 860px) {
-  .board-clips { --clip-h: 96px; gap: 8px; }
+  /* the board is not a fixed-height box on a phone, so the clip row gets its own height */
+  .board-clips { flex: none; height: 120px; min-height: 0; gap: 8px; }
 }
