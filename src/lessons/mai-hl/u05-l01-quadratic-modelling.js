@@ -14,12 +14,44 @@ const knownA = [[0, 2, 'Release: $(0,2)$', 'w'], [0.6, 3.8, 'Maximum: $(0.6,3.8)
 const knownB = [[0.2, 2.7, '$(0.2,2.7)$', 'nw'], [0.6, 3.9, '$(0.6,3.9)$', 'n'], [1, 3.5, '$(1,3.5)$', 'e']]
 const knownC = [[0, 0, 'Bounce: $(0,0)$', 'ne'], [1.7, 0, 'Floor: $(1.7,0)$', 'ne'], [0.2, 1.5, '$(0.2,1.5)$', 'nw']]
 const noKeys = { steps: ['Use the given information to choose a form.'], out: 'Choose before calculating.' }
-const unchecked = 'Menu sequence not yet checked on the calculator. Use the named screen labels.'
-const modelKeys = (formula) => ({
-  steps: ['Open GRAPH from MENU.', `Enter $Y_1=${formula}$. Use $X$ in place of $t$.`,
-    'Use a window covering $0\\le X\\le1.8$ and $0\\le Y\\le5$, then draw.'],
-  out: 'Height above floor against time', watch: unchecked,
+// fx-CG50 steps. Verified on the emulator 25/10/2026 for shooter A (Graph entry, V-Window, DRAW, G-Solv MAX
+// gave X=0.6, Y=3.8) and the Equation > SIMUL > 3 unknowns screen; menu paths also from the log in the
+// gdc-online-deck skill (references/menu_paths_verified.md). Anything still not run says so on screen.
+const k = (s) => `<span class="key">${s}</span>`
+const e = (s) => `<span class="entry">${s}</span>`
+const todo = ' (not yet checked on the calculator)'
+const typed = {
+  A: `${k('(−)')} ${e('5')} ${k('(')} ${k('X,θ,T')} ${k('−')} ${e('0')}${k('.')}${e('6')} ${k(')')} ${k('x²')} ${k('+')} ${e('3')}${k('.')}${e('8')}`,
+  B: `${k('(−)')} ${e('5')} ${k('X,θ,T')} ${k('x²')} ${k('+')} ${e('7')} ${k('X,θ,T')} ${k('+')} ${e('1')}${k('.')}${e('5')}`,
+  C: `${k('(−)')} ${e('5')} ${k('X,θ,T')} ${k('(')} ${k('X,θ,T')} ${k('−')} ${e('1')}${k('.')}${e('7')} ${k(')')}`,
+}
+const openGraph = `${k('MENU')} ${k('5')}: Graph. Wait for the function list before pressing anything else`
+const setWindow = `${k('SHIFT')} ${k('F3')} (V-Window). Type ${e('0')} ${k('EXE')} ${e('1')}${k('.')}${e('8')} ${k('EXE')} ${e('0')}${k('.')}${e('2')} ${k('EXE')}, then ${k('↓')} to skip the dot row. Type ${e('0')} ${k('EXE')} ${e('5')} ${k('EXE')} ${e('1')} ${k('EXE')}, then ${k('EXIT')}`
+const draw = `${k('F6')} (DRAW). Wait for the whole curve before pressing another key`
+const modelKeys = (id, top, x, y) => ({
+  steps: [
+    openGraph,
+    `On the ${e('Y1')} row press ${k('AC')} to clear the old function, then type ${typed[id]}. Press ${k('EXE')} to store it`,
+    setWindow,
+    draw,
+    `${k('F5')} (G-Solv) ${k('F2')} (MAX), then ${k('EXE')} to show the coordinates${id === 'A' ? '' : todo}`,
+  ],
+  out: `Maximum: X = ${x}, Y = ${y}`,
+  watch: `Check that ${e('Y1')} reads ${top} before you draw. Keys pressed while a curve is drawing are lost, so wait for the whole curve. Use ${k('X,θ,T')} wherever the model has $t$.`,
 })
+const simulRow = (n, ...vals) => `Row ${n}: ${vals.map((x) => e(x)).join(` ${k('EXE')} `)} ${k('EXE')}${todo}`
+const simulKeys = {
+  steps: [
+    `${k('MENU')}, wait for the main menu, then ${k('X,θ,T')} (Equation, icon A)`,
+    `${k('F1')} (SIMUL), then ${k('F2')} (3 unknowns). A grid opens with columns a, b, c, d`,
+    simulRow(1, '0.04', '0.2', '1', '2.7'),
+    simulRow(2, '0.36', '0.6', '1', '3.9'),
+    simulRow(3, '1', '1', '1', '3.5'),
+    `${k('F1')} (SOLVE)${todo}`,
+  ],
+  out: 'X = −5, Y = 7, Z = 1.5, so a = −5, b = 7, c = 1.5',
+  watch: 'The grid columns are labelled a, b, c, d (the coefficients and the right-hand side), but the answers are labelled X, Y, Z. X is your a, Y is your b, and Z is your c. Enter the 1 for the coefficient of c in every row.',
+}
 const givens = {
   intro: 'Each ball follows a quadratic model. Start each clock when its flight begins; height $h$ is above the floor.',
   cards: [
@@ -66,7 +98,7 @@ export default {
         ...(shown('a-form') ? [['Vertex form', 'h_A(t)&=a(t-0.6)^2+3.8']] : []),
         ...(shown('a-model') ? [['Substitute', '2&=0.36a+3.8'], ['Solve', 'a&=\\frac{2-3.8}{0.36}\\\\&=-5'], ['Model', 'h_A(t)&=-5(t-0.6)^2\\\\&\\quad+3.8', true]] : []),
       ], note: 'Vertex information fixes the horizontal and vertical shifts. One other point fixes the remaining coefficient.' }),
-      keys: ({ shown }) => shown('a-model') ? modelKeys('-5(X-0.6)^2+3.8') : noKeys,
+      keys: ({ shown }) => shown('a-model') ? modelKeys('A', '−5(x−0.6)²+3.8', '0.6', '3.8') : noKeys,
     },
     {
       id: 'standard', short: 'Three points',
@@ -83,15 +115,7 @@ export default {
         ...(shown('b-system') ? [['Three equations', '0.04a+0.2b+c&=2.7\\\\0.36a+0.6b+c&=3.9\\\\a+b+c&=3.5']] : []),
         ...(shown('b-model') ? [['GDC solution', 'a&=-5\\\\b&=7\\\\c&=1.5'], ['Model', 'h_B(t)&=-5t^2+7t+1.5', true]] : []),
       ], note: 'This is the one full simultaneous-equations demonstration: three known points, three unknown coefficients. Use the equation solver, not regression.' }),
-      keys: ({ shown }) => shown('b-system') ? {
-        steps: ['Open EQUATION, choose simultaneous equations, and select three unknowns.',
-          'Use the columns for $a$, $b$, $c$, and the right-hand side.',
-          'Row 1: $0.04,\\ 0.2,\\ 1,\\ 2.7$.',
-          'Row 2: $0.36,\\ 0.6,\\ 1,\\ 3.9$.',
-          'Row 3: $1,\\ 1,\\ 1,\\ 3.5$. Solve.'],
-        out: shown('b-model') ? 'a = −5, b = 7, c = 1.5' : 'Reveal the model after solving.',
-        watch: unchecked + ' The coefficient of c is 1 in every row.',
-      } : noKeys,
+      keys: ({ shown }) => shown('b-system') ? { ...simulKeys, out: shown('b-model') ? simulKeys.out : 'Reveal the model after solving.' } : noKeys,
     },
     {
       id: 'factored', short: 'Factored form',
@@ -108,7 +132,7 @@ export default {
         ...(shown('c-form') ? [['Factored form', 'h_C(t)&=a(t-0)(t-1.7)\\\\&=at(t-1.7)']] : []),
         ...(shown('c-model') ? [['Substitute', '1.5&=a(0.2)(0.2-1.7)\\\\&=-0.3a'], ['Coefficient', 'a&=\\frac{1.5}{-0.3}\\\\&=-5'], ['Height model', 'h_C(t)&=-5t(t-1.7)', true]] : []),
       ], note: 'The roots are actual floor contacts. Model this one bounce on $0\\le t\\le1.7$; stop before the next bounce.' }),
-      keys: ({ shown }) => shown('c-model') ? modelKeys('-5X(X-1.7)') : noKeys,
+      keys: ({ shown }) => shown('c-model') ? modelKeys('C', '−5x(x−1.7)', '0.85', '3.6125') : noKeys,
     },
     {
       id: 'compare', short: 'Compare',
@@ -130,12 +154,18 @@ export default {
         ...(shown('longest') ? [['Airtimes', 'A&:1.47\\text{ s}\\\\B&:1.59\\text{ s}\\\\C&:1.70\\text{ s}', true]] : []),
       ], note: 'Move time through 1.47–1.70 s to test the comparison. A and B start at release; C starts at its first floor contact. Each model stops at the next floor contact.' }),
       keys: ({ shown }) => ({
-        steps: ['In GRAPH, enter the three models as $Y_1$, $Y_2$, and $Y_3$.',
-          'Use a window covering $0\\le X\\le1.8$ and $0\\le Y\\le5$.',
-          'G-Solv MAX: compare the three maximum heights.',
-          'G-Solv ROOT: choose the positive zero of each model.'],
+        steps: [
+          openGraph,
+          `${e('Y1')}: ${k('AC')} if the row is not empty, type ${typed.A}, then ${k('EXE')}. The cursor drops to ${e('Y2')}`,
+          `${e('Y2')}: type ${typed.B}, then ${k('EXE')}`,
+          `${e('Y3')}: type ${typed.C}, then ${k('EXE')}`,
+          setWindow,
+          draw,
+          `${k('F5')} (G-Solv) ${k('F2')} (MAX). Use ${k('↑')} or ${k('↓')} to pick a graph, ${k('EXE')} to take it, then ${k('EXE')} for the coordinates. ${k('F5')} ${k('F2')} again for the next graph${todo}`,
+          `${k('F5')} ${k('F1')} (ROOT) for the zeros, then ${k('→')} for the next zero. Read the positive one${todo}`,
+        ],
         out: shown('longest') ? 'Longest: C = 1.70 s' : 'Compare before revealing.',
-        watch: unchecked + ' For C, 0 s starts the bounce; 1.7 s ends it.',
+        watch: `For C, 0 s starts the bounce and 1.7 s ends it, so its first zero is $0$. Switch off any graph you are not testing, or pick the right one with ${k('↑')} ${k('↓')} each time.`,
       }),
     },
   ],
