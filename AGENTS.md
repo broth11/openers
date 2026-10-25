@@ -8,6 +8,8 @@ Before changing anything, read:
 2. `docs/CATALOG.md`: what already exists. Reuse it before writing anything new.
 3. `docs/ENGINES.md`: the engine interface, and how to add JSXGraph or three.js.
 
+Planning an opener (whether a lesson gets one, the outline Ben approves, which engine, how it shapes the printed notes) is not in this repo. It is in Ben's lesson skills `mai-lesson-package` (section "Lesson opener") and `mai-lesson-design` (the outline gate and "Choosing the opener's engine"). In Codex they are at `~/.codex/skills/<name>/SKILL.md`; their masters are in `/Users/benjaminroth/Documents/Courses/MAI HL/_tools/skills_sync/masters/`. Read both before proposing a new opener, and stop at the outline gate for Ben's approval.
+
 Setup (once per environment):
 
 ```bash
