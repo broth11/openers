@@ -71,12 +71,14 @@ for (const [w, h] of sizes) {
           const r = n.getBoundingClientRect()
           return r.left < g.left - 1 || r.right > g.right + 1 || r.top < g.top - 1 || r.bottom > g.bottom + 1
         }).map((n) => n.textContent.slice(0, 24))
+        const answerMathOverflow = [...document.querySelectorAll('.answer-math')].some((n)=>n.scrollWidth>n.clientWidth+1)
+        const answerRowsClash = [...document.querySelectorAll('.qa-rows')].some((g) => [...g.children].some((n,i,rows) => i > 0 && n.getBoundingClientRect().top - rows[i-1].getBoundingClientRect().bottom < 4))
         const workingOverflow = [...document.querySelectorAll('.work-equation')].filter((n) => n.scrollWidth > n.clientWidth + 1).length
-        return { hscroll: de.scrollWidth > de.clientWidth + 1, panelHScroll: pnl.scrollWidth > pnl.clientWidth + 1, workingOverflow, panelScrolls: pnl.scrollHeight > pnl.clientHeight + 2, questionsScroll: qa.scrollHeight > qa.clientHeight + 2, labelsOutside: out }
+        return { answerMathOverflow, answerRowsClash, hscroll: de.scrollWidth > de.clientWidth + 1, panelHScroll: pnl.scrollWidth > pnl.clientWidth + 1, workingOverflow, panelScrolls: pnl.scrollHeight > pnl.clientHeight + 2, questionsScroll: qa.scrollHeight > qa.clientHeight + 2, labelsOutside: out }
       })
       const shift = panel ? 0 : stability.find((x) => x.scene === s + 1)?.moved || 0
       m.shiftWhileSliding = shift
-      const bad = m.hscroll || m.panelHScroll || m.workingOverflow || m.panelScrolls || (w > 860 && m.questionsScroll) || m.labelsOutside.length || (w > 860 && shift > 0.5)
+      const bad = m.answerMathOverflow || m.answerRowsClash || m.hscroll || m.panelHScroll || m.workingOverflow || m.panelScrolls || (w > 860 && m.questionsScroll) || m.labelsOutside.length || (w > 860 && shift > 0.5)
       if (bad) failures++
       console.log(JSON.stringify({ size: `${w}x${h}`, scene: s + 1, panel, ok: !bad, ...m }))
       await page.screenshot({ path: new URL(`${w}x${h}-s${s + 1}${panel ? '-panel' : ''}.png`, outDir).pathname })

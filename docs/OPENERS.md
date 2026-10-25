@@ -43,6 +43,7 @@ export default {
       controls: ['n', 'p1'],                    // or ({ v }) => [...]
       prompts: [
         { id: 'r1', q: 'Question', a: 'Answer' },
+        // For separate, well-spaced equation rows use aLines: ['...', '...'] instead of a.
         { id: 'r2', q: 'Predict…', choices: ['smaller', 'the same', 'larger'], correct: 1, a: 'Answer' },
       ],
       graph: ({ v, shown }) => ({ bounds, items, labels }),
@@ -100,6 +101,7 @@ export default {
 - **Point labels (Ben, 2026-10-25):** coordinate labels must sit close to the point they name. Use `attached: true`: the placer ignores that label's own dot as an obstacle, tries all nearby directions before distant ones, and prioritises coordinate labels over function names. If unavoidable displacement exceeds 22 px, a thin leader connects the box to its actual point. Never put a coordinate label far away without a connection.
 - **Use actual roots for the factored-form scene (Ben, 2026-10-25):** Ben rejected the release-height crossing setup and rejected maximum/vertex information for this scene. U5 L1 C is one bounce with known floor contacts at t=0 and t=1.7 and one observation h(0.2)=1.5. Use h_C=at(t-1.7) directly, giving a=-5. No shifted function, symmetry argument, maximum height, or vertex time is supplied for C. All opening givens, questions, graphs, working, and recap must agree with the bounce scenario.
 - **Working flows vertically (Ben, 2026-10-25):** use available vertical space, display maths, and equals-sign alignment. Captions go above calculations rather than taking a separate left column. Break chained equalities and long substitutions into multiple aligned lines; no horizontal scrolling to read working.
+- **Left-pane answers (Ben, 2026-10-25):** successive equation rows also align their equals signs. Use `aLines` with separate maths-only rows; the shell groups them into an aligned display with generous row spacing. Keep explanatory text in its own row.
 - **Comparison feature labels (Ben, 2026-10-25):** vertex and root values always have colour-matched leader lines to their actual points. Root labels sit in increasing-time order in one row below the x-axis, with room reserved below the axis. Vertex labels form an ordered row above the maxima. Use the shared placer's `rail: { group, side: 'above' | 'below' }` plus `leader: true`; anchors stay on the mathematical features, and ordinary function labels avoid the reserved rows.
 
 ## Build, check, preview
@@ -155,3 +157,19 @@ The check drives every scene, reveal, slider end, and switch at 1366x768, 1440x8
 - Selected orange discs/washers are opaque with dashed circular rims and thickness edges.
   Keep surrounding surfaces faint and their end faces very faint to avoid many overlapping
   translucent caps obscuring the selected piece. Avoid triangulated reference wireframes.
+
+### Algebra, spacing and calculator guidance (Ben, October 2026)
+
+- Use prompt `aLines` for separate equations or continuation lines. The shell renders rows with
+  real vertical gaps, so stacked fractions/integrals cannot touch the following expression.
+  The layout matrix checks those gaps as well as overflow.
+- An unused or not-yet-revealed Casio panel stays blank, with no prediction message, placeholder
+  or empty Display label. Omit `out` until there is an actual result to show.
+- Show the rearrangement from y=f(x) to x=g(y), then square the horizontal radius, before
+  introducing a y-axis volume integral. Avoid starting with an already rearranged expression.
+- Circle working begins with (x-h)²+(y-k)²=r² and identifies the supplied centre and radius.
+  Substitute those values explicitly before isolating and expanding x².
+- L11's three-point parabola uses c=1 from (0,1), then 4a−2b=2 and 4a+2b=2. Casio guidance
+  uses the verified two-unknown route: MENU, XθT (Equation), F1 SIMUL, F1 2 unknowns; each
+  row's entries followed by EXE; F1 SOLVE. Source: gdc-online-deck verified key log, AASL D3,
+  23 October 2026 (also distributed in the course toolkit's gdc-online-deck.zip).

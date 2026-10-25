@@ -252,3 +252,9 @@ input.sel::-moz-range-thumb { border-color: #e8890c; }
 .sg .sg-drag { cursor: grab; }
 .sg.dragging, .sg.dragging .sg-drag { cursor: grabbing; }
 .engine-seg { flex: none; }
+
+/* Deliberate answer rows keep stacked fractions/integrals clear of the next equation. */
+.qa-rows { display: flex; flex-direction: column; gap: 0.45em; }
+.answer-line { min-width: 0; line-height: 1.5; padding-block: 0.08em; }
+
+.answer-math { max-width: 100%; font-family: var(--f-math); padding-block: 0.2em; }

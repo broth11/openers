@@ -117,6 +117,25 @@ function renderHeader() {
   }
 }
 
+// Group successive equation lines into a single aligned display. Narrative stays in its own row.
+function answerLines(lines) {
+  const result = []
+  let equations = []
+  const flush = () => {
+    if (!equations.length) return
+    const latex = equations.map((line)=>line.replace(/=|\\approx/, (relation)=>'&'+relation)).join('\\\\[0.35em]')
+    result.push(`<div class="answer-line answer-math">${tex(`\\begin{aligned}${latex}\\end{aligned}`, true)}</div>`)
+    equations = []
+  }
+  for (const line of lines) {
+    const match = line.match(/^\$([^$]+)\$$/)
+    if (match && /=|\\approx/.test(match[1])) equations.push(match[1])
+    else { flush(); result.push(`<div class="answer-line">${md(line)}</div>`) }
+  }
+  flush()
+  return result.join('')
+}
+
 // ---------- questions column
 function renderQA() {
   const sc = scene()
@@ -132,11 +151,11 @@ function renderQA() {
             })
             .join('')}</div>`
         : ''
-      return `<article class="q${shown ? ' done' : ''}">
+      return `<article class="q${shown ? ' done' : ''}" data-prompt="${p.id}">
         <div class="qn">${i + 1}</div>
         <div class="qb">
           <p class="qq">${md(p.q)}</p>${choices}
-          ${shown ? `<p class="qa-ans">${md(p.a)}</p>` : `<button type="button" class="reveal" data-reveal="${p.id}">Show answer</button>`}
+          ${shown ? (p.aLines ? `<div class="qa-ans qa-rows">${answerLines(p.aLines)}</div>` : `<p class="qa-ans">${md(p.a)}</p>`) : `<button type="button" class="reveal" data-reveal="${p.id}">Show answer</button>`}
         </div>
       </article>`
     })
@@ -196,9 +215,9 @@ function renderPanel() {
          ${sec.goal ? `<h3 class="goal">${md(sec.goal)}</h3>` : ''}
          <ol class="casio">${sec.steps.map((s) => `<li><span>${md(s)}</span></li>`).join('')}</ol>
        </section>`).join('')}
-       <p class="out-line">Display <span class="out">${k.out}</span></p>
+       ${k.out ? `<p class="out-line">Display <span class="out">${k.out}</span></p>` : ''}
        ${k.watch ? `<p class="watch"><b>Watch out.</b> ${md(k.watch)}</p>` : ''}`
-    : '<p class="note">No calculator steps for this scene.</p>'
+    : ''
   setHTML(
     $('pnl'),
     `<div class="phead"><div class="seg sm" role="group" aria-label="Panel view">

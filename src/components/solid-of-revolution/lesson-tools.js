@@ -9,7 +9,7 @@ export const commonParams = {
   angle: { type: 'range', label: 'Turn about the axis', min: 0, max: 360, step: 1, value: 360, show: (v) => `${v}°` },
 }
 export const emptyWork = () => ({ blocks: [], note: 'Write your prediction before revealing the working.' })
-export const noKeys = () => ({ sections: [], out: 'Predict first. Reveal the integral before using the calculator.' })
+export const noKeys = () => ({ sections: [] })
 // Verified integral template and exponent exit from docs/OPENERS.md. No new menu paths.
 export function integralKeys({ integrand, lo, hi, out, note = 'Multiply the integral result by π. Volume uses cubic units.' }) {
   return {

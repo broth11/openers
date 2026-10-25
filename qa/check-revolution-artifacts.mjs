@@ -27,6 +27,16 @@ for (const [number, name, scenes] of [[10,'Discs and Stretches',5],[11,'A Hemisp
     await page.screenshot({ path: new URL(`l${number}-s${i + 1}.png`, out).pathname })
     await page.click('#workBtn'); await page.waitForTimeout(600)
     await page.screenshot({ path: new URL(`l${number}-s${i + 1}-working.png`, out).pathname })
+    if (number===11 && i===1) {
+      await page.click('[data-show="calc"]'); await page.waitForTimeout(150)
+      for (const size of [[1440,860],[412,900]]) {
+        await page.setViewportSize({width:size[0],height:size[1]}); await page.waitForTimeout(300)
+        assert.equal(await page.locator('.pnl').evaluate((n)=>n.scrollHeight>n.clientHeight+2 || n.scrollWidth>n.clientWidth+1),false)
+        await page.screenshot({path:new URL(`l11-system-${size[0]}.png`,out).pathname})
+      }
+      await page.setViewportSize({width:1440,height:860}); await page.waitForTimeout(200)
+      await page.click('[data-show="work"]')
+    }
     await page.click('#pclose'); await page.waitForTimeout(600)
     if (await page.locator('.solid-viewport canvas').isVisible()) {
       const png = await page.locator('.solid-viewport canvas').evaluate((c) => c.toDataURL())
