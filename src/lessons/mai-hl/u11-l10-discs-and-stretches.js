@@ -1,7 +1,12 @@
 // Approved revised scope: discs about BOTH axes, negative profiles, vertical stretches. No washers.
-// Mathematics checked in qa/verify-u11-l10-l11.py. Calculator: only verified integral template.
+// Mathematics checked in qa/verify-u11-l10-l11.py. Calculator: the verified Run-Matrix integral template
+// ([OPTN] [F4] CALC [F4] ∫dx, [→] to each limit, one more [→] after an exponent; key log AASL D6, 23/10/2026).
+// Steps NOT yet pressed on the emulator, so not in the key log (never flagged on screen; see hand-off):
+//   [MENU] [1] for Run-Matrix (keypad menu map, same wording as U11 L9);
+//   π as [SHIFT] [×10ˣ] typed inside the integrand (π on that key is logged for Graph, AASL D2).
+// The exponent box ([^] then one [→] to leave it) is logged (AASL D1, D6).
 import { revolution } from '../../components/solid-of-revolution/index.js'
-import { commonParams, T, emptyWork, noKeys, integralKeys, sliceReadout } from '../../components/solid-of-revolution/lesson-tools.js'
+import { commonParams, T, emptyWork, noKeys, integralKeys, sliceReadout, k, e, PI, X } from '../../components/solid-of-revolution/lesson-tools.js'
 import { COLORS as C } from '../../kit/style.js'
 
 const B = { left: -0.65, right: 4.7, bottom: -0.65, top: 2.8 }
@@ -49,7 +54,8 @@ export default {
         ...(shown('piece-volume') ? [['Circular face', T`A&=\pi r^2\\&=\pi(\sqrt{x_i})^2\\&=\pi x_i`], ['Thin disc', T`\Delta V&\approx A\Delta x\\&=\pi x_i\Delta x`]] : []),
         ...(shown('x-volume') ? [['Add the discs', T`V&=\pi\int_0^4(\sqrt{x})^2\,dx\\&=\pi\int_0^4x\,dx\\&=8\pi\\&\approx25.1\text{ units}^3`, true]] : []),
       ], note: shown('x-volume') ? 'Special case: the cross-sectional area is linear in x. Every equal-width midpoint disc sum already equals 8π. More discs improve the shape, not this total.' : 'Reveal each answer to see its working.' }),
-      keys: ({ shown }) => shown('x-volume') ? integralKeys({ integrand: 'X', lo: '0', hi: '4', out: '25.13274123' }) : noKeys(),
+      keys: ({ shown }) => shown('x-volume') ? integralKeys({ goal: 'Find the volume about the x-axis', typing: `${PI} ${X}`, lo: '0', hi: '4', out: '25.13274123',
+        watch: 'π is typed inside the integral, so the display is the volume itself. Leave it out and the display shows 8, the plain integral.' }) : noKeys(),
     },
     {
       id: 'negative', short: 'Below the axis', heading: 'Reflect the profile below the x-axis.',
@@ -81,7 +87,8 @@ export default {
         ...(shown('y-form') ? [['Rewrite the function', T`y&=\sqrt{x}\\y^2&=x\\x&=y^2`], ['Square the horizontal radius', T`r^2&=x^2\\&=(y^2)^2\\&=y^4`]] : []),
         ...(shown('y-volume') ? [['Add the discs', T`V&=\pi\int_0^2(y^2)^2\,dy\\&=\pi\int_0^2y^4\,dy\\&=\frac{32\pi}{5}\\&\approx20.1\text{ units}^3`, true]] : []),
       ], note: 'The shaded region has changed from the x-axis example. Choose bounds and thickness from the selected axis.' }),
-      keys: ({ shown }) => shown('y-volume') ? integralKeys({ integrand: 'X^4', lo: '0', hi: '2', out: '20.10619298', note: 'The calculator uses X even though the mathematical variable is y. Enter the y-bounds 0 and 2.' }) : noKeys(),
+      keys: ({ shown }) => shown('y-volume') ? integralKeys({ goal: 'Find the volume about the y-axis', typing: `${PI} ${X} ${k('^')} ${e('4')}`, leave: true, lo: '0', hi: '2', out: '20.10619298',
+        watch: 'The calculator integrates in X only, so X stands for y here. The limits are still the y-values 0 and 2.' }) : noKeys(),
     },
     {
       id: 'stretch', short: 'Double the height', heading: T`Compare $f(x)=\sqrt{x}$ and $g(x)=2f(x)$. Rotate about x.`,
@@ -114,7 +121,8 @@ export default {
         ] : []),
         ...(shown('stretch-rule') ? [['Vertical stretch by q, about x', T`V_g&=q^2V_f`]] : []),
       ], note: 'The length interval stays [0, 4]. Toggle f and g to compare their solids at the same camera scale.' }),
-      keys: noKeys,
+      keys: ({ shown }) => shown('stretch-compare') ? integralKeys({ goal: 'Find the volume of the doubled solid', typing: T`${PI} ${e('4')} ${X}, because $[2\sqrt{x}]^2=4x$`, lo: '0', hi: '4', out: '100.5309649',
+        watch: 'Compare with 25.13274123 for f. This display is four times as large, which is the factor $q^2=2^2$.' }) : noKeys(),
     },
   ],
 }

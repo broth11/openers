@@ -1,9 +1,14 @@
 // Approved bowl story: hemisphere, three exact design points, paraboloid cavity, disc/washer split.
 // Data are interpolation points, not regression observations. Verified in qa/verify-u11-l10-l11.py.
-// Calculator guidance: integral template and Equation > SIMUL > 2 unknowns, row entry
-// and F1 SOLVE from the verified key log (gdc-online-deck, AASL D3, 23/10/2026).
+// Calculator guidance: the Run-Matrix integral template (key log AASL D6, 23/10/2026) and Equation > SIMUL >
+// 2 unknowns, row entry and F1 SOLVE (key log AASL D3, 23/10/2026).
+// Steps NOT yet pressed on the emulator, so not in the key log (never flagged on screen; see hand-off):
+//   [MENU] [1] for Run-Matrix (keypad menu map, same wording as U11 L9);
+//   π as [SHIFT] [×10ˣ] typed inside the integrand (π on that key is logged for Graph, AASL D2);
+//   brackets [(] [)] and [x²] inside the integrand (brackets are logged for Graph, [x²] is used in U11 L9);
+//   how SIMUL shows X = 1/2: fraction or 0.5 depends on the display mode, so the panel names both.
 import { revolution } from '../../components/solid-of-revolution/index.js'
-import { commonParams, T, noKeys, integralKeys, sliceReadout } from '../../components/solid-of-revolution/lesson-tools.js'
+import { commonParams, T, noKeys, integralKeys, integralSection, sliceReadout, k, e, PI, X } from '../../components/solid-of-revolution/lesson-tools.js'
 import { COLORS as C } from '../../kit/style.js'
 import { snap } from '../../components/strips/index.js'
 
@@ -24,20 +29,19 @@ function bowl(v, changes = {}) {
   return result
 }
 // Since the point (0,1) gives c=1, use the verified two-unknown solver for a and b.
-const key = (s) => `<span class="key">${s}</span>`
-const entry = (s) => `<span class="entry">${s}</span>`
 const bowlSystemKeys = (shown) => ({
   sections: [
     { goal: 'Solve the two equations for a and b', steps: [
-      `${key('MENU')}, wait for the main menu, then ${key('X,θ,T')} (Equation, icon A).`,
-      `${key('F1')} (SIMUL), then ${key('F1')} (2 unknowns).`,
+      `${k('MENU')}, wait for the main menu, then ${k('X,θ,T')} (Equation, icon A).`,
+      `${k('F1')} (SIMUL), then ${k('F1')} (2 unknowns).`,
       'The point (0, 1) gives c = 1. The remaining equations are $4a-2b=2$ and $4a+2b=2$.',
-      `Row 1: ${entry('4')} ${key('EXE')} ${key('(−)')} ${entry('2')} ${key('EXE')} ${entry('2')} ${key('EXE')}.`,
-      `Row 2: ${entry('4')} ${key('EXE')} ${entry('2')} ${key('EXE')} ${entry('2')} ${key('EXE')}.`,
-      `${key('F1')} (SOLVE).`,
+      `Row 1: ${e('4')} ${k('EXE')} ${k('(−)')} ${e('2')} ${k('EXE')} ${e('2')} ${k('EXE')}.`,
+      `Row 2: ${e('4')} ${k('EXE')} ${e('2')} ${k('EXE')} ${e('2')} ${k('EXE')}.`,
+      `${k('F1')} (SOLVE).`,
     ] },
   ],
-  out: shown('parabola') ? 'X = 0.5, Y = 0, so a = 1/2, b = 0, c = 1.' : '',
+  // The steps are the method, so they show before the reveal; only the display (the answer) waits.
+  out: shown('parabola') ? 'X = 1/2 (or 0.5) and Y = 0, so a = 1/2, b = 0, c = 1.' : '',
   watch: 'The calculator’s X and Y are the model coefficients a and b. Each row contains two coefficients followed by the right-hand side.',
 })
 export default {
@@ -71,7 +75,8 @@ export default {
           ['Hemisphere formula check', T`\frac23\pi(3)^3&=18\pi\text{ cm}^3`],
         ] : []),
       ], note: shown('outer-radius') ? 'The horizontal radius is x. Its square is 6y − y²; no square root is needed for disc area.' : 'Replace h by 0, k by 3, and r by 3 in the circle formula.' }),
-      keys: ({ shown }) => shown('outer-volume') ? integralKeys({ integrand: '6X-X^2', lo: '0', hi: '3', out: '56.54866776 cm³' }) : noKeys(),
+      keys: ({ shown }) => shown('outer-volume') ? integralKeys({ goal: 'Find the volume of the hemisphere', typing: `${PI} ${k('(')} ${e('6')} ${X} ${k('−')} ${X} ${k('x²')} ${k(')')}`, lo: '0', hi: '3', out: '56.54866776 cm³',
+        watch: 'Use the brackets. Without them π multiplies only the 6X term and the display is wrong.' }) : noKeys(),
     },
     {
       id: 'design', short: 'Design the hollow', heading: 'Three exact design points define the parabolic cross-section.', controls: [],
@@ -126,7 +131,8 @@ export default {
         ...(shown('cavity') ? [['Removed volume', T`V_{\mathrm{cavity}}&=\pi\int_1^3(2y-2)\,dy\\&=4\pi\text{ cm}^3`]] : []),
         ...(shown('material') ? [['Remaining material', T`V_{\mathrm{material}}&=V_{\mathrm{outer}}-V_{\mathrm{cavity}}\\&=18\pi-4\pi\\&=14\pi\text{ cm}^3\\&\approx44.0\text{ cm}^3`, true]] : []),
       ], note: 'The cutaway removes a quarter of the display to expose the interior. Volume calculations refer to the complete bowl.' }),
-      keys: ({ shown }) => shown('cavity') ? integralKeys({ integrand: '2X-2', lo: '1', hi: '3', out: '12.56637061 cm³', note: 'This is the removed volume. Subtract it from the hemisphere volume to find material.' }) : noKeys(),
+      keys: ({ shown }) => shown('cavity') ? integralKeys({ goal: 'Find the volume of the cavity', typing: `${PI} ${k('(')} ${e('2')} ${X} ${k('−')} ${e('2')} ${k(')')}`, lo: '1', hi: '3', out: '12.56637061 cm³',
+        watch: 'This is the removed volume, not the material. Subtract it from the hemisphere to find the material.' }) : noKeys(),
     },
     {
       id: 'washers', short: 'Inside the bowl', heading: 'Move a horizontal slice from the base towards the rim.',
@@ -157,7 +163,13 @@ export default {
           ['Total material', T`V&=\frac{8\pi}{3}+\frac{34\pi}{3}\\&=14\pi\text{ cm}^3`, true],
         ] : []),
       ], note: 'Do not square R − r. A washer is an outer circle with an inner circle removed.' }),
-      keys: noKeys,
+      keys: ({ shown }) => shown('split-volume') ? {
+        sections: [
+          integralSection({ goal: 'Find the volume of the walls', lo: '1', hi: '3', shows: '35.60471674, which is 34π/3',
+            typing: `${PI} ${k('(')} ${k('(')} ${e('6')} ${X} ${k('−')} ${X} ${k('x²')} ${k(')')} ${k('−')} ${k('(')} ${e('2')} ${X} ${k('−')} ${e('2')} ${k(')')} ${k(')')}` }),
+        ],
+        watch: 'Add the base, 8π/3 ≈ 8.37758041, to reach 43.98229715, which is 14π. One integral of π(6X − X²) from 0 to 3 would give the whole hemisphere, 56.54866776.',
+      } : noKeys(),
     },
   ],
 }

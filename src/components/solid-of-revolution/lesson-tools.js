@@ -10,17 +10,37 @@ export const commonParams = {
 }
 export const emptyWork = () => ({ blocks: [], note: 'Write your prediction before revealing the working.' })
 export const noKeys = () => ({ sections: [] })
-// Verified integral template and exponent exit from docs/OPENERS.md. No new menu paths.
-export function integralKeys({ integrand, lo, hi, out, note = 'Multiply the integral result by π. Volume uses cubic units.' }) {
+// fx-CG50 key helpers. Key names are the physical key legends (kit: gdc-online-deck, gdc_slide.js).
+export const k = (s) => `<span class="key">${s}</span>`
+export const e = (s) => `<span class="entry">${s}</span>`
+export const PI = `${k('SHIFT')} ${k('×10ˣ')} (π)`
+export const X = k('X,θ,T')
+
+// One Run-Matrix ∫dx section, from the verified template: [OPTN] [F4] CALC [F4] ∫dx, cursor starts in the
+// integrand, [→] to the lower then the upper limit, one more [→] first after an exponent box.
+// π is typed INSIDE the integrand, so the display is the volume itself (typing it outside, or forgetting it,
+// shows the plain integral). `leave` is the extra [→] step, only for an integrand that ends in an exponent.
+// `again` is for a second integral in the same panel: no need to reopen Run-Matrix.
+export function integralSection({ goal, typing, leave = false, lo, hi, shows, again = false }) {
   return {
-    sections: [{ goal: 'Evaluate the volume', steps: [
-      'Open Run-Matrix from the main menu.',
-      '<span class="key">OPTN</span> <span class="key">F4</span> CALC <span class="key">F4</span> ∫dx.',
-      `Enter $${integrand}$ as the integrand, using X for the variable.`,
-      'After an exponent, press → to leave its box. Press → to move to the lower limit, then → to the upper limit.',
-      `Enter lower limit ${lo} and upper limit ${hi}, then press EXE. Multiply the result by π.`,
-    ] }], out, watch: note,
+    goal,
+    steps: [
+      ...(again
+        ? [`${k('OPTN')} ${k('F4')} (CALC) ${k('F4')} (∫dx) again. You are still in Run-Matrix`]
+        : [
+          `${k('MENU')} ${k('1')}: Run-Matrix. Wait for the screen before pressing anything else`,
+          `${k('OPTN')} ${k('F4')} (CALC) ${k('F4')} (∫dx). The template ∫□□ □ dx opens with the cursor in the integrand`,
+        ]),
+      `Type ${typing}`,
+      ...(leave ? [`${k('→')} once to leave the exponent box`] : []),
+      `${k('→')} lower limit ${e(lo)}, ${k('→')} upper limit ${e(hi)}`,
+      `${k('EXE')}${shows ? `. The display shows ${shows}` : ''}`,
+    ],
   }
+}
+// A panel with one integral: its display goes in `out`, under the section.
+export function integralKeys({ goal, typing, leave, lo, hi, out, watch }) {
+  return { sections: [integralSection({ goal, typing, leave, lo, hi })], out, watch }
 }
 export const sliceReadout = (a, b, v, axis) => {
   const t = snap(a, b, v.n, a + (b - a) * v.selected)

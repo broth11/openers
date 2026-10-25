@@ -171,7 +171,8 @@ input.sel::-moz-range-thumb { border-color: #e8890c; }
 }
 .page.panel-open .pnl { opacity: 1; transform: none; transition: opacity 0.3s ease 0.1s, transform 0.46s cubic-bezier(0.4, 0, 0.2, 1); }
 :root { --pw: clamp(340px, 27vw, 480px); }
-.phead { display: flex; align-items: center; gap: 10px; justify-content: space-between; }
+/* z-index: MathLive superscript struts (top: -3em) can overflow above the panel body and would otherwise sit on top of the tabs */
+.phead { display: flex; align-items: center; gap: 10px; justify-content: space-between; position: relative; z-index: 2; }
 .pclose { border: none; background: transparent; color: var(--muted); font-size: 26px; line-height: 1; padding: 2px 8px; border-radius: 8px; }
 .pclose:hover { color: var(--ink); background: var(--line); }
 .pbody { display: flex; flex-direction: column; gap: clamp(8px, 1.4vh, 14px); min-width: 0; }

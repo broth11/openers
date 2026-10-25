@@ -66,6 +66,21 @@ the approved Pearson hybrid: blue generating profile, green faces, shaded materi
   `qa/check-revolutions.mjs` (orbit, animation, reveal gating, slice matching, cavity and mobile).
   Browser tests accept OPENERS_CHROME; Playwright must be available locally or via NODE_PATH.
 
+### Calculator panels (`lesson-tools.js`)
+
+`integralKeys({ goal, typing, leave, lo, hi, out, watch })` builds a one-integral Casio fx-CG50 panel;
+`integralSection({ goal, typing, leave, lo, hi, shows, again })` builds one section of a longer panel.
+Key helpers `k` (key cap), `e` (typed entry), `PI` ([SHIFT] [×10ˣ]) and `X` ([X,θ,T]) keep the legends
+identical to the keypad.
+
+- Type π **inside** the integrand, with brackets around the rest (`π(6X−X²)`), so the display is the
+  volume itself and matches `out`. Typing the integral alone shows 8 for ∫X dX on [0, 4], not 8π.
+- Add `leave: true` only when the integrand ends in an exponent box (`X^4`). Never show it otherwise.
+- `again: true` for a second integral in one panel replaces the Run-Matrix steps with one line.
+- A panel must not scroll. `qa/check.mjs` opens the **Working** tab only, so check the Casio tab by
+  eye or with a script. One integral with its watch box fits at 1366×768; three integrals do not.
+- Sequences not yet pressed on the emulator are listed in a comment at the top of each lesson file.
+
 ### L10 classroom comparison
 
 The stretch scene supplies f(x)=sqrt(x) and g(x)=2f(x) together in 2D, then lets the teacher
