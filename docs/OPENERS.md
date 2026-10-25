@@ -1,0 +1,111 @@
+# How to build an opener
+
+The method and the code contract for every opener. Claude reads this through `CLAUDE.md`, Codex through `AGENTS.md`. Lesson planning (whether a lesson gets an opener, and the outline Ben approves) lives in Ben's lesson skills; this file covers how the opener itself is built.
+
+## What an opener is
+
+The first 5 to 10 minutes of class: one live visual Ben projects and drives while students predict, answer, and write. Every opener is on one student site (`openers.bensnotes.app`) with a deep link per lesson (`#mai-hl-u11-l09`), so students can come back to any lesson's key visual. Each lesson can also be built as a single private artifact for preview or sharing.
+
+### What it must do
+
+- **Bridge from a recent lesson.** Show the relationship between what students just learned and today's idea. Start where students already are, live, then move.
+- **Make students commit before they see.** Prediction choices, questions with hidden answers, exact values held back until the matching answer is revealed.
+- **Show a limit of the old method.** The case where last lesson's method stops working or becomes impractical, so today's method is needed.
+- **End with something to explore.** A final scene with controls students can push to edge cases.
+
+The U11 L9 pilot's four scenes are the pattern to reach for, not a template: Last lesson, Same object new view (with a prediction), Only one way works, Your turn.
+
+## Reuse first
+
+1. Read `docs/CATALOG.md`. If a component already does what the scene needs, use it.
+2. If a scene needs something new and reusable (a 3D solid, a Voronoi diagram, a network), build it as a component in `src/components/<name>/` with a `README.md` (what it does, options, a working example, rules, pitfalls met) and add it to the catalog. Then use it in the lesson.
+3. Lesson modules hold content (questions, scenes, numbers). Drawing code that another lesson could use belongs in a component, not in the lesson.
+
+## The lesson module
+
+`src/lessons/<course>/uNN-lNN-<slug>.js`, default export:
+
+```js
+export default {
+  course: 'mai-hl', unit: 11, lesson: 9,
+  title: 'Area between a curve and the y-axis',
+  bridge: 'Lesson 8: area between curves',
+  engine: 'svg',                                // the default; see docs/ENGINES.md
+  params: {                                     // every control, shared across scenes
+    n: { type: 'range', label: 'Strips', min: 1, max: 40, step: 1, value: 6, show: (v) => String(v) },
+    p1: { type: 'range', label: 'Typical strip at', min: 0, max: 4, step: 0.01, value: 1.5, show: (v, all) => `x = ${v}`, sel: true },
+    dir: { type: 'seg', label: 'Slice', options: [['v', 'Vertical'], ['h', 'Horizontal']], value: 'v' },
+  },
+  scenes: [
+    {
+      id: 'recall', short: 'Last lesson',
+      heading: 'Text with $math$',
+      controls: ['n', 'p1'],                    // or ({ v }) => [...]
+      prompts: [
+        { id: 'r1', q: 'Question', a: 'Answer' },
+        { id: 'r2', q: 'Predict…', choices: ['smaller', 'the same', 'larger'], correct: 1, a: 'Answer' },
+      ],
+      graph: ({ v, shown }) => ({ bounds, items, labels }),
+      readout: ({ v, shown }) => 'one line beside the heading',
+      working: ({ v }) => ({ rows: [['Label', 'latex', isAnswer]], note: 'text' }),
+      keys: ({ v }) => ({ steps: ['html'], out: 'display value', watch: 'common trap' }),
+    },
+  ],
+}
+```
+
+- `v` holds the control values; `shown(id)` is true once a prompt's answer is revealed.
+- `show: (value, allValues)` formats a slider's readout.
+- Text accepts `$inline$` and `$$display$$` LaTeX, rendered by MathLive.
+- Add a new course to `src/lessons/courses.js`.
+
+### Graph spec (SVG engine)
+
+- `bounds`: the region that must be visible. The stage keeps a 1:1 grid and grows the shorter range to fit.
+- `items`, drawn in layers (see `src/kit/svg.js`):
+  - `{ type: 'area', var: 'x' | 'y', from, to, lo, hi, color, opacity }` shaded region between two functions
+  - `{ type: 'rects', items: [[x1, x2, y1, y2], ...], color, opacity }` many strips
+  - `{ type: 'line', x1, y1, x2, y2, color, width, dash }`
+  - `{ type: 'curve', f: (t) => [x, y], t: [a, b], color, width, dash }`
+  - `{ type: 'rect', x1, x2, y1, y2, color, drag: { param, axis } }` the typical strip, draggable
+  - `{ type: 'dim', from: [x, y], to: [x, y], color }` a dimension arrow
+  - `{ type: 'points', pts: [[x, y], ...], color, r }`
+- `labels`: `{ id, x, y, html, color, pos, plain, fixed }`. See "Labels" below.
+
+## House style (fixed by the kit)
+
+- Graph on white always: dotted teal grid at whole units (thinning to 2, 5, 10 as the window grows), axes with arrowheads at all four ends, open origin circle, STIX tick numbers with true minus signs and no 0, axis titles x and y.
+- Colours and line weights come from `src/kit/style.js`, by role. Curves teal `#0f8b8d`, second boundary coral `#e4572e`, strips accent blue, orange `#e8890c` only for the typical strip, its slider, and answers. Never invent a colour.
+- Function labels: white box, thin rounded black border, text in the curve colour, using the source's notation (`y=\sqrt{x}`, `x=y^2`).
+- Page: questions column on the left (answers hidden until revealed, in class and at home), stage in the centre, working and Casio fx-CG50 panel sliding in from the right. Keys: arrows change scene, R reveals the next answer, W opens the panel, F full screen, Esc closes the panel.
+
+## Rules learned on the pilot
+
+- **A typical strip is always one of the drawn strips** (`components/strips`, `snap()`): it starts and stops on strip edges, never leaves the bounds, and uses the same midpoint as the blue strip under it. The slider readout shows that midpoint.
+- **Strip sums are midpoint sums**, shown live, converging to the exact value.
+- **Exact first, then rounded.** Working rows use "=" while exact and "≈" only from the first rounding (`Frac.exactThenApprox()` in `src/kit/math.js`).
+- **Labels are placed by the shared placer, never by hand** (`src/kit/labels.js`, ported from labkit in the aasl-online-lesson-deck skill). Give each label an anchor on the thing it names and a preferred `pos`; the placer tries it, then 23 other directions, and takes the first box clear of curves, lines, points, axes, tick numbers, and other labels. Marks tied to one spot (Δx above its strip) are `fixed: true` and placed first. `x: 'left' | 'right'`, `y: 'top' | 'bottom'` pin a label to that edge of the view. Labels are placed again when the maths fonts load.
+- **Nothing moves when a slider moves.** The readout has a fixed one-line row; keep it to one line, and never let a slider change the height of the heading, the questions column, or the controls. The check fails on a shift over 0.5 px.
+- **Long maths in answers is split** into separate `$...$` chunks so the column can wrap.
+- **MathLive has no `\dots`.** Type three plain dots inside the maths.
+- **Calculator steps** are Casio fx-CG50, built from the current numbers, ending with the display value and an orange Watch out for the classic trap. Take every sequence from the verified key log in the gdc-online-deck skill (`references/menu_paths_verified.md`). The Run-Matrix ∫dx template is [OPTN] [F4] CALC [F4] ∫dx; the cursor starts in the integrand; [→] moves to the lower then the upper limit, with one more [→] first after an exponent box or Abs. Abs is [OPTN] [F6] ▷ [F4] NUMERIC [F1]. The fx-CG50 integrates in X only. A step not in the log says so on screen ("not yet checked on the calculator") and is listed for Ben.
+- **Words**: no em dashes, Oxford commas, plain direct voice.
+- **Every exact value** (areas, antiderivatives, limits) is checked with sympy before committing.
+
+## Build, check, preview
+
+```bash
+npm install
+npm run dev                                     # live on your machine, no network needed
+npm run lint
+npm run build && npm run serve                  # site build at http://127.0.0.1:4173
+node qa/check.mjs mai-hl-u11-l09                # layout check (second terminal)
+npm run artifact -- mai-hl-u11-l09 "U11 L9 Opener"   # one self-contained file in dist-artifact/
+```
+
+The check drives every scene, reveal, slider end, and switch at 1366x768, 1440x860, 1920x1080, and a 412-wide phone, with the panel open and closed. It fails on page errors, sideways page scroll, a scrolling panel or questions column, a label outside the graph, or anything shifting more than 0.5 px while a slider sweeps. Look at one screenshot per scene in `qa/out/`.
+
+- **Claude** publishes the artifact build as a private artifact for Ben to preview at once.
+- **Codex** (or Ben) previews with `npm run dev`.
+- **Pushing a branch** builds a Cloudflare preview; merging into `main` puts it live on `openers.bensnotes.app`. Work on a branch; merge only when Ben approves.
+- When you build something reusable, update its component README and `docs/CATALOG.md` in the same commit.

@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Lesson Openers</title>
+    <meta name="description" content="The opening visual for each lesson, live, so you can come back to it." />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@500;700&display=swap" />
+  </head>
+  <body>
+    <div class="page" id="page">
+      <header class="top">
+        <details class="pnav" id="pnav">
+          <summary aria-label="Choose a lesson">
+            <span class="dot" id="navDot"></span><span class="pnav-name">Lessons</span>
+            <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+          </summary>
+          <nav class="pnav-menu" id="pnavMenu" aria-label="Lessons"></nav>
+        </details>
+        <div class="ttl">
+          <span class="eyebrow" id="eyebrow"></span>
+          <h1 id="lessonTitle"></h1>
+        </div>
+        <div class="seg engine-seg" id="engineSeg" role="group" aria-label="Graph engine" hidden></div>
+        <nav class="stepper" id="stepper" aria-label="Scenes"></nav>
+        <div class="tools">
+          <button class="btn" id="workBtn" type="button" aria-expanded="false" aria-controls="side" title="Working and calculator steps (W)">Working</button>
+          <button class="btn icon" id="fsBtn" type="button" aria-pressed="false" title="Full screen (F)" aria-label="Full screen">
+            <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 6V2h4M10 2h4v4M14 10v4h-4M6 14H2v-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg>
+          </button>
+          <button class="btn" id="resetBtn" type="button" title="Hide every answer and go back to the first scene">Reset</button>
+        </div>
+      </header>
+
+      <div class="main" id="main">
+        <aside class="qa" id="qa" aria-label="Questions"></aside>
+
+        <section class="stage" aria-label="Graph">
+          <div class="stage-head">
+            <p class="heading" id="heading"></p>
+            <p class="readout" id="readout" aria-live="polite"></p>
+          </div>
+          <div class="graph" id="graph"><div class="graph-msg" id="graphMsg" hidden></div></div>
+          <div class="controls" id="controls"></div>
+        </section>
+
+        <aside class="side" id="side" aria-label="Working and calculator steps">
+          <div class="pnl" id="pnl" data-show="work"></div>
+        </aside>
+      </div>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
