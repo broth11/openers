@@ -23,3 +23,12 @@
   .board-card h2 { margin: 0 0 5px; font-size: 18px; }
   .board-card p { margin: 4px 0; font-size: 16px; }
 }
+
+/* Clips: one row above the cards, same columns as the cards, every clip at one shared height. */
+.board-clips { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; --clip-h: clamp(84px, 17vh, 190px); }
+.board-clip { margin: 0; display: flex; justify-content: center; min-width: 0; }
+.board-clip video { display: block; height: var(--clip-h); width: auto; max-width: 100%; object-fit: contain; border-radius: 10px; background: #e8eff4; }
+.page.panel-open .board-clips { --clip-h: clamp(64px, 11vh, 110px); gap: 8px; }
+@media (max-width: 860px) {
+  .board-clips { --clip-h: 96px; gap: 8px; }
+}

@@ -1,6 +1,9 @@
 // Three different shots, three useful forms. Model values verified in qa/verify-u05-l01.py.
 // No gravity coefficient is supplied: students determine it from each shot's given information.
 import { COLORS as C } from '../../kit/style.js'
+import clipOne from './media/u05-l01-clip-1-teacher-blocks.mp4'
+import clipTwo from './media/u05-l01-clip-2-kid-fail.mp4'
+import clipThree from './media/u05-l01-clip-3-trick-shot.mp4'
 import { fmt } from '../../kit/math.js'
 import { flightGraph, height, landingTime } from '../../components/projectile/index.js'
 
@@ -60,6 +63,12 @@ const simulKeys = {
 }
 const givens = {
   intro: 'Each ball follows a quadratic model. Start each clock when its flight begins; height $h$ is above the floor.',
+  // One clip above each card, in card order. Silent, looping, same height.
+  clips: [
+    { src: clipOne, alt: 'A teacher blocks a child\'s throw.' },
+    { src: clipTwo, alt: 'A child\'s basketball shot misses.' },
+    { src: clipThree, alt: 'A double basketball trick shot.' },
+  ],
   cards: [
     { title: 'Shooter A', lines: ['Released at $2$ m.', 'Maximum height $3.8$ m at $0.6$ s.'] },
     { title: 'Shooter B', lines: ['At $0.2$ s: $2.7$ m.', 'At $0.6$ s: $3.9$ m.', 'At $1.0$ s: $3.5$ m.'] },
