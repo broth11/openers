@@ -14,10 +14,80 @@ export function tex(latex, display = false) {
   return cache.get(key)
 }
 
-export function md(text) {
-  return String(text).replace(/\$\$([^$]+)\$\$|\$([^$]+)\$/g, (m, d, t) =>
-    d != null ? `<span class="tx tx-d">${tex(d, true)}</span>` : `<span class="tx">${tex(t)}</span>`,
-  )
+// Relations and binary operators where a long expression may break onto a new line (break before),
+// and punctuation after which it may break.
+const BREAK_BEFORE = ['\\approx', '\\neq', '\\leq', '\\geq', '\\le', '\\ge', '\\times', '\\cdot', '\\pm', '\\to', '\\Rightarrow', '=', '<', '>', '+', '-']
+const SIGNS = new Set(['+', '-', '\\pm'])
+
+// Split LaTeX at natural break points only: outside braces, brackets, parentheses, and
+// \left...\right, and never at a sign that is unary (start, or right after another operator).
+export function splitAtBreaks(latex) {
+  const parts = []
+  let depth = 0
+  let start = 0
+  let prevOp = true // true at the start and after any operator: a following + or - is a sign
+  let i = 0
+  while (i < latex.length) {
+    const c = latex[i]
+    if (c === '{' || c === '(' || c === '[') { depth++; prevOp = true; i++; continue }
+    if (c === '}' || c === ')' || c === ']') { depth--; prevOp = false; i++; continue }
+    if (c === '\\') {
+      const word = latex.slice(i).match(/^\\[A-Za-z]+|^\\./)[0]
+      if (word === '\\left') { depth++; i += word.length; if (latex[i] === '\\') i += latex.slice(i).match(/^\\[A-Za-z]+|^\\./)[0].length; else i++; prevOp = true; continue }
+      if (word === '\\right') { depth--; i += word.length; if (latex[i] === '\\') i += latex.slice(i).match(/^\\[A-Za-z]+|^\\./)[0].length; else i++; prevOp = false; continue }
+      if (word === '\\begin' || word === '\\end') { depth += word === '\\begin' ? 1 : -1; i += word.length; continue }
+      const op = BREAK_BEFORE.find((o) => o === word)
+      if (op && depth === 0) {
+        if (!(SIGNS.has(op) && prevOp) && i > start) { parts.push(latex.slice(start, i)); start = i }
+        prevOp = true
+      } else prevOp = !!op
+      i += word.length
+      continue
+    }
+    if (c === '^' || c === '_') { prevOp = true; i++; continue }
+    if (c === ' ') { i++; continue }
+    if (BREAK_BEFORE.includes(c)) {
+      if (depth === 0 && !(SIGNS.has(c) && prevOp) && i > start) { parts.push(latex.slice(start, i)); start = i }
+      prevOp = true
+      i++
+      continue
+    }
+    if (c === ',' && depth === 0) {
+      parts.push(latex.slice(start, i + 1))
+      start = i + 1
+      prevOp = true
+      i++
+      continue
+    }
+    prevOp = false
+    i++
+  }
+  parts.push(latex.slice(start))
+  return parts.map((p) => p.trim()).filter(Boolean)
+}
+
+// One <span class="tx"> per piece, with a <wbr> between pieces so that the line can wrap there.
+// A piece that starts with an operator gets an empty group in front, so the operator keeps its
+// binary spacing exactly as in the unbroken expression.
+function wrapMath(latex, display) {
+  const parts = splitAtBreaks(latex)
+  if (parts.length < 2) return `<span class="tx${display ? ' tx-d' : ''}">${tex(latex, display)}</span>`
+  return parts
+    .map((p, i) => {
+      const src = i > 0 && !/^,/.test(parts[i - 1].slice(-1)) ? `{}${p}` : p
+      return `<span class="tx${display ? ' tx-d' : ''}">${tex(src, display)}</span>`
+    })
+    .join('<wbr>')
+}
+
+// md(text, { wrap: true }) lets long maths break at natural points instead of forcing one
+// unbreakable (and so scrolling) line. The default keeps every expression in one piece.
+export function md(text, opts = {}) {
+  return String(text).replace(/\$\$([^$]+)\$\$|\$([^$]+)\$/g, (m, d, t) => {
+    const latex = d != null ? d : t
+    if (opts.wrap) return wrapMath(latex, d != null)
+    return d != null ? `<span class="tx tx-d">${tex(d, true)}</span>` : `<span class="tx">${tex(t)}</span>`
+  })
 }
 
 function gcd(a, b) {

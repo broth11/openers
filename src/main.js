@@ -130,7 +130,7 @@ function answerLines(lines) {
   for (const line of lines) {
     const match = line.match(/^\$([^$]+)\$$/)
     if (match && /=|\\approx/.test(match[1])) equations.push(match[1])
-    else { flush(); result.push(`<div class="answer-line">${md(line)}</div>`) }
+    else { flush(); result.push(`<div class="answer-line">${md(line, { wrap: true })}</div>`) }
   }
   flush()
   return result.join('')
@@ -147,15 +147,15 @@ function renderQA() {
         ? `<div class="choices" role="group" aria-label="Prediction">${p.choices
             .map((c, j) => {
               const st = shown && j === p.correct ? 'ok' : shown && j === chosen ? 'no' : j === chosen ? 'picked' : ''
-              return `<button type="button" class="${st}" data-choose="${p.id}" data-j="${j}" aria-pressed="${j === chosen}">${md(c)}</button>`
+              return `<button type="button" class="${st}" data-choose="${p.id}" data-j="${j}" aria-pressed="${j === chosen}">${md(c, { wrap: true })}</button>`
             })
             .join('')}</div>`
         : ''
       return `<article class="q${shown ? ' done' : ''}" data-prompt="${p.id}">
         <div class="qn">${i + 1}</div>
         <div class="qb">
-          <p class="qq">${md(p.q)}</p>${choices}
-          ${shown ? (p.aLines ? `<div class="qa-ans qa-rows">${answerLines(p.aLines)}</div>` : `<p class="qa-ans">${md(p.a)}</p>`) : `<button type="button" class="reveal" data-reveal="${p.id}">Show answer</button>`}
+          <p class="qq">${md(p.q, { wrap: true })}</p>${choices}
+          ${shown ? (p.aLines ? `<div class="qa-ans qa-rows">${answerLines(p.aLines)}</div>` : `<p class="qa-ans">${md(p.a, { wrap: true })}</p>`) : `<button type="button" class="reveal" data-reveal="${p.id}">Show answer</button>`}
         </div>
       </article>`
     })
