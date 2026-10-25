@@ -181,7 +181,11 @@ function renderPanel() {
   const sc = scene()
   const w = sc.working ? sc.working(ctx()) : null
   const k = sc.keys ? sc.keys(ctx()) : null
-  const rows = w
+  const rows = w?.blocks
+    ? `<div class="display-working">${w.blocks.map(([label, latex, answer]) => `<section class="work-block${answer ? ' answer' : ''}">
+      <h3>${label}</h3><div class="work-equation">${tex(`\\begin{aligned}${latex}\\end{aligned}`, true)}</div>
+    </section>`).join('')}</div>${w.note ? `<p class="note">${md(w.note)}</p>` : ''}`
+    : w
     ? `<div class="steps">${w.rows
         .map(([lbl, l, ans]) => `<span class="lbl">${lbl}</span><span class="rb${ans ? ' ans' : ''}">${tex(l)}</span>`)
         .join('')}</div>${w.note ? `<p class="note">${md(w.note)}</p>` : ''}`

@@ -60,24 +60,33 @@ export function avoidPoints(shapes, toPx) {
 
 export function createLabeller(ov, renderLabel) {
   const labelEls = new Map()
+  const leaders = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+  leaders.setAttribute('class', 'label-leaders')
+  leaders.setAttribute('aria-hidden', 'true')
+  Object.assign(leaders.style, { position: 'absolute', inset: '0', width: '100%', height: '100%', overflow: 'visible' })
+  ov.prepend(leaders)
 
   // view (optional): the visible math bounds. A label's x may be 'left' or 'right' and its y 'top' or
   // 'bottom', to stay pinned to that edge of the view when a zoomable scene is panned or zoomed.
   function place({ labels, toPx, w, h, pts = [], dots = [], ticks = [], view = null }) {
+    leaders.replaceChildren()
     const edge = (v, lo, hi) => (v === 'left' || v === 'bottom' ? lo + (hi - lo) * 0.015 : v === 'right' || v === 'top' ? hi - (hi - lo) * 0.015 : v)
     const seen = new Set()
     const taken = []
     const m = 5
-    const clash = (r) => {
+    const clash = (r, anchor = null) => {
       let n = 0
       for (const [x, y] of pts) if (x > r.l - m && x < r.r + m && y > r.t - m && y < r.b + m) n++
-      for (const [x, y] of dots) if (x > r.l - 14 && x < r.r + 14 && y > r.t - 14 && y < r.b + 14) n += 20
+      for (const [x, y] of dots) {
+        if (anchor && Math.hypot(x - anchor.x, y - anchor.y) < 1) continue
+        if (x > r.l - 14 && x < r.r + 14 && y > r.t - 14 && y < r.b + 14) n += 20
+      }
       for (const q of taken) if (r.l < q.r + 2 && q.l < r.r + 2 && r.t < q.b + 2 && q.t < r.b + 2) n += 500 // never on another label
       for (const q of ticks) if (r.l < q.r + 2 && q.l < r.r + 2 && r.t < q.b + 2 && q.t < r.b + 2) n += 0.3
       if (r.l < 4 || r.t < 4 || r.r > w - 4 || r.b > h - 4) n += 200
       return n
     }
-    const ordered = [...(labels || [])].sort((a, b) => (b.fixed ? 1 : 0) - (a.fixed ? 1 : 0))
+    const ordered = [...(labels || [])].sort((a, b) => (b.fixed ? 1 : 0) - (a.fixed ? 1 : 0) || (b.attached ? 1 : 0) - (a.attached ? 1 : 0))
     for (const lb of ordered) {
       seen.add(lb.id)
       let node = labelEls.get(lb.id)
@@ -104,12 +113,14 @@ export function createLabeller(ov, renderLabel) {
       const nh = node.offsetHeight
       const gap = Math.max(nh * 0.25, 10)
       const pref = lb.pos || 'ne'
-      const order = lb.fixed ? [pref] : [pref, ...DIRS.filter((q) => q !== pref && q[0] === pref[0]), ...DIRS.filter((q) => q[0] !== pref[0])]
+      const order = lb.fixed ? [pref] : lb.attached
+        ? [pref, ...DIRS.slice(0, 8).filter((q) => q !== pref), ...DIRS.slice(8).filter((q) => q !== pref)]
+        : [pref, ...DIRS.filter((q) => q !== pref && q[0] === pref[0]), ...DIRS.filter((q) => q[0] !== pref[0])]
       let best = null
       for (const dir of order) {
         const [l, t] = candidate(dir, p.x, p.y, nw, nh, gap)
         const r = { l, t, r: l + nw, b: t + nh }
-        const n = clash(r)
+        const n = clash(r, lb.attached ? p : null)
         if (!best || n < best.n) best = { r, n }
         if (n === 0) break
       }
@@ -117,6 +128,15 @@ export function createLabeller(ov, renderLabel) {
       const top = Math.max(4, Math.min(h - nh - 4, best.r.t))
       node.style.transform = `translate(${Math.round(left)}px, ${Math.round(top)}px)`
       const r = { l: left, t: top, r: left + nw, b: top + nh }
+      if (lb.attached) {
+        const ex = Math.max(r.l, Math.min(r.r, p.x))
+        const ey = Math.max(r.t, Math.min(r.b, p.y))
+        if (Math.hypot(ex - p.x, ey - p.y) > 22) {
+          const line = document.createElementNS('http://www.w3.org/2000/svg', 'line')
+          for (const [key, value] of Object.entries({ x1: p.x, y1: p.y, x2: ex, y2: ey, stroke: lb.color || '#55697b', 'stroke-width': 1.2 })) line.setAttribute(key, value)
+          leaders.append(line)
+        }
+      }
       taken.push(r)
       for (const q of ticks) if (q.el && r.l < q.r + 4 && q.l < r.r + 4 && r.t < q.b + 4 && q.t < r.b + 4) q.el.style.visibility = 'hidden'
     }

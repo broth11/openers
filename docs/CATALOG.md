@@ -33,7 +33,7 @@ Everything the kit can already do. Read this before building a new opener, and a
 | Lesson | Title | Engine | Components |
 |---|---|---|---|
 | MAI HL U11 L9 | Area between a curve and the y-axis | SVG | Strips |
-| MAI HL U5 L1 | Three shots, three forms | SVG | Information board, Projectile height graph |
+| MAI HL U5 L1 | Three flights, three forms | SVG | Information board, Projectile height graph |
 
 ## Wanted next (from the syllabus survey, 2026-10-25)
 

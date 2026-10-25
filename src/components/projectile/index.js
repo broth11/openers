@@ -1,7 +1,5 @@
 // Height against time, not a spatial basketball trajectory.
 // Equations and data belong to the lesson; this component draws a flight and its observations.
-import { COLORS as C } from '../../kit/style.js'
-
 export const height = (shot, t) => shot.a * t * t + shot.b * t + shot.c
 export const peakTime = (shot) => -shot.b / (2 * shot.a)
 export const peakHeight = (shot) => height(shot, peakTime(shot))
@@ -33,15 +31,13 @@ export function flightGraph({ shots, time, guides = [], revealPeaks = false, rev
     for (const [i, observation] of (shot.known || []).entries()) {
       const [t, h, text, pos] = observation
       items.push({ type: 'points', pts: [[t, h]], color: shot.color })
-      labels.push({ id: `known-${shot.id}-${i}`, x: t, y: h, html: text, color: shot.color, pos: pos || 'ne' })
+      labels.push({ id: `known-${shot.id}-${i}`, x: t, y: h, html: text, color: shot.color, pos: pos || 'ne', attached: true })
     }
   }
   return {
     bounds: { left: -0.18, right: 1.95, bottom: -0.55, top: 4.95 },
     axes: { x: 't (s)', y: 'h (m)', aspect: 3, xStep: 0.5, yStep: 1, nonnegative: true },
-    description: 'Ball height in metres against time in seconds since release. Each curve stops at its first ground contact.',
+    description: 'Ball height in metres against time in seconds since the flight began. Each curve stops at its next ground contact.',
     items, labels,
   }
 }
-
-export const releaseGuide = (h) => ({ type: 'line', x1: 0, y1: h, x2: 1.75, y2: h, color: C.muted, width: 2, dash: true })
