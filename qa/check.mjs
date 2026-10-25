@@ -14,11 +14,11 @@ try { ({ chromium } = require('playwright')) } catch {
 const key = process.argv[2] || ''
 const base = process.env.OPENERS_URL || 'http://127.0.0.1:4173/'
 const here = new URL('.', import.meta.url)
-const outDir = new URL('./out/', here)
+const outDir = new URL(process.env.OPENERS_QA_DIR || './out/', here)
 mkdirSync(outDir, { recursive: true })
 
 const sizes = [[1366, 768], [1440, 860], [1920, 1080], [412, 900]]
-const browser = await chromium.launch()
+const browser = await chromium.launch(process.env.OPENERS_CHROME ? { executablePath: process.env.OPENERS_CHROME } : {})
 let failures = 0
 for (const [w, h] of sizes) {
   const page = await browser.newPage({ viewport: { width: w, height: h } })

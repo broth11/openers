@@ -25,12 +25,15 @@ Everything the kit can already do. Read this before building a new opener, and a
 | Component | What it does | First used | README |
 |---|---|---|---|
 | Strips | Riemann and midpoint strips, vertical or horizontal; the snapped typical strip; midpoint sums; SVG items | U11 L9 | `src/components/strips/README.md` |
+| Information board | Given-information cards before a graph/model reveal | U5 L1 | `src/components/info-board/README.md` |
+| Projectile height graph | Observations, revealed flights, time cursors, maxima, and ground-contact comparisons | U5 L1 | `src/components/projectile/README.md` |
 
 ## Openers
 
 | Lesson | Title | Engine | Components |
 |---|---|---|---|
 | MAI HL U11 L9 | Area between a curve and the y-axis | SVG | Strips |
+| MAI HL U5 L1 | Three shots, three forms | SVG | Information board, Projectile height graph |
 
 ## Wanted next (from the syllabus survey, 2026-10-25)
 

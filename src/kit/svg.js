@@ -39,9 +39,9 @@ export function makeSvgGraph(host, { renderLabel, onDrag }) {
   const labeller = createLabeller(ov, renderLabel)
   let geo = { pts: [], dots: [] } // what labels must avoid, in px
 
-  const X = (x) => (x - view.left) * view.ppu
+  const X = (x) => (x - view.left) * view.ppu * view.aspect
   const Y = (y) => (view.top - y) * view.ppu
-  const toMath = (px, py) => ({ x: view.left + px / view.ppu, y: view.top - py / view.ppu })
+  const toMath = (px, py) => ({ x: view.left + px / (view.ppu * view.aspect), y: view.top - py / view.ppu })
 
   function fit() {
     const w = host.clientWidth
@@ -49,10 +49,11 @@ export function makeSvgGraph(host, { renderLabel, onDrag }) {
     if (!want || !w || !h) return false
     const xr = want.right - want.left
     const yr = want.top - want.bottom
-    const ppu = Math.min(w / xr, h / yr)
+    const aspect = spec.axes?.aspect || 1
+    const ppu = Math.min(w / (xr * aspect), h / yr)
     const cx = (want.left + want.right) / 2
     const cy = (want.bottom + want.top) / 2
-    view = { left: cx - w / ppu / 2, right: cx + w / ppu / 2, bottom: cy - h / ppu / 2, top: cy + h / ppu / 2, ppu, w, h }
+    view = { left: cx - w / (ppu * aspect) / 2, right: cx + w / (ppu * aspect) / 2, bottom: cy - h / ppu / 2, top: cy + h / ppu / 2, ppu, aspect, w, h }
     svg.setAttribute('viewBox', `0 0 ${w} ${h}`)
     svg.setAttribute('width', w)
     svg.setAttribute('height', h)
@@ -67,10 +68,10 @@ export function makeSvgGraph(host, { renderLabel, onDrag }) {
   }
 
   function grid(g) {
-    const step = gridStep(view.ppu)
+    const step = { x: spec.axes?.xStep || gridStep(view.ppu * view.aspect), y: spec.axes?.yStep || gridStep(view.ppu) }
     const gx = el('g', { stroke: GRID, 'stroke-width': ROLES.grid.lineWidth, 'stroke-dasharray': '1.5 3.5', opacity: ROLES.grid.lineOpacity }, g)
-    for (let x = Math.ceil(view.left / step) * step; x <= view.right; x += step) if (x !== 0) el('line', { x1: X(x), y1: 0, x2: X(x), y2: view.h }, gx)
-    for (let y = Math.ceil(view.bottom / step) * step; y <= view.top; y += step) if (y !== 0) el('line', { x1: 0, y1: Y(y), x2: view.w, y2: Y(y) }, gx)
+    for (let x = Math.ceil(view.left / step.x) * step.x; x <= view.right; x += step.x) if (x !== 0) el('line', { x1: X(x), y1: 0, x2: X(x), y2: view.h }, gx)
+    for (let y = Math.ceil(view.bottom / step.y) * step.y; y <= view.top; y += step.y) if (y !== 0) el('line', { x1: 0, y1: Y(y), x2: view.w, y2: Y(y) }, gx)
     return step
   }
 
@@ -78,25 +79,25 @@ export function makeSvgGraph(host, { renderLabel, onDrag }) {
     const ox = X(0)
     const oy = Y(0)
     const a = el('g', { stroke: AXIS, 'stroke-width': ROLES.axis.lineWidth, fill: 'none' }, g)
-    el('line', { x1: 6, y1: oy, x2: view.w - 6, y2: oy, 'marker-start': 'url(#ar)', 'marker-end': 'url(#ar)' }, a)
-    el('line', { x1: ox, y1: view.h - 6, x2: ox, y2: 6, 'marker-start': 'url(#ar)', 'marker-end': 'url(#ar)' }, a)
+    el('line', { x1: spec.axes?.nonnegative ? ox : 6, y1: oy, x2: view.w - 6, y2: oy, 'marker-start': spec.axes?.nonnegative ? null : 'url(#ar)', 'marker-end': 'url(#ar)' }, a)
+    el('line', { x1: ox, y1: spec.axes?.nonnegative ? oy : view.h - 6, x2: ox, y2: 6, 'marker-start': spec.axes?.nonnegative ? null : 'url(#ar)', 'marker-end': 'url(#ar)' }, a)
     const t = el('g', { fill: TICK, 'font-family': 'STIX Two Text, Cambria Math, serif', 'font-size': 17 }, g)
     const tk = el('g', { stroke: AXIS, 'stroke-width': 1.4 }, g)
-    for (let x = Math.ceil(view.left / step) * step; x <= view.right - 0.6; x += step) {
-      if (x === 0 || X(x) < 18) continue
+    for (let x = Math.ceil(view.left / step.x) * step.x; x <= view.right; x += step.x) {
+      if (x === 0 || X(x) < 18 || X(x) > view.w - 38 || (spec.axes?.nonnegative && x < 0)) continue
       el('line', { x1: X(x), y1: oy - 4, x2: X(x), y2: oy + 4 }, tk)
       const n = el('text', { class: 'sg-tick', x: X(x), y: oy + 22, 'text-anchor': 'middle', 'paint-order': 'stroke', stroke: '#fff', 'stroke-width': 4 }, t)
       n.textContent = minus(r2(x))
     }
-    for (let y = Math.ceil(view.bottom / step) * step; y <= view.top - 0.6; y += step) {
-      if (y === 0 || Y(y) > view.h - 18) continue
+    for (let y = Math.ceil(view.bottom / step.y) * step.y; y <= view.top; y += step.y) {
+      if (y === 0 || Y(y) > view.h - 18 || Y(y) < 38 || (spec.axes?.nonnegative && y < 0)) continue
       el('line', { x1: ox - 4, y1: Y(y), x2: ox + 4, y2: Y(y) }, tk)
       const n = el('text', { class: 'sg-tick', x: ox - 9, y: Y(y) + 6, 'text-anchor': 'end', 'paint-order': 'stroke', stroke: '#fff', 'stroke-width': 4 }, t)
       n.textContent = minus(r2(y))
     }
     const it = el('g', { fill: AXIS, 'font-family': 'STIX Two Text, Cambria Math, serif', 'font-size': 21, 'font-style': 'italic' }, g)
-    el('text', { x: view.w - 10, y: oy - 12, 'text-anchor': 'end' }, it).textContent = 'x'
-    el('text', { x: ox + 12, y: 22 }, it).textContent = 'y'
+    el('text', { x: view.w - 10, y: oy - 12, 'text-anchor': 'end' }, it).textContent = spec.axes?.x || 'x'
+    el('text', { x: ox + 12, y: 22 }, it).textContent = spec.axes?.y || 'y'
   }
 
   function draw() {
@@ -231,8 +232,10 @@ export function makeSvgGraph(host, { renderLabel, onDrag }) {
   return {
     engine: 'svg',
     apply(next) {
-      spec = { items: next.items || [], labels: next.labels || [] }
-      if (JSON.stringify(next.bounds) !== JSON.stringify(want)) {
+      const changedAxes = JSON.stringify(spec.axes) !== JSON.stringify(next.axes)
+      spec = { items: next.items || [], labels: next.labels || [], axes: next.axes }
+      svg.setAttribute('aria-label', next.description || 'Function graph')
+      if (changedAxes || JSON.stringify(next.bounds) !== JSON.stringify(want)) {
         want = next.bounds
         fit()
       } else if (!view) fit()

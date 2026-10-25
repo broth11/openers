@@ -9,6 +9,7 @@ import 'mathlive/static.css'
 import './shell.css'
 import { md, tex } from './kit/math.js'
 import { makeSvgGraph } from './kit/svg.js'
+import { makeInfoBoard } from './components/info-board/index.js'
 
 // Graph engines by name. A lesson sets engine: 'svg' (the default). New engines (jsxgraph, three)
 // are added here when a lesson first needs them, with the same apply/clear/destroy interface.
@@ -16,6 +17,7 @@ const ENGINES = { svg: makeSvgGraph }
 import { COURSES, EXPLORERS } from './lessons/courses.js'
 
 const $ = (id) => document.getElementById(id)
+const infoBoard = makeInfoBoard($('graph'), md)
 const pad = (n) => String(n).padStart(2, '0')
 const baseKey = (L) => `${L.course}-u${pad(L.unit)}-l${pad(L.lesson)}`
 const keyOf = (L) => baseKey(L) + (L.variant ? `-${L.variant}` : '')
@@ -213,6 +215,7 @@ function renderGraph() {
   const sc = scene()
   setHTML($('heading'), md(sc.heading || ''))
   setHTML($('readout'), sc.readout ? md(sc.readout(ctx())) : '')
+  infoBoard.apply(sc.board ? sc.board(ctx()) : null)
   if (graph && sc.graph) graph.apply(sc.graph(ctx()))
 }
 

@@ -56,12 +56,14 @@ export default {
 
 - `v` holds the control values; `shown(id)` is true once a prompt's answer is revealed.
 - `show: (value, allValues)` formats a slider's readout.
+- Optional `board: (ctx) => ({ intro, cards: [{ title, lines }], note })` replaces the graph with a given-information board. It uses the shared Information board component. No equations or completed curves need be shown before students have constructed a model.
 - Text accepts `$inline$` and `$$display$$` LaTeX, rendered by MathLive.
 - Add a new course to `src/lessons/courses.js`.
 
 ### Graph spec (SVG engine)
 
 - `bounds`: the region that must be visible. The stage keeps a 1:1 grid and grows the shorter range to fit.
+- Optional `axes: { x, y, aspect, xStep, yStep, nonnegative }` names quantities and units, sets a deliberate horizontal display ratio (default 1), and can restrict axes to positive directions. `aspect: 3` means one horizontal unit is three times the screen length of one vertical unit. Record the ratio when the quantities have different units, as with time and height. Omit `xStep` and `yStep` for the automatic grid. Defaults remain the pilot's x/y, 1:1, double-ended axes.
 - `items`, drawn in layers (see `src/kit/svg.js`):
   - `{ type: 'area', var: 'x' | 'y', from, to, lo, hi, color, opacity }` shaded region between two functions
   - `{ type: 'rects', items: [[x1, x2, y1, y2], ...], color, opacity }` many strips
@@ -91,6 +93,8 @@ export default {
 - **Calculator steps** are Casio fx-CG50, built from the current numbers, ending with the display value and an orange Watch out for the classic trap. Take every sequence from the verified key log in the gdc-online-deck skill (`references/menu_paths_verified.md`). The Run-Matrix ∫dx template is [OPTN] [F4] CALC [F4] ∫dx; the cursor starts in the integrand; [→] moves to the lower then the upper limit, with one more [→] first after an exponent box or Abs. Abs is [OPTN] [F6] ▷ [F4] NUMERIC [F1]. The fx-CG50 integrates in X only. A step not in the log says so on screen ("not yet checked on the calculator") and is listed for Ben.
 - **Words**: no em dashes, Oxford commas, plain direct voice.
 - **Every exact value** (areas, antiderivatives, limits) is checked with sympy before committing.
+- **U5 L1 planning decisions (Ben, 2026-10-25):** three different basketball shots in five scenes: givens and comparison questions; vertex form; standard form from three points; shifted factored form; comparison/recap. The opening scene supplies only information needed to determine the models. Demonstrate the simultaneous-equations process once, with a full 3×3 system; use one coefficient substitution in the other two forms. For a known nonzero level H, factor h−H, not h. A height–time graph is not a spatial ball trajectory. Stop each flight at the floor; hold its cursor there after landing.
+- **Reveal discipline:** model curves and solved coefficients appear only after the model answer is revealed. The working/calculator drawer follows the same reveal state. Initial comparison questions defer their answers to the recap, and do not expose full models via the drawer.
 
 ## Build, check, preview
 
