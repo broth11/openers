@@ -29,25 +29,30 @@ const openGraph = `${k('MENU')} ${k('5')}: Graph. Wait for the function list bef
 const setWindow = `${k('SHIFT')} ${k('F3')} (V-Window). Type ${e('0')} ${k('EXE')} ${e('1')}${k('.')}${e('8')} ${k('EXE')} ${e('0')}${k('.')}${e('2')} ${k('EXE')}, then ${k('↓')} to skip the dot row. Type ${e('0')} ${k('EXE')} ${e('5')} ${k('EXE')} ${e('1')} ${k('EXE')}, then ${k('EXIT')}`
 const draw = `${k('F6')} (DRAW). Wait for the whole curve before pressing another key`
 const modelKeys = (id, top, x, y) => ({
-  steps: [
-    openGraph,
-    `On the ${e('Y1')} row press ${k('AC')} to clear the old function, then type ${typed[id]}. Press ${k('EXE')} to store it`,
-    setWindow,
-    draw,
-    `${k('F5')} (G-Solv) ${k('F2')} (MAX), then ${k('EXE')} to show the coordinates${id === 'A' ? '' : todo}`,
+  sections: [
+    { goal: 'Enter the model', steps: [
+      openGraph,
+      `On the ${e('Y1')} row press ${k('AC')} to clear the old function, then type ${typed[id]}. Press ${k('EXE')} to store it`,
+    ] },
+    { goal: 'Set the window and draw the graph', steps: [setWindow, draw] },
+    { goal: 'Find the maximum height', steps: [
+      `${k('F5')} (G-Solv) ${k('F2')} (MAX), then ${k('EXE')} to show the coordinates${id === 'A' ? '' : todo}`,
+    ] },
   ],
   out: `Maximum: X = ${x}, Y = ${y}`,
   watch: `Check that ${e('Y1')} reads ${top} before you draw. Keys pressed while a curve is drawing are lost, so wait for the whole curve. Use ${k('X,θ,T')} wherever the model has $t$.`,
 })
 const simulRow = (n, ...vals) => `Row ${n}: ${vals.map((x) => e(x)).join(` ${k('EXE')} `)} ${k('EXE')}${todo}`
 const simulKeys = {
-  steps: [
-    `${k('MENU')}, wait for the main menu, then ${k('X,θ,T')} (Equation, icon A)`,
-    `${k('F1')} (SIMUL), then ${k('F2')} (3 unknowns). A grid opens with columns a, b, c, d`,
-    simulRow(1, '0.04', '0.2', '1', '2.7'),
-    simulRow(2, '0.36', '0.6', '1', '3.9'),
-    simulRow(3, '1', '1', '1', '3.5'),
-    `${k('F1')} (SOLVE)${todo}`,
+  sections: [
+    { goal: 'Enter the three equations', steps: [
+      `${k('MENU')}, wait for the main menu, then ${k('X,θ,T')} (Equation, icon A)`,
+      `${k('F1')} (SIMUL), then ${k('F2')} (3 unknowns). A grid opens with columns a, b, c, d`,
+      simulRow(1, '0.04', '0.2', '1', '2.7'),
+      simulRow(2, '0.36', '0.6', '1', '3.9'),
+      simulRow(3, '1', '1', '1', '3.5'),
+    ] },
+    { goal: 'Solve the system of equations', steps: [`${k('F1')} (SOLVE)${todo}`] },
   ],
   out: 'X = −5, Y = 7, Z = 1.5, so a = −5, b = 7, c = 1.5',
   watch: 'The grid columns are labelled a, b, c, d (the coefficients and the right-hand side), but the answers are labelled X, Y, Z. X is your a, Y is your b, and Z is your c. Enter the 1 for the coefficient of c in every row.',
@@ -154,15 +159,20 @@ export default {
         ...(shown('longest') ? [['Airtimes', 'A&:1.47\\text{ s}\\\\B&:1.59\\text{ s}\\\\C&:1.70\\text{ s}', true]] : []),
       ], note: 'Move time through 1.47–1.70 s to test the comparison. A and B start at release; C starts at its first floor contact. Each model stops at the next floor contact.' }),
       keys: ({ shown }) => ({
-        steps: [
-          openGraph,
-          `${e('Y1')}: ${k('AC')} if the row is not empty, type ${typed.A}, then ${k('EXE')}. The cursor drops to ${e('Y2')}`,
-          `${e('Y2')}: type ${typed.B}, then ${k('EXE')}`,
-          `${e('Y3')}: type ${typed.C}, then ${k('EXE')}`,
-          setWindow,
-          draw,
-          `${k('F5')} (G-Solv) ${k('F2')} (MAX). Use ${k('↑')} or ${k('↓')} to pick a graph, ${k('EXE')} to take it, then ${k('EXE')} for the coordinates. ${k('F5')} ${k('F2')} again for the next graph${todo}`,
-          `${k('F5')} ${k('F1')} (ROOT) for the zeros, then ${k('→')} for the next zero. Read the positive one${todo}`,
+        sections: [
+          { goal: 'Enter the three models', steps: [
+            openGraph,
+            `${e('Y1')}: ${k('AC')} if the row is not empty, type ${typed.A}, then ${k('EXE')}. The cursor drops to ${e('Y2')}`,
+            `${e('Y2')}: type ${typed.B}, then ${k('EXE')}`,
+            `${e('Y3')}: type ${typed.C}, then ${k('EXE')}`,
+          ] },
+          { goal: 'Set the window and draw all three graphs', steps: [setWindow, draw] },
+          { goal: 'Find each maximum height', steps: [
+            `${k('F5')} (G-Solv) ${k('F2')} (MAX). Use ${k('↑')} or ${k('↓')} to pick a graph, ${k('EXE')} to take it, then ${k('EXE')} for the coordinates. ${k('F5')} ${k('F2')} again for the next graph${todo}`,
+          ] },
+          { goal: 'Find when each ball lands (the positive zero)', steps: [
+            `${k('F5')} ${k('F1')} (ROOT) for the zeros, then ${k('→')} for the next zero. Read the positive one${todo}`,
+          ] },
         ],
         out: shown('longest') ? 'Longest: C = 1.70 s' : 'Compare before revealing.',
         watch: `For C, 0 s starts the bounce and 1.7 s ends it, so its first zero is $0$. Switch off any graph you are not testing, or pick the right one with ${k('↑')} ${k('↓')} each time.`,

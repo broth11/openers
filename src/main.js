@@ -191,7 +191,10 @@ function renderPanel() {
         .join('')}</div>${w.note ? `<p class="note">${md(w.note)}</p>` : ''}`
     : '<p class="note">No working for this scene.</p>'
   const keys = k
-    ? `<ol class="casio">${k.steps.map((s) => `<li><span>${md(s)}</span></li>`).join('')}</ol>
+    ? `${(k.sections || [{ steps: k.steps }]).map((sec) => `<section class="goal-block">
+         ${sec.goal ? `<h3 class="goal">${md(sec.goal)}</h3>` : ''}
+         <ol class="casio">${sec.steps.map((s) => `<li><span>${md(s)}</span></li>`).join('')}</ol>
+       </section>`).join('')}
        <p class="out-line">Display <span class="out">${k.out}</span></p>
        ${k.watch ? `<p class="watch"><b>Watch out.</b> ${md(k.watch)}</p>` : ''}`
     : '<p class="note">No calculator steps for this scene.</p>'

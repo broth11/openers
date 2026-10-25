@@ -17,7 +17,7 @@ Everything the kit can already do. Read this before building a new opener, and a
 | House style | Colours and line weights by role; grid step rule; π tick labels | `src/kit/style.js` |
 | Label placer | House-style labels that avoid curves, points, ticks, and each other | `src/kit/labels.js` |
 | Maths helpers | MathLive rendering (`tex`, `md`), exact fractions (`Frac`), number formatting (`fmt`, `num`) | `src/kit/math.js` |
-| Shell | Menu, scenes, questions and reveals, controls, readout, working and Casio panel, keys, deep links | `src/main.js`, `src/shell.css`, `index.html` |
+| Shell | Menu, scenes, questions and reveals, controls, readout, working and Casio panel (calculator steps grouped under goal headings via `sections`), keys, deep links | `src/main.js`, `src/shell.css`, `index.html` |
 | Layout check | Every scene, reveal, slider, and size; stability sweep | `qa/check.mjs` |
 
 ## Components
