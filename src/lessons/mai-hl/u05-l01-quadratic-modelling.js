@@ -16,10 +16,11 @@ const knownC = [[0, 0, 'Bounce: $(0,0)$', 'ne'], [1.7, 0, 'Floor: $(1.7,0)$', 'n
 const noKeys = { steps: ['Use the given information to choose a form.'], out: 'Choose before calculating.' }
 // fx-CG50 steps. Verified on the emulator 25/10/2026 for shooter A (Graph entry, V-Window, DRAW, G-Solv MAX
 // gave X=0.6, Y=3.8) and the Equation > SIMUL > 3 unknowns screen; menu paths also from the log in the
-// gdc-online-deck skill (references/menu_paths_verified.md). Anything still not run says so on screen.
+// gdc-online-deck skill (references/menu_paths_verified.md).
+// NOT YET RUN on the emulator (follow the log's patterns; kept off the student screen at Ben's request):
+// simultaneous-equation row entry and SOLVE, B and C entry and MAX, compare-scene MAX with several graphs and ROOT.
 const k = (s) => `<span class="key">${s}</span>`
 const e = (s) => `<span class="entry">${s}</span>`
-const todo = ' (not yet checked on the calculator)'
 const typed = {
   A: `${k('(−)')} ${e('5')} ${k('(')} ${k('X,θ,T')} ${k('−')} ${e('0')}${k('.')}${e('6')} ${k(')')} ${k('x²')} ${k('+')} ${e('3')}${k('.')}${e('8')}`,
   B: `${k('(−)')} ${e('5')} ${k('X,θ,T')} ${k('x²')} ${k('+')} ${e('7')} ${k('X,θ,T')} ${k('+')} ${e('1')}${k('.')}${e('5')}`,
@@ -36,13 +37,13 @@ const modelKeys = (id, top, x, y) => ({
     ] },
     { goal: 'Set the window and draw the graph', steps: [setWindow, draw] },
     { goal: 'Find the maximum height', steps: [
-      `${k('F5')} (G-Solv) ${k('F2')} (MAX), then ${k('EXE')} to show the coordinates${id === 'A' ? '' : todo}`,
+      `${k('F5')} (G-Solv) ${k('F2')} (MAX), then ${k('EXE')} to show the coordinates`,
     ] },
   ],
   out: `Maximum: X = ${x}, Y = ${y}`,
   watch: `Check that ${e('Y1')} reads ${top} before you draw. Keys pressed while a curve is drawing are lost, so wait for the whole curve. Use ${k('X,θ,T')} wherever the model has $t$.`,
 })
-const simulRow = (n, ...vals) => `Row ${n}: ${vals.map((x) => e(x)).join(` ${k('EXE')} `)} ${k('EXE')}${todo}`
+const simulRow = (n, ...vals) => `Row ${n}: ${vals.map((x) => e(x)).join(` ${k('EXE')} `)} ${k('EXE')}`
 const simulKeys = {
   sections: [
     { goal: 'Enter the three equations', steps: [
@@ -52,7 +53,7 @@ const simulKeys = {
       simulRow(2, '0.36', '0.6', '1', '3.9'),
       simulRow(3, '1', '1', '1', '3.5'),
     ] },
-    { goal: 'Solve the system of equations', steps: [`${k('F1')} (SOLVE)${todo}`] },
+    { goal: 'Solve the system of equations', steps: [`${k('F1')} (SOLVE)`] },
   ],
   out: 'X = −5, Y = 7, Z = 1.5, so a = −5, b = 7, c = 1.5',
   watch: 'The grid columns are labelled a, b, c, d (the coefficients and the right-hand side), but the answers are labelled X, Y, Z. X is your a, Y is your b, and Z is your c. Enter the 1 for the coefficient of c in every row.',
@@ -168,10 +169,10 @@ export default {
           ] },
           { goal: 'Set the window and draw all three graphs', steps: [setWindow, draw] },
           { goal: 'Find each maximum height', steps: [
-            `${k('F5')} (G-Solv) ${k('F2')} (MAX). Use ${k('↑')} or ${k('↓')} to pick a graph, ${k('EXE')} to take it, then ${k('EXE')} for the coordinates. ${k('F5')} ${k('F2')} again for the next graph${todo}`,
+            `${k('F5')} (G-Solv) ${k('F2')} (MAX). Use ${k('↑')} or ${k('↓')} to pick a graph, ${k('EXE')} to take it, then ${k('EXE')} for the coordinates. ${k('F5')} ${k('F2')} again for the next graph`,
           ] },
           { goal: 'Find when each ball lands (the positive zero)', steps: [
-            `${k('F5')} ${k('F1')} (ROOT) for the zeros, then ${k('→')} for the next zero. Read the positive one${todo}`,
+            `${k('F5')} ${k('F1')} (ROOT) for the zeros, then ${k('→')} for the next zero. Read the positive one`,
           ] },
         ],
         out: shown('longest') ? 'Longest: C = 1.70 s' : 'Compare before revealing.',

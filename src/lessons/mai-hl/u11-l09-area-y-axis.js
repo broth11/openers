@@ -209,7 +209,7 @@ export default {
       },
       keys() {
         return {
-          steps: integral(`${e('2')} ${k('−')} ${k('SHIFT')} ${k('x²')} (√) ${k('X,θ,T')}`, `${k('→')} once to leave the √ (not yet checked on the calculator)`, '0', '4'),
+          steps: integral(`${e('2')} ${k('−')} ${k('SHIFT')} ${k('x²')} (√) ${k('X,θ,T')}`, `${k('→')} once to leave the √`, '0', '4'),
           out: '2.666666667',
           watch: 'The cursor must leave the √ before the limits, or the 0 and 4 end up under the root.',
         }
