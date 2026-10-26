@@ -6,13 +6,14 @@
 // A spec is { bounds, items, labels }. Items, drawn in this order of layers:
 //   { type: 'area', var: 'x' | 'y', from, to, lo: (t) => v, hi: (t) => v, color, opacity }
 //   { type: 'rects', items: [[x1, x2, y1, y2], ...], color, opacity }
-//   { type: 'line', x1, y1, x2, y2, color, width, dash }
-//   { type: 'curve', f: (t) => [x, y], t: [a, b], color, width, dash }
+//   { type: 'line', x1, y1, x2, y2, color, width, dash, ghost }   (ghost: labels ignore it, e.g. a moving cursor)
+//   { type: 'curve', f: (t) => [x, y], t: [a, b], color, width, dash, n }   (n: samples, default 240)
 //   { type: 'rect', x1, x2, y1, y2, color, drag: { param, axis: 'x' | 'y' } }   (the typical strip)
 //   { type: 'dim', from: [x, y], to: [x, y], color }                           (double-headed arrow)
 //   { type: 'points', pts: [[x, y], ...], color, r, hollow }
 //   { type: 'arrow', from: [x, y], to: [x, y], color, width }                  (single-headed arrow)
 //   { type: 'handle', x, y, color, drag: { param, axis } }                      (draggable point)
+// Optional spec.zoom: true allows wheel zoom, drag to pan, and +, −, Reset view buttons.
 // Optional spec.scene = { frac, draw(api) } puts a drawn context scene beside the graph (below 640 px wide,
 // above it). See components/context-stage/README.md for the api the draw function receives.
 // Labels: { id, x, y, html, color, pos, plain, fixed }, placed by kit/labels.js.
@@ -62,6 +63,14 @@ export function makeSvgGraph(host, { renderLabel, onDrag }) {
     return { ox: sw + gap, oy: 0, gw: W - sw - gap, gh: H, scene: { x: 0, y: 0, w: sw, h: H, stacked: false } }
   }
 
+  // Pan and zoom (spec.zoom: true): scale s and an offset of the centre, in maths units.
+  let zoom = { s: 1, dx: 0, dy: 0 }
+  const zoomUi = document.createElement('div')
+  zoomUi.className = 'zoom-ctl'
+  zoomUi.hidden = true
+  zoomUi.innerHTML = '<button type="button" data-z="in" aria-label="Zoom in">+</button><button type="button" data-z="out" aria-label="Zoom out">−</button><button type="button" data-z="reset">Reset view</button>'
+  host.append(zoomUi)
+
   function fit() {
     const W = host.clientWidth
     const H = host.clientHeight
@@ -70,9 +79,9 @@ export function makeSvgGraph(host, { renderLabel, onDrag }) {
     const xr = want.right - want.left
     const yr = want.top - want.bottom
     const aspect = spec.axes?.aspect || 1
-    const ppu = Math.min(gw / (xr * aspect), gh / yr)
-    const cx = (want.left + want.right) / 2
-    const cy = (want.bottom + want.top) / 2
+    const ppu = Math.min(gw / (xr * aspect), gh / yr) * zoom.s
+    const cx = (want.left + want.right) / 2 + zoom.dx
+    const cy = (want.bottom + want.top) / 2 + zoom.dy
     view = { left: cx - gw / (ppu * aspect) / 2, right: cx + gw / (ppu * aspect) / 2, bottom: cy - gh / ppu / 2, top: cy + gh / ppu / 2, ppu, aspect, w: ox + gw, h: oy + gh, ox, oy, gw, gh, W, H, scene }
     svg.setAttribute('viewBox', `0 0 ${W} ${H}`)
     svg.setAttribute('width', W)
@@ -190,11 +199,11 @@ export function makeSvgGraph(host, { renderLabel, onDrag }) {
     axes(el('g', {}, svg), step)
     const top = el('g', clipped, svg)
     for (const l of layer('line')) {
-      seg(X(l.x1), Y(l.y1), X(l.x2), Y(l.y2))
+      if (!l.ghost) seg(X(l.x1), Y(l.y1), X(l.x2), Y(l.y2))
       el('line', { x1: X(l.x1), y1: Y(l.y1), x2: X(l.x2), y2: Y(l.y2), stroke: l.color, 'stroke-width': l.width || 3, 'stroke-dasharray': l.dash ? '9 7' : null, 'stroke-linecap': 'round' }, top)
     }
     for (const c of layer('curve')) {
-      const n = 240
+      const n = c.n || 240
       const cp = []
       for (let i = 0; i <= n; i++) cp.push(c.f(c.t[0] + ((c.t[1] - c.t[0]) * i) / n))
       for (let i = 1; i < cp.length; i++) seg(X(cp[i - 1][0]), Y(cp[i - 1][1]), X(cp[i][0]), Y(cp[i][1]))
@@ -237,7 +246,7 @@ export function makeSvgGraph(host, { renderLabel, onDrag }) {
         el('circle', p.hollow
           ? { cx: X(x), cy: Y(y), r: p.r || 6, fill: '#fff', stroke: p.color || COLORS.sel, 'stroke-width': 3 }
           : { cx: X(x), cy: Y(y), r: p.r || 6, fill: p.color || COLORS.sel, stroke: '#fff', 'stroke-width': 2 }, top)
-        dots.push([X(x), Y(y)])
+        if (!p.ghost) dots.push([X(x), Y(y)])
       }
     }
     for (const hd of layer('handle')) {
@@ -277,8 +286,40 @@ export function makeSvgGraph(host, { renderLabel, onDrag }) {
     const r = svg.getBoundingClientRect()
     return toMath(e.clientX - r.left, e.clientY - r.top)
   }
+  // pan: drag the background of a zoomable graph; zoom: the wheel (about the cursor) or the buttons
+  let pan = null
+  const redraw = () => { if (fit()) draw() }
+  function zoomBy(f, px = view.ox + view.gw / 2, py = view.oy + view.gh / 2) {
+    const before = toMath(px, py)
+    zoom.s = Math.max(0.25, Math.min(8, zoom.s * f))
+    fit()
+    const after = toMath(px, py)
+    zoom.dx += before.x - after.x
+    zoom.dy += before.y - after.y
+    redraw()
+  }
+  zoomUi.addEventListener('click', (e) => {
+    const b = e.target.closest('button')
+    if (!b) return
+    if (b.dataset.z === 'in') zoomBy(1.25)
+    else if (b.dataset.z === 'out') zoomBy(0.8)
+    else { zoom = { s: 1, dx: 0, dy: 0 }; redraw() }
+  })
+  svg.addEventListener('wheel', (e) => {
+    if (!spec.zoom) return
+    e.preventDefault()
+    const r = svg.getBoundingClientRect()
+    zoomBy(Math.exp(-e.deltaY * 0.0015), e.clientX - r.left, e.clientY - r.top)
+  }, { passive: false })
   svg.addEventListener('pointerdown', (e) => {
     const g = e.target.closest('.sg-drag')
+    if (!g && spec.zoom) {
+      pan = { x: e.clientX, y: e.clientY, dx: zoom.dx, dy: zoom.dy }
+      svg.setPointerCapture(e.pointerId)
+      svg.classList.add('panning')
+      e.preventDefault()
+      return
+    }
     if (!g) return
     drag = { param: g.dataset.param, axis: g.dataset.axis }
     svg.setPointerCapture(e.pointerId)
@@ -288,11 +329,18 @@ export function makeSvgGraph(host, { renderLabel, onDrag }) {
     e.preventDefault()
   })
   svg.addEventListener('pointermove', (e) => {
+    if (pan) {
+      zoom.dx = pan.dx - (e.clientX - pan.x) / (view.ppu * view.aspect)
+      zoom.dy = pan.dy + (e.clientY - pan.y) / view.ppu
+      redraw()
+      return
+    }
     if (drag === null) return
     const p = pointer(e)
     onDrag(drag.param, drag.axis === 'x' ? p.x : p.y)
   })
   const end = (e) => {
+    if (pan) { pan = null; svg.classList.remove('panning'); try { svg.releasePointerCapture(e.pointerId) } catch { /* already released */ } return }
     if (drag === null) return
     drag = null
     svg.classList.remove('dragging')
@@ -313,7 +361,11 @@ export function makeSvgGraph(host, { renderLabel, onDrag }) {
     apply(next) {
       const changedAxes = JSON.stringify(spec.axes) !== JSON.stringify(next.axes)
       const hadScene = !!spec.scene
-      spec = { items: next.items || [], labels: next.labels || [], axes: next.axes, scene: next.scene }
+      // a new window or a graph that does not zoom starts from the reset view
+      if (!next.zoom || JSON.stringify(next.bounds) !== JSON.stringify(want)) zoom = { s: 1, dx: 0, dy: 0 }
+      zoomUi.hidden = !next.zoom
+      svg.classList.toggle('zoomable', !!next.zoom)
+      spec = { items: next.items || [], labels: next.labels || [], axes: next.axes, scene: next.scene, zoom: next.zoom }
       if (hadScene !== !!spec.scene) want = null
       svg.setAttribute('aria-label', next.description || 'Function graph')
       if (changedAxes || JSON.stringify(next.bounds) !== JSON.stringify(want)) {
@@ -331,6 +383,7 @@ export function makeSvgGraph(host, { renderLabel, onDrag }) {
       document.fonts?.removeEventListener?.('loadingdone', refont)
       svg.remove()
       ov.remove()
+      zoomUi.remove()
       labeller.clear()
     },
   }

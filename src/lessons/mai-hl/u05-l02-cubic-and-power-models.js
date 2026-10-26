@@ -50,7 +50,8 @@ const cubicKeys = {
 // ---------- scene 1: the mall
 function mallGraph({ v, shown }) {
   const t = v.time
-  const items = [{ type: 'line', x1: t, y1: -110, x2: t, y2: 430, color: C.muted, width: 2, dash: true }]
+  // the clock line and the cursor pass behind the labels; no label moves for them
+  const items = [{ type: 'line', x1: t, y1: -110, x2: t, y2: 430, color: C.muted, width: 2, dash: true, ghost: true }]
   const labels = []
   const pts = shown('m1') ? [...COUNTS, LATE] : COUNTS
   if (shown('m1')) {
@@ -59,8 +60,8 @@ function mallGraph({ v, shown }) {
   }
   if (shown('m4')) {
     items.push({ type: 'curve', f: (x) => [x, crowd(x)], t: [-0.2, 10.4], color: C.teal })
-    items.push({ type: 'line', x1: -0.6, y1: crowd(t), x2: t, y2: crowd(t), color: C.sel, width: 2, dash: true })
-    items.push({ type: 'points', pts: [[t, crowd(t)]], color: C.teal, r: 9 })
+    items.push({ type: 'line', x1: -0.6, y1: crowd(t), x2: t, y2: crowd(t), color: C.sel, width: 2, dash: true, ghost: true })
+    items.push({ type: 'points', pts: [[t, crowd(t)]], color: C.teal, r: 9, ghost: true })
     labels.push({ id: 'cubic', x: 9.6, y: crowd(9.6), html: '$V=2t^3-27t^2+108t+20$', color: C.teal, pos: 'w' })
   }
   items.push({ type: 'points', pts, color: C.sel, r: 7 })
@@ -91,14 +92,14 @@ function jarGraph({ v, shown }) {
       const lx = id === 'h' ? 17 : id === 'w' ? 15.5 : 17.5
       labels.push({ id: `j-${id}`, x: lx, y: f(lx), html: shown(gate) ? `${name}: ${eq}` : name, color: on ? C.teal : C.muted, pos: id === 'h' ? 'n' : 'nw', plain: !on })
     }
-    items.push({ type: 'line', x1: s, y1: 0, x2: s, y2: JAR[mode](s), color: C.sel, width: 2, dash: true })
-    items.push({ type: 'points', pts: [[s, JAR[mode](s)]], color: C.sel, r: 9 })
+    items.push({ type: 'line', x1: s, y1: 0, x2: s, y2: JAR[mode](s), color: C.sel, width: 2, dash: true, ghost: true })
+    items.push({ type: 'points', pts: [[s, JAR[mode](s)]], color: C.sel, r: 9, ghost: true })
   }
   items.push({ type: 'points', pts: [[10, 200]], color: C.strip, r: 7 })
   labels.push({ id: 'ref', x: 10, y: 200, html: '$(10,\\,200)$', color: C.strip, pos: 'nw', attached: true })
   const big = !shown('j1') ? null : mode === 'h' ? { h: s, w: 10 } : mode === 'w' ? { h: 10, w: s } : { h: s, w: s }
   return {
-    bounds: { left: -2.6, right: 22.6, bottom: -230, top: 1700 },
+    bounds: { left: -2.6, right: 22.6, bottom: -230, top: 1820 },
     axes: { x: 'size (cm)', y: 'N', aspect: 72, xStep: 5, yStep: 200, nonnegative: true },
     description: 'Number of jelly beans against the size of the jar, beside a drawing of the jars.',
     items, labels,
@@ -128,8 +129,8 @@ function lampGraph({ v, shown }) {
     labels.push({ id: 'law', x: 1.4, y: lux(1.4), html: '$I=\\dfrac{400}{d^2}$', color: C.teal, pos: 'ne' })
   }
   if (shown('l1')) {
-    items.push({ type: 'line', x1: d, y1: 0, x2: d, y2: lux(d), color: C.sel, width: 2, dash: true })
-    items.push({ type: 'points', pts: [[d, lux(d)]], color: C.sel, r: 9 })
+    items.push({ type: 'line', x1: d, y1: 0, x2: d, y2: lux(d), color: C.sel, width: 2, dash: true, ghost: true })
+    items.push({ type: 'points', pts: [[d, lux(d)]], color: C.sel, r: 9, ghost: true })
     items.push({ type: 'points', pts: [[4, 25]], color: C.strip, r: 7 })
     labels.push({ id: 'p4', x: 4, y: 25, html: '$(4,\\,25)$', color: C.strip, pos: 'n', attached: true })
   }
@@ -161,7 +162,7 @@ const OFF_ON = [['off', 'Off'], ['on', 'On']]
 
 export default {
   course: 'mai-hl', unit: 5, lesson: 2,
-  title: 'Three counts, then four', engine: 'svg',
+  title: 'Cubic fitting, direct and inverse variation', engine: 'svg',
   bridge: 'Lesson 1: fit a quadratic from three conditions with a system of equations.',
   params: {
     time: { type: 'range', label: 'Clock', min: 0, max: 10, step: 0.05, value: 0, show: (v) => `${clock(v)}  ($t=${v.toFixed(2)}$)`, sel: true, play: { seconds: 12 } },
@@ -205,10 +206,10 @@ export default {
       },
       controls: ['time'],
       prompts: [
-        { id: 'm1', q: 'Find the quadratic $V=at^2+bt+c$ through $(0,20)$, $(3,155)$, and $(6,128)$.', a: '$c=20$, so $V=-9t^2+72t+20$.' },
+        { id: 'm1', q: 'Fit $V=at^2+bt+c$ through $(0,20)$, $(3,155)$, and $(6,128)$.', a: '$V=-9t^2+72t+20$' },
         { id: 'm2', q: 'At 19:00 the count is $(9,263)$. What does the quadratic give?', choices: ['about $263$', 'more than $263$', 'a negative crowd'], correct: 2, a: '$V(9)=-61$: a negative crowd.' },
-        { id: 'm3', q: 'Why can no quadratic model the whole day?', a: 'It rises, falls, and rises again: two turning points. A quadratic has one.' },
-        { id: 'm4', q: 'For $V=at^3+bt^2+ct+d$, write down $d$ and three equations. Find the model.', a: '$d=20$, so $V=2t^3-27t^2+108t+20$.' },
+        { id: 'm3', q: 'Why can no quadratic model the whole day?', a: 'Two turning points: it rises, falls, and rises again.' },
+        { id: 'm4', q: 'Write down $d$ and three equations for $V=at^3+bt^2+ct+d$. Find the model.', a: '$V=2t^3-27t^2+108t+20$' },
       ],
       graph: mallGraph,
       working: ({ shown }) => {
@@ -230,7 +231,7 @@ export default {
     },
     {
       id: 'poly', short: 'Polynomial recap',
-      heading: 'Polynomials: change the degree, the leading coefficient, and the roots. In factored form, drag a root along the axis.',
+      heading: 'Polynomials: change the degree, the leading coefficient, and the roots. Drag a root along the axis; scroll to zoom, drag the grid to pan.',
       readout: ({ v }) => `$${polyEquation(polyState(v))}$`,
       controls: ({ v }) => (v.form === 'fact' ? ['deg', 'form', 'sign', 'amag', 'rep'] : ['deg', 'form', 'sign', 'amag', 'shift']),
       cardsTitle: 'Polynomial recap',

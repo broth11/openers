@@ -144,7 +144,7 @@ export function polyGraph({ deg, a, roots, shift = 0, form, handles = [] }) {
     const ys = up ? '$y\\to\\infty$' : '$y\\to-\\infty$'
     labels.push({ id: `end-${id}`, x: dir > 0 ? 'right' : 'left', y: up ? T * 0.72 : -T * 0.72, html: `${xs}<br>${ys}`, color: C.coral, pos: dir > 0 ? 'w' : 'e', plain: true, fixed: true })
   }
-  items.push({ type: 'curve', f: (x) => [x, Math.max(-T * 3, Math.min(T * 3, f(x)))], t: [-L - 1, L + 1], color: C.teal })
+  items.push({ type: 'curve', f: (x) => [x, Math.max(-T * 30, Math.min(T * 30, f(x)))], t: [-60, 60], n: 2400, color: C.teal })
   if (turning.length) items.push({ type: 'points', pts: turning.filter(([x, y]) => Math.abs(x) < L && Math.abs(y) < T), color: C.strip, r: 7 })
   const shown = real.filter((r) => Math.abs(r.x) < L)
   const hs = form === 'fact' ? handles : []
@@ -154,7 +154,8 @@ export function polyGraph({ deg, a, roots, shift = 0, form, handles = [] }) {
   const tex = polyEquation({ a, roots, shift, form })
   return {
     bounds: { left: -L, right: L, bottom: -T, top: T },
-    axes: { x: 'x', y: 'y', aspect: 1, xStep: 1, yStep: 1 },
+    axes: { x: 'x', y: 'y', aspect: 1 },
+    zoom: true,
     description: `Graph of ${tex}.`,
     items, labels,
   }

@@ -77,7 +77,16 @@ function wrapMath(latex, display, cls = 'tx') {
   // does not fit, and breaks between pieces only when it is wider than a full line (Ben, 2026-10-26).
   return `<span class="txg">${parts
     .map((p, i) => {
-      const src = i > 0 && !/^,/.test(parts[i - 1].slice(-1)) ? `{}${p}` : p
+      // MathLive drops the spacing around an operator that opens a piece, so put it back by hand:
+      // a thick space before a relation (its right-hand space survives), and a medium space on both
+      // sides of a binary operator.
+      let src = p
+      if (i > 0 && !/^,/.test(parts[i - 1].slice(-1))) {
+        const bin = p.match(/^(\+|-|\\times|\\cdot|\\pm)/)
+        if (bin) src = `\\:${bin[0]}\\:${p.slice(bin[0].length)}`
+        else if (/^(=|<|>|\\approx|\\neq|\\leq|\\geq|\\le|\\ge|\\to|\\Rightarrow)/.test(p)) src = `\\;{}${p}`
+        else src = `{}${p}`
+      }
       return `<span class="${c}">${tex(src, display)}</span>`
     })
     .join('<wbr>')}</span>`

@@ -15,3 +15,5 @@ graph: () => polyGraph(st), cards: () => polyCards(st)
 - `polyEquation(state)` gives the equation on screen; show it in the readout row above the graph, not as a label on it.
 - `polyCards`: end behaviour (odd or even degree, sign of a), turning points (count, at most n - 1), real roots (list, at most n), factored or standard form, repeated roots, and "n + 1 conditions fix a polynomial of degree n".
 - `analyse()` finds real roots and turning points numerically (sampling and bisection), so standard form with any constant works.
+
+- The graph sets `zoom: true` (wheel zoom, drag to pan, Reset view), and the curve is drawn far beyond the window so it stays whole when zoomed out.

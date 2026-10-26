@@ -119,6 +119,10 @@ export default {
 - **Working shows every constant.** Substitute with the constant written in (for example $27a+9b+3c+20=155$), then a separate step moves the constants to one side. Keep a short model on one line.
 - **An equation that changes with the controls goes in the readout row**, above the graph, not in a label on it.
 - **WebKit pitfall:** a clipped SVG group with opacity paints only in patches in Safari. Grid and axes are never clipped; they are drawn inside the graph's rectangle by construction. Curves are clipped only when a scene shares the SVG.
+- **Moving cursors never move labels.** A clock line, cursor point, or connector that follows a slider is `ghost: true`: it passes behind the labels, and the labels stay put.
+- **Maths sits on the text baseline.** Inline maths is aligned `baseline`, not `middle`, so it lines up with the words around it; wrapped pieces get their operator spacing back by hand (`kit/math.js`).
+- **Zoom where a recap needs room.** `zoom: true` in a graph spec gives wheel zoom, drag to pan, and +, −, and Reset view buttons; the view resets when the window changes. Used on the U5 L2 polynomial recap.
+- **Lesson titles name the skills** (Ben, 26 October 2026): for example "Cubic fitting, direct and inverse variation", not a clever phrase.
 - **Exact fits, not regression.** Three points fix a quadratic and four fix a cubic: say "fit through", never "regression", in these scenes.
 
 ## Build, check, preview

@@ -40,7 +40,7 @@ Everything the kit can already do. Read this before building a new opener, and a
 | MAI HL U5 L1 | Three flights, three forms | SVG | Information board, Projectile height graph |
 | MAI HL U11 L10 | Discs and stretches | three.js + SVG | Solid of revolution, Strips |
 | MAI HL U11 L11 | A hemisphere bowl | three.js + SVG | Solid of revolution, Strips |
-| MAI HL U5 L2 | Three counts, then four | SVG | Context stage, Polynomial explorer, Power family |
+| MAI HL U5 L2 | Cubic fitting, direct and inverse variation | SVG | Context stage, Polynomial explorer, Power family |
 
 ## Wanted next (from the syllabus survey, 2026-10-25)
 
