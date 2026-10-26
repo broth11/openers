@@ -71,6 +71,8 @@ try {
   await reveal('y-shape'); assert.equal((await data()).axis, 'y')
   await page.click('[data-seg="turnAxis"][data-val="x"]'); await wait()
   assert.equal((await data()).axis, 'x')
+  assert.equal(+(await data()).outerRadius, 2)
+  assert(+(await data()).innerRadius > 0)
   await page.screenshot({path:new URL('y-turn-about-x.png',dir).pathname})
   await page.click('[data-seg="turnAxis"][data-val="y"]'); await wait()
   assert.equal((await data()).axis, 'y')

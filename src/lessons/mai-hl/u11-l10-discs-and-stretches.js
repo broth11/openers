@@ -74,7 +74,7 @@ export default {
       keys: noKeys,
     },
     {
-      id: 'y-turn', short: 'Turn about y', heading: T`Rotate the curve $y=\sqrt{x}$, from (0, 0) to (4, 2), about each axis.`,
+      id: 'y-turn', short: 'Turn about y', heading: T`Rotate the region beside $y=\sqrt{x}$, for $0\le y\le2$, about each axis.`,
       controls: ({ shown }) => shown('y-shape') ? ['turnAxis', 'angle', 'n', 'selected', 'pieceView'] : ['selected', 'pieceView'],
       prompts: [
         { id: 'y-shape', q: T`Predict: will $y=\sqrt{x}$ trace the same 3D shape about the y-axis as about the x-axis? Then state the strip direction and thickness about y.`, choices: ['Same shape', 'Different shape'], correct: 1,
@@ -83,9 +83,10 @@ export default {
         { id: 'y-volume', q: 'Write the volume integral and evaluate it.', aLines: [T`$V_y=\pi\int_0^2y^4\,dy$`, T`$=\frac{32\pi}{5}\approx20.1\text{ units}^3$`, T`Not equal to $V_x=8\pi\approx25.1$ about x.`] },
       ],
       graph: ({ v, shown }) => {
-        // Same camera scale for both axes, so the two solids compare fairly.
+        // The SAME region (beside the curve) about either axis, at one camera scale.
+        // About x it is a radius-2 cylinder with a paraboloid removed: outer 2, inner sqrt(x).
         if (shown('y-shape') && v.turnAxis === 'x') {
-          return base(v, { id: 'y-turn-x', axis: 'x', scale: 7, revealed: true, dimensions: false, stack: true, bounds: B, labels: positiveLabels })
+          return base(v, { id: 'y-turn-x', axis: 'x', scale: 7, outer: () => 2, inner: Math.sqrt, revealed: true, dimensions: false, stack: true, bounds: B, labels: positiveLabels })
         }
         return base(v, { id: 'y-turn', axis: 'y', scale: 7, b: 2, outer: (y) => y * y, revealed: shown('y-shape'), dimensions: shown('y-shape'), stack: true, bounds: B, labels: [{ id: 'function', x: 2.6, y: Math.sqrt(2.6), html: shown('y-form') ? '$x=y^2$' : T`$y=\sqrt{x}$`, color: C.strip, pos: 'se' }] })
       },
@@ -99,7 +100,7 @@ export default {
         ...(shown('y-form') ? [['Rewrite the function', T`y&=\sqrt{x}\\y^2&=x\\x&=y^2`], ['Square the horizontal radius', T`r^2&=x^2\\&=(y^2)^2\\&=y^4`]] : []),
         ...(shown('y-volume') ? [
           ['Add the discs about y', T`V_y&=\pi\int_0^2y^4\,dy\\&=\frac{32\pi}{5}\approx20.1\text{ units}^3`, true],
-          ['Compare: about x', T`V_x&=\pi\int_0^4x\,dx\\&=8\pi\approx25.1\text{ units}^3`, true],
+          ['Compare: about x, washers', T`V_x&=\pi\int_0^4\left(2^2-x\right)dx\\&=8\pi\approx25.1\text{ units}^3`, true],
         ] : []),
       ], note: shown('y-volume') ? 'Same curve, different solids: the volumes are not equal.' : 'About y, the shaded region is beside the curve, not under it. Choose bounds and thickness from the selected axis.' }),
       keys: ({ shown }) => shown('y-volume') ? integralKeys({ goal: 'Find the volume about the y-axis', typing: `${PI} ${X} ${k('^')} ${e('4')}`, leave: true, lo: '0', hi: '2', out: '20.10619298',

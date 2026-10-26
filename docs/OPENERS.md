@@ -179,6 +179,7 @@ The check drives every scene, reveal, slider end, and switch at 1366x768, 1440x8
 - L10's y-axis scene opens with one combined prediction, matching the notes' Introduction 4(a):
   will y=sqrt(x), from (0, 0) to (4, 2), trace the same 3D shape about y as about x, then the
   strip direction and thickness about y. Its answer shows no calculation.
-- After that reveal, a "Rotate about" toggle switches the revolution between the x-axis (region
-  under the curve, radius sqrt(x)) and the y-axis (region beside it, radius y²), at one camera scale.
+- After that reveal, a "Rotate about" toggle revolves the SAME region (beside the curve) about
+  the x-axis (washers: a radius-2 cylinder with a paraboloid removed, 8π) or the y-axis (discs,
+  radius y², 32π/5), at one camera scale. Never swap in the region under the curve.
 - Part (c) evaluates the y-axis volume, 32π/5, and states that it differs from 8π about x.
