@@ -61,6 +61,8 @@ function freshState(lesson) {
 
 const ctx = () => ({ v: S.values, shown: (id) => S.revealed.has(id) })
 const scene = () => L.scenes[S.scene]
+// A scene with no working and no calculator steps has no panel: its Working button is hidden.
+const hasPanel = (sc) => !!(sc.working || sc.keys)
 const controlsOf = (sc) => (typeof sc.controls === 'function' ? sc.controls(ctx()) : sc.controls || [])
 
 // ---------- menu
@@ -104,6 +106,8 @@ function renderHeader() {
   if (sib.length > 1) {
     setHTML($('engineSeg'), sib.map((x) => `<button type="button" data-variant="${keyOf(x)}" aria-pressed="${x === L}">${x.engineLabel || x.engine || 'SVG'}</button>`).join(''))
   }
+  $('workBtn').hidden = !hasPanel(scene())
+  if (!hasPanel(scene()) && S.open) setOpen(false)
   const multi = L.scenes.length > 1
   $('stepper').hidden = !multi
   if (multi) {
@@ -422,7 +426,7 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') { if (S.open) setOpen(false); $('pnav').open = false; return }
   if (inRange) return
   const k = e.key.toLowerCase()
-  if (k === 'w') setOpen(!S.open)
+  if (k === 'w') { if (hasPanel(scene())) setOpen(!S.open) }
   else if (k === 'f') toggleFs()
   else if (e.key === 'ArrowRight' || e.key === 'PageDown') goScene(S.scene + 1)
   else if (e.key === 'ArrowLeft' || e.key === 'PageUp') goScene(S.scene - 1)

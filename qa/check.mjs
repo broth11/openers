@@ -32,6 +32,8 @@ for (const [w, h] of sizes) {
   for (let s = 0; s < n; s++) {
     if (await page.locator(`#stepper [data-scene="${s}"]`).count()) { await page.click(`#stepper [data-scene="${s}"]`); await page.waitForTimeout(150) }
     for (const panel of [false, true]) {
+      // a scene without working or calculator steps hides its Working button: nothing to open
+      if (panel && !(await page.locator('#workBtn').isVisible())) continue
       if (panel) { await page.click('#workBtn'); await page.waitForTimeout(600) } else {
         if (await page.locator('.choices button').count()) { await page.locator('.choices button').first().click(); await page.waitForTimeout(60) }
         while (await page.locator('.reveal').count()) { await page.locator('.reveal').first().click(); await page.waitForTimeout(60) }

@@ -285,3 +285,6 @@ input.sel::-moz-range-thumb { border-color: #e8890c; }
 
 /* context stage scenes */
 .sg-scene text { font-family: var(--f-ui); }
+
+/* one wrapped expression: moves to the next line whole, breaks inside only when wider than the line */
+.txg { display: inline-block; max-width: 100%; vertical-align: middle; }

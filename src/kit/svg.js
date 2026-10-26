@@ -95,7 +95,7 @@ export function makeSvgGraph(host, { renderLabel, onDrag }) {
 
   function grid(g) {
     const step = { x: spec.axes?.xStep || gridStep(view.ppu * view.aspect), y: spec.axes?.yStep || gridStep(view.ppu) }
-    const gx = el('g', { stroke: GRID, 'stroke-width': ROLES.grid.lineWidth, 'stroke-dasharray': '1.5 3.5', opacity: ROLES.grid.lineOpacity }, g)
+    const gx = el('g', { stroke: GRID, 'stroke-width': ROLES.grid.lineWidth, 'stroke-dasharray': '1.5 3.5', 'stroke-opacity': ROLES.grid.lineOpacity }, g)
     for (let x = Math.ceil(view.left / step.x) * step.x; x <= view.right; x += step.x) if (x !== 0) el('line', { x1: X(x), y1: view.oy, x2: X(x), y2: view.h }, gx)
     for (let y = Math.ceil(view.bottom / step.y) * step.y; y <= view.top; y += step.y) if (y !== 0) el('line', { x1: view.ox, y1: Y(y), x2: view.w, y2: Y(y) }, gx)
     return step
@@ -106,19 +106,22 @@ export function makeSvgGraph(host, { renderLabel, onDrag }) {
     const nonnegativeY = spec.axes?.nonnegative === true || spec.axes?.nonnegative?.y
     const ox = X(0)
     const oy = Y(0)
+    // an axis outside the graph's rectangle (beside a scene) is not drawn, nor are its numbers
+    const showX = oy >= view.oy && oy <= view.h
+    const showY = ox >= view.ox && ox <= view.w
     const a = el('g', { stroke: AXIS, 'stroke-width': ROLES.axis.lineWidth, fill: 'none' }, g)
-    el('line', { x1: nonnegativeX ? ox : view.ox + 6, y1: oy, x2: view.w - 6, y2: oy, 'marker-start': nonnegativeX ? null : 'url(#ar)', 'marker-end': 'url(#ar)' }, a)
-    el('line', { x1: ox, y1: nonnegativeY ? oy : view.h - 6, x2: ox, y2: view.oy + 6, 'marker-start': nonnegativeY ? null : 'url(#ar)', 'marker-end': 'url(#ar)' }, a)
+    if (showX) el('line', { x1: nonnegativeX ? ox : view.ox + 6, y1: oy, x2: view.w - 6, y2: oy, 'marker-start': nonnegativeX ? null : 'url(#ar)', 'marker-end': 'url(#ar)' }, a)
+    if (showY) el('line', { x1: ox, y1: nonnegativeY ? oy : view.h - 6, x2: ox, y2: view.oy + 6, 'marker-start': nonnegativeY ? null : 'url(#ar)', 'marker-end': 'url(#ar)' }, a)
     const t = el('g', { fill: TICK, 'font-family': 'STIX Two Text, Cambria Math, serif', 'font-size': 17 }, g)
     const tk = el('g', { stroke: AXIS, 'stroke-width': 1.4 }, g)
     for (let x = Math.ceil(view.left / step.x) * step.x; x <= view.right; x += step.x) {
-      if (x === 0 || X(x) < view.ox + 18 || X(x) > view.w - 38 || (nonnegativeX && x < 0)) continue
+      if (!showX || x === 0 || X(x) < view.ox + 18 || X(x) > view.w - 38 || (nonnegativeX && x < 0)) continue
       el('line', { x1: X(x), y1: oy - 4, x2: X(x), y2: oy + 4 }, tk)
       const n = el('text', { class: 'sg-tick', x: X(x), y: oy + 22, 'text-anchor': 'middle', 'paint-order': 'stroke', stroke: '#fff', 'stroke-width': 4 }, t)
       n.textContent = minus(r2(x))
     }
     for (let y = Math.ceil(view.bottom / step.y) * step.y; y <= view.top; y += step.y) {
-      if (y === 0 || Y(y) > view.h - 18 || Y(y) < view.oy + 38 || (nonnegativeY && y < 0)) continue
+      if (!showY || y === 0 || Y(y) > view.h - 18 || Y(y) < view.oy + 38 || (nonnegativeY && y < 0)) continue
       el('line', { x1: ox - 4, y1: Y(y), x2: ox + 4, y2: Y(y) }, tk)
       const n = el('text', { class: 'sg-tick', x: ox - 9, y: Y(y) + 6, 'text-anchor': 'end', 'paint-order': 'stroke', stroke: '#fff', 'stroke-width': 4 }, t)
       n.textContent = minus(r2(y))
@@ -153,8 +156,13 @@ export function makeSvgGraph(host, { renderLabel, onDrag }) {
       spec.scene.draw({ el: (tag, attrs, parent) => el(tag, attrs, parent || sg), g: sg, x: sc.x, y: sc.y, w: sc.w, h: sc.h, Y: sy, stacked: sc.stacked, graphY: Y })
     }
     // origin circle sits under everything, so the axes run through it
-    el('circle', { cx: X(0), cy: Y(0), r: ORIGIN.radius, fill: 'none', stroke: AXIS, 'stroke-width': ORIGIN.lineWidth, 'clip-path': `url(#${uid}-clip)` }, svg)
-    const step = grid(el('g', { 'clip-path': `url(#${uid}-clip)` }, svg))
+    // Grid and axes are drawn inside the graph's rectangle by construction, never clipped:
+    // WebKit paints a clipped group with opacity only in patches.
+    const inside = X(0) >= view.ox && X(0) <= view.w && Y(0) >= view.oy && Y(0) <= view.h
+    if (inside) el('circle', { cx: X(0), cy: Y(0), r: ORIGIN.radius, fill: 'none', stroke: AXIS, 'stroke-width': ORIGIN.lineWidth }, svg)
+    const step = grid(el('g', {}, svg))
+    // curves and shapes are clipped only when a scene shares the svg
+    const clipped = view.scene ? { 'clip-path': `url(#${uid}-clip)` } : {}
     const pts = []
     const dots = []
     const seg = (x1, y1, x2, y2) => {
@@ -164,7 +172,7 @@ export function makeSvgGraph(host, { renderLabel, onDrag }) {
     seg(view.ox, Y(0), view.w, Y(0))
     seg(X(0), view.oy, X(0), view.h)
     const layer = (type) => spec.items.filter((i) => i.type === type)
-    const body = el('g', { 'clip-path': `url(#${uid}-clip)` }, svg)
+    const body = el('g', clipped, svg)
 
     for (const a of layer('area')) {
       const pts = []
@@ -179,8 +187,8 @@ export function makeSvgGraph(host, { renderLabel, onDrag }) {
         el('rect', { x: X(Math.min(x1, x2)), y: Y(Math.max(y1, y2)), width: Math.abs(X(x2) - X(x1)), height: Math.abs(Y(y1) - Y(y2)) }, g)
       }
     }
-    axes(el('g', { 'clip-path': `url(#${uid}-clip)` }, svg), step)
-    const top = el('g', { 'clip-path': `url(#${uid}-clip)` }, svg)
+    axes(el('g', {}, svg), step)
+    const top = el('g', clipped, svg)
     for (const l of layer('line')) {
       seg(X(l.x1), Y(l.y1), X(l.x2), Y(l.y2))
       el('line', { x1: X(l.x1), y1: Y(l.y1), x2: X(l.x2), y2: Y(l.y2), stroke: l.color, 'stroke-width': l.width || 3, 'stroke-dasharray': l.dash ? '9 7' : null, 'stroke-linecap': 'round' }, top)

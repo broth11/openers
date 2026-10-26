@@ -109,6 +109,11 @@ export function factoredTex(a, roots) {
   return `y=${lead}${groups.map((g) => (g.m > 1 ? `${factor(g.x)}^{${g.m}}` : factor(g.x))).join('')}`
 }
 
+// The equation on screen, for a dedicated field above the graph (the readout row).
+export function polyEquation({ a, roots, shift = 0, form }) {
+  return form === 'fact' ? factoredTex(a, roots) : standardTex(expand(a, roots).map((v, i, arr) => (i === arr.length - 1 ? v + shift : v)))
+}
+
 export function polyGraph({ deg, a, roots, shift = 0, form, handles = [] }) {
   const { f, real, turning } = analyse({ deg, a, roots, shift })
   const L = 5.6
@@ -134,7 +139,10 @@ export function polyGraph({ deg, a, roots, shift = 0, form, handles = [] }) {
   for (const [dir, up, id, x, x2] of arrows) {
     const off = dir * 0.28
     items.push({ type: 'arrow', from: [x + off, f(x)], to: [x2 + off, f(x2)], color: C.coral, width: 4 })
-    labels.push({ id: `end-${id}`, x: x2 + off, y: f(x2), html: up ? (dir > 0 ? '$x\\to\\infty,\\ y\\to\\infty$' : '$x\\to-\\infty,\\ y\\to\\infty$') : (dir > 0 ? '$x\\to\\infty,\\ y\\to-\\infty$' : '$x\\to-\\infty,\\ y\\to-\\infty$'), color: C.coral, pos: dir > 0 ? (up ? 'se' : 'ne') : (up ? 'sw' : 'nw'), plain: true })
+    // the statement sits at its own side of the window, in two rows
+    const xs = dir > 0 ? '$x\\to\\infty$' : '$x\\to-\\infty$'
+    const ys = up ? '$y\\to\\infty$' : '$y\\to-\\infty$'
+    labels.push({ id: `end-${id}`, x: dir > 0 ? 'right' : 'left', y: up ? T * 0.72 : -T * 0.72, html: `${xs}<br>${ys}`, color: C.coral, pos: dir > 0 ? 'w' : 'e', plain: true, fixed: true })
   }
   items.push({ type: 'curve', f: (x) => [x, Math.max(-T * 3, Math.min(T * 3, f(x)))], t: [-L - 1, L + 1], color: C.teal })
   if (turning.length) items.push({ type: 'points', pts: turning.filter(([x, y]) => Math.abs(x) < L && Math.abs(y) < T), color: C.strip, r: 7 })
@@ -143,8 +151,7 @@ export function polyGraph({ deg, a, roots, shift = 0, form, handles = [] }) {
   items.push({ type: 'points', pts: shown.filter((r) => !hs.some((h) => Math.abs(h.x - r.x) < 1e-9)).map((r) => [r.x, 0]), color: C.sel, r: 7 })
   for (const h of hs) items.push({ type: 'handle', x: h.x, y: 0, color: C.sel, drag: { param: h.param, axis: 'x' }, r: 10 })
   for (const r of shown) if (r.m > 1) labels.push({ id: `m-${r.x.toFixed(3)}`, x: r.x, y: 0, html: r.m === 2 ? 'double' : 'triple', color: C.sel, pos: 's', plain: true, attached: true })
-  const tex = form === 'fact' ? factoredTex(a, roots) : standardTex(expand(a, roots).map((v, i, arr) => (i === arr.length - 1 ? v + shift : v)))
-  labels.push({ id: 'eq', x: 'left', y: 'top', html: `$${tex}$`, color: C.teal, pos: 'se', fixed: true })
+  const tex = polyEquation({ a, roots, shift, form })
   return {
     bounds: { left: -L, right: L, bottom: -T, top: T },
     axes: { x: 'x', y: 'y', aspect: 1, xStep: 1, yStep: 1 },

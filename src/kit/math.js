@@ -73,12 +73,14 @@ function wrapMath(latex, display, cls = 'tx') {
   const parts = splitAtBreaks(latex)
   const c = cls + (display ? ' tx-d' : '')
   if (parts.length < 2) return `<span class="${c}">${tex(latex, display)}</span>`
-  return parts
+  // The pieces sit in one inline-block group: the whole expression moves to the next line when it
+  // does not fit, and breaks between pieces only when it is wider than a full line (Ben, 2026-10-26).
+  return `<span class="txg">${parts
     .map((p, i) => {
       const src = i > 0 && !/^,/.test(parts[i - 1].slice(-1)) ? `{}${p}` : p
       return `<span class="${c}">${tex(src, display)}</span>`
     })
-    .join('<wbr>')
+    .join('<wbr>')}</span>`
 }
 
 // Inline maths for the working panel rows: same line breaking as md({ wrap: true }), but without

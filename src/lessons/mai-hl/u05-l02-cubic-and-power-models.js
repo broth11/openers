@@ -11,7 +11,7 @@
 import { COLORS as C } from '../../kit/style.js'
 import { fmt } from '../../kit/math.js'
 import { drawMall, drawJars, drawLamp } from '../../components/context-stage/index.js'
-import { polyGraph, polyCards, rootsFor, freeHandles } from '../../components/polynomial/index.js'
+import { polyGraph, polyCards, polyEquation, rootsFor, freeHandles } from '../../components/polynomial/index.js'
 import { powerGraph, directCards, inverseCards, topFor, powerTex } from '../../components/power-family/index.js'
 
 // ---------- models
@@ -98,7 +98,7 @@ function jarGraph({ v, shown }) {
   labels.push({ id: 'ref', x: 10, y: 200, html: '$(10,\\,200)$', color: C.strip, pos: 'nw', attached: true })
   const big = !shown('j1') ? null : mode === 'h' ? { h: s, w: 10 } : mode === 'w' ? { h: 10, w: s } : { h: s, w: s }
   return {
-    bounds: { left: -2.6, right: 21.5, bottom: -80, top: 1700 },
+    bounds: { left: -2.6, right: 22.6, bottom: -230, top: 1700 },
     axes: { x: 'size (cm)', y: 'N', aspect: 72, xStep: 5, yStep: 200, nonnegative: true },
     description: 'Number of jelly beans against the size of the jar, beside a drawing of the jars.',
     items, labels,
@@ -164,7 +164,7 @@ export default {
   title: 'Three counts, then four', engine: 'svg',
   bridge: 'Lesson 1: fit a quadratic from three conditions with a system of equations.',
   params: {
-    time: { type: 'range', label: 'Clock', min: 0, max: 10, step: 0.05, value: 3, show: (v) => `${clock(v)}  ($t=${v.toFixed(2)}$)`, sel: true, play: { seconds: 12 } },
+    time: { type: 'range', label: 'Clock', min: 0, max: 10, step: 0.05, value: 0, show: (v) => `${clock(v)}  ($t=${v.toFixed(2)}$)`, sel: true, play: { seconds: 12 } },
     deg: { type: 'seg', label: 'Degree', options: [['2', '2'], ['3', '3'], ['4', '4']], value: '3' },
     form: { type: 'seg', label: 'Form', options: [['fact', 'Factored'], ['std', 'Standard']], value: 'fact' },
     sign: { type: 'seg', label: 'Leading coefficient', options: [['+', 'a > 0'], ['-', 'a < 0']], value: '+' },
@@ -176,7 +176,7 @@ export default {
     r: { type: 'range', label: 'r', min: -4.5, max: 4.5, step: 0.1, value: 1.5 },
     s: { type: 'range', label: 's', min: -4.5, max: 4.5, step: 0.1, value: 3.5 },
     grow: { type: 'seg', label: 'Grow', options: [['h', 'Taller only'], ['w', 'Wider only'], ['both', 'Same shape']], value: 'both' },
-    size: { type: 'range', label: 'Growing dimension', min: 5, max: 20, step: 0.1, value: 20, show: (v) => `${fmt(v, 1)} cm`, sel: true, play: { seconds: 8 } },
+    size: { type: 'range', label: 'Growing dimension', min: 5, max: 20, step: 0.1, value: 10, show: (v) => `${fmt(v, 1)} cm`, sel: true, play: { seconds: 8 } },
     dn: { type: 'seg', label: 'Power n', options: [['0.5', '½'], ['1', '1'], ['2', '2'], ['3', '3']], value: '3' },
     dk: { type: 'range', label: 'k', min: 0.5, max: 4, step: 0.1, value: 1, show: (v) => `$k=${fmt(v, 1)}$` },
     ddbl: { type: 'seg', label: 'Double x', options: OFF_ON, value: 'on' },
@@ -214,13 +214,14 @@ export default {
       working: ({ shown }) => {
         if (shown('m4')) return { blocks: [
           ['Free coefficient', 'V(0)&=20\\\\d&=20'],
-          ['Substitute the other counts', '27a+9b+3c&=135\\\\216a+36b+6c&=108\\\\729a+81b+9c&=243'],
-          ['Model', 'V&=2t^3-27t^2\\\\&\\quad+108t+20', true],
+          ['Substitute the other counts', '27a+9b+3c+20&=155\\\\216a+36b+6c+20&=128\\\\729a+81b+9c+20&=263'],
+          ['Move the constants to one side', '27a+9b+3c&=135\\\\216a+36b+6c&=108\\\\729a+81b+9c&=243'],
+          ['Model', 'V&=2t^3-27t^2+108t+20', true],
         ], note: 'Turning points at 13:00 and 16:00. The cubic keeps rising after 16:00, so it cannot model closing time.' }
         if (shown('m1')) return { blocks: [
           ['Free coefficient', 'c&=20'],
           ['Substitute (3, 155) and (6, 128)', '9a+3b+20&=155\\\\36a+6b+20&=128'],
-          ['Simplify', '9a+3b&=135\\\\36a+6b&=108'],
+          ['Move the constants to one side', '9a+3b&=135\\\\36a+6b&=108'],
           ['Model', 'V&=-9t^2+72t+20', true],
         ], note: 'Three conditions fix the three coefficients of a quadratic.' }
         return { blocks: [['Given', '(0,20),\\ (3,155),\\ (6,128)']], note: '$V$ counts shoppers inside, in hundreds; $t$ is hours after 10:00.' }
@@ -229,8 +230,8 @@ export default {
     },
     {
       id: 'poly', short: 'Polynomial recap',
-      heading: 'Polynomials: change the degree, the leading coefficient, and the roots. Drag a root along the axis.',
-      readout: ({ v }) => (v.form === 'fact' ? 'Factored form: each orange handle is a root you can drag.' : 'Standard form: add a constant to lift or lower the graph.'),
+      heading: 'Polynomials: change the degree, the leading coefficient, and the roots. In factored form, drag a root along the axis.',
+      readout: ({ v }) => `$${polyEquation(polyState(v))}$`,
       controls: ({ v }) => (v.form === 'fact' ? ['deg', 'form', 'sign', 'amag', 'rep'] : ['deg', 'form', 'sign', 'amag', 'shift']),
       cardsTitle: 'Polynomial recap',
       cards: ({ v }) => polyCards(polyState(v)),

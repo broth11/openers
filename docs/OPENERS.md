@@ -114,6 +114,11 @@ export default {
 - **Context, then recap.** For a family students already know, one short context scene then a recap explorer. For a new family, every context scene is followed by a recap explorer that places its model in the wider family.
 - **Recap scenes have no questions.** Toggles and sliders drive knowledge cards; a card appears only when its switch is on or it describes what is on the graph.
 - **Context scenes are drawn and animated** beside the graph (the Periodic Models Explorer pattern), with Play on the main slider. Scenes hold the prediction state until the prediction is revealed.
+- **No panel, no button.** A scene with neither `working` nor `keys` hides the Working button, so the graph and controls keep the full width (Ben, 26 October 2026).
+- **Equations move whole.** A wrapped expression is one inline-block group: it moves to the next line as a whole and breaks between pieces only when it is wider than a full line (`kit/math.js`, Ben, 26 October 2026).
+- **Working shows every constant.** Substitute with the constant written in (for example $27a+9b+3c+20=155$), then a separate step moves the constants to one side. Keep a short model on one line.
+- **An equation that changes with the controls goes in the readout row**, above the graph, not in a label on it.
+- **WebKit pitfall:** a clipped SVG group with opacity paints only in patches in Safari. Grid and axes are never clipped; they are drawn inside the graph's rectangle by construction. Curves are clipped only when a scene shares the SVG.
 - **Exact fits, not regression.** Three points fix a quadratic and four fix a cubic: say "fit through", never "regression", in these scenes.
 
 ## Build, check, preview
