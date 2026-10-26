@@ -86,3 +86,6 @@ identical to the keypad.
 The stretch scene supplies f(x)=sqrt(x) and g(x)=2f(x) together in 2D, then lets the teacher
 toggle the generated 3D profile at a fixed camera scale. It revolves about x only. The scene
 starts from the area integral in the earlier recall scene and squares the doubled radius.
+
+The y-axis scene shares one camera scale between an x-axis and a y-axis revolution of the same
+curve segment, switched by the lesson's `turnAxis` toggle after the prediction is revealed.

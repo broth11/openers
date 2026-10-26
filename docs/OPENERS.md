@@ -173,3 +173,12 @@ The check drives every scene, reveal, slider end, and switch at 1366x768, 1440x8
   uses the verified two-unknown route: MENU, XθT (Equation), F1 SIMUL, F1 2 unknowns; each
   row's entries followed by EXE; F1 SOLVE. Source: gdc-online-deck verified key log, AASL D3,
   23 October 2026 (also distributed in the course toolkit's gdc-online-deck.zip).
+
+### Same curve, two axes (Ben, 26 October 2026)
+
+- L10's y-axis scene opens with one combined prediction, matching the notes' Introduction 4(a):
+  will y=sqrt(x), from (0, 0) to (4, 2), trace the same 3D shape about y as about x, then the
+  strip direction and thickness about y. Its answer shows no calculation.
+- After that reveal, a "Rotate about" toggle switches the revolution between the x-axis (region
+  under the curve, radius sqrt(x)) and the y-axis (region beside it, radius y²), at one camera scale.
+- Part (c) evaluates the y-axis volume, 32π/5, and states that it differs from 8π about x.

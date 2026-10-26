@@ -22,6 +22,7 @@ export default {
     ...commonParams,
     side: { type: 'seg', label: 'Profile', options: [['above', 'Above'], ['below', 'Below']], value: 'below' },
     model: { type: 'seg', label: '3D profile', options: [['f', 'f(x)'], ['g', 'g(x) = 2f(x)']], value: 'f' },
+    turnAxis: { type: 'seg', label: 'Rotate about', options: [['x', 'x-axis'], ['y', 'y-axis']], value: 'y' },
   },
   scenes: [
     {
@@ -73,20 +74,34 @@ export default {
       keys: noKeys,
     },
     {
-      id: 'y-turn', short: 'Turn about y', heading: T`Rotate the region beside $y=\sqrt{x}$ about the y-axis, for $0\le y\le2$.`,
-      controls: ({ shown }) => shown('y-disc') ? ['angle', 'n', 'selected', 'pieceView'] : ['selected', 'pieceView'],
+      id: 'y-turn', short: 'Turn about y', heading: T`Rotate the curve $y=\sqrt{x}$, from (0, 0) to (4, 2), about each axis.`,
+      controls: ({ shown }) => shown('y-shape') ? ['turnAxis', 'angle', 'n', 'selected', 'pieceView'] : ['selected', 'pieceView'],
       prompts: [
-        { id: 'y-disc', q: 'Which strips make discs about the y-axis? State their thickness.', a: T`Horizontal strips, with thickness $\Delta y$.` },
+        { id: 'y-shape', q: T`Predict: will $y=\sqrt{x}$ trace the same 3D shape about the y-axis as about the x-axis? Then state the strip direction and thickness about y.`, choices: ['Same shape', 'Different shape'], correct: 1,
+          a: T`Different. About y: horizontal strips, thickness $\Delta y$.` },
         { id: 'y-form', q: T`Starting with $y=\sqrt{x}$, write $x$ and then $x^2$ in terms of $y$.`, aLines: [T`$y^2=x$`, T`$x=y^2$`, T`$x^2=y^4$`] },
-        { id: 'y-volume', q: 'Write the volume integral and evaluate it.', aLines: [T`$V=\pi\int_0^2y^4\,dy$`, T`$=\frac{32\pi}{5}\approx20.1\text{ units}^3$`] },
+        { id: 'y-volume', q: 'Write the volume integral and evaluate it.', aLines: [T`$V_y=\pi\int_0^2y^4\,dy$`, T`$=\frac{32\pi}{5}\approx20.1\text{ units}^3$`, T`Not equal to $V_x=8\pi\approx25.1$ about x.`] },
       ],
-      graph: ({ v, shown }) => base(v, { id: 'y-turn', axis: 'y', scale: 7, b: 2, outer: (y) => y * y, revealed: shown('y-disc'), dimensions: shown('y-disc'), stack: true, bounds: B, labels: [{ id: 'function', x: 2.6, y: Math.sqrt(2.6), html: shown('y-form') ? '$x=y^2$' : T`$y=\sqrt{x}$`, color: C.strip, pos: 'se' }] }),
-      readout: ({ v, shown }) => shown('y-volume') ? T`$V=\frac{32\pi}{5}\approx20.1\text{ units}^3$` : sliceReadout(0, 2, v, 'y'),
+      graph: ({ v, shown }) => {
+        // Same camera scale for both axes, so the two solids compare fairly.
+        if (shown('y-shape') && v.turnAxis === 'x') {
+          return base(v, { id: 'y-turn-x', axis: 'x', scale: 7, revealed: true, dimensions: false, stack: true, bounds: B, labels: positiveLabels })
+        }
+        return base(v, { id: 'y-turn', axis: 'y', scale: 7, b: 2, outer: (y) => y * y, revealed: shown('y-shape'), dimensions: shown('y-shape'), stack: true, bounds: B, labels: [{ id: 'function', x: 2.6, y: Math.sqrt(2.6), html: shown('y-form') ? '$x=y^2$' : T`$y=\sqrt{x}$`, color: C.strip, pos: 'se' }] })
+      },
+      readout: ({ v, shown }) => {
+        const aboutX = shown('y-shape') && v.turnAxis === 'x'
+        if (shown('y-volume')) return aboutX ? T`About x: $V_x=8\pi\approx25.1\text{ units}^3$` : T`About y: $V_y=\frac{32\pi}{5}\approx20.1\text{ units}^3$`
+        return aboutX ? sliceReadout(0, 4, v, 'x') : sliceReadout(0, 2, v, 'y')
+      },
       working: ({ shown }) => ({ blocks: [
-        ...(shown('y-disc') ? [['Horizontal disc thickness', T`\text{thickness}&=\Delta y`]] : []),
+        ...(shown('y-shape') ? [['Horizontal disc thickness', T`\text{thickness}&=\Delta y`]] : []),
         ...(shown('y-form') ? [['Rewrite the function', T`y&=\sqrt{x}\\y^2&=x\\x&=y^2`], ['Square the horizontal radius', T`r^2&=x^2\\&=(y^2)^2\\&=y^4`]] : []),
-        ...(shown('y-volume') ? [['Add the discs', T`V&=\pi\int_0^2(y^2)^2\,dy\\&=\pi\int_0^2y^4\,dy\\&=\frac{32\pi}{5}\\&\approx20.1\text{ units}^3`, true]] : []),
-      ], note: 'The shaded region has changed from the x-axis example. Choose bounds and thickness from the selected axis.' }),
+        ...(shown('y-volume') ? [
+          ['Add the discs about y', T`V_y&=\pi\int_0^2y^4\,dy\\&=\frac{32\pi}{5}\approx20.1\text{ units}^3`, true],
+          ['Compare: about x', T`V_x&=\pi\int_0^4x\,dx\\&=8\pi\approx25.1\text{ units}^3`, true],
+        ] : []),
+      ], note: shown('y-volume') ? 'Same curve, different solids: the volumes are not equal.' : 'About y, the shaded region is beside the curve, not under it. Choose bounds and thickness from the selected axis.' }),
       keys: ({ shown }) => shown('y-volume') ? integralKeys({ goal: 'Find the volume about the y-axis', typing: `${PI} ${X} ${k('^')} ${e('4')}`, leave: true, lo: '0', hi: '2', out: '20.10619298',
         watch: 'The calculator integrates in X only, so X stands for y here. The limits are still the y-values 0 and 2.' }) : noKeys(),
     },
