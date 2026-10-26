@@ -60,6 +60,8 @@ export default {
 - Optional `board: (ctx) => ({ intro, cards: [{ title, lines }], note })` replaces the graph with a given-information board. It uses the shared Information board component. No equations or completed curves need be shown before students have constructed a model.
 - `working()` may return `blocks: [[caption, alignedLatex, isAnswer], ...]` instead of `rows`. Each caption sits above display mathematics; use `&` before the equals sign and `\\` for continuation lines. Split long substitutions vertically. The working must never require horizontal scrolling; the layout check measures each display block and the drawer itself.
 - Text accepts `$inline$` and `$$display$$` LaTeX, rendered by MathLive.
+- Optional `cards: (ctx) => [{ title, lines, html, tone }]` with no `prompts` makes a recap scene: the questions column shows knowledge cards that follow the controls (no questions). `cardsTitle` names the column. `tone` is `teal`, `coral`, `sel`, or `muted`. Keep the list short enough that the column never scrolls at 1366x768 with every switch on.
+- A range param with `play: { seconds }` gets a Play button beside its label; it runs the slider from its value to its maximum.
 - Add a new course to `src/lessons/courses.js`.
 
 ### Graph spec (SVG engine)
@@ -73,7 +75,10 @@ export default {
   - `{ type: 'curve', f: (t) => [x, y], t: [a, b], color, width, dash }`
   - `{ type: 'rect', x1, x2, y1, y2, color, drag: { param, axis } }` the typical strip, draggable
   - `{ type: 'dim', from: [x, y], to: [x, y], color }` a dimension arrow
-  - `{ type: 'points', pts: [[x, y], ...], color, r }`
+  - `{ type: 'points', pts: [[x, y], ...], color, r, hollow }`
+  - `{ type: 'arrow', from: [x, y], to: [x, y], color, width, dash }` a single-headed arrow
+  - `{ type: 'handle', x, y, color, drag: { param, axis } }` a draggable point (roots on an axis)
+- Optional `scene: { frac, draw(api) }` draws a context scene beside the graph. See `src/components/context-stage/README.md`.
 - `labels`: `{ id, x, y, html, color, pos, plain, fixed }`. See "Labels" below.
 
 ## House style (fixed by the kit)
@@ -103,6 +108,13 @@ export default {
 - **Working flows vertically (Ben, 2026-10-25):** use available vertical space, display maths, and equals-sign alignment. Captions go above calculations rather than taking a separate left column. Break chained equalities and long substitutions into multiple aligned lines; no horizontal scrolling to read working.
 - **Left-pane answers (Ben, 2026-10-25):** successive equation rows also align their equals signs. Use `aLines` with separate maths-only rows; the shell groups them into an aligned display with generous row spacing. Keep explanatory text in its own row.
 - **Comparison feature labels (Ben, 2026-10-25):** vertex and root values always have colour-matched leader lines to their actual points. Root labels sit in increasing-time order in one row below the x-axis, with room reserved below the axis. Vertex labels form an ordered row above the maxima. Use the shared placer's `rail: { group, side: 'above' | 'below' }` plus `leader: true`; anchors stay on the mathematical features, and ordinary function labels avoid the reserved rows.
+
+## U5 L2 rules (Ben, 26 October 2026)
+
+- **Context, then recap.** For a family students already know, one short context scene then a recap explorer. For a new family, every context scene is followed by a recap explorer that places its model in the wider family.
+- **Recap scenes have no questions.** Toggles and sliders drive knowledge cards; a card appears only when its switch is on or it describes what is on the graph.
+- **Context scenes are drawn and animated** beside the graph (the Periodic Models Explorer pattern), with Play on the main slider. Scenes hold the prediction state until the prediction is revealed.
+- **Exact fits, not regression.** Three points fix a quadratic and four fix a cubic: say "fit through", never "regression", in these scenes.
 
 ## Build, check, preview
 

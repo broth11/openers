@@ -17,7 +17,7 @@ Everything the kit can already do. Read this before building a new opener, and a
 | House style | Colours and line weights by role; grid step rule; π tick labels | `src/kit/style.js` |
 | Label placer | House-style labels that avoid curves, points, ticks, and each other | `src/kit/labels.js` |
 | Maths helpers | MathLive rendering (`tex`, `md`), exact fractions (`Frac`), number formatting (`fmt`, `num`) | `src/kit/math.js` |
-| Shell | Menu, scenes, questions and reveals, controls, readout, working and Casio panel (calculator steps grouped under goal headings via `sections`), keys, deep links | `src/main.js`, `src/shell.css`, `index.html` |
+| Shell | Menu, scenes, questions and reveals, recap cards (a scene with `cards` and no prompts), controls with optional Play, readout, working and Casio panel (calculator steps grouped under goal headings via `sections`), keys, deep links | `src/main.js`, `src/shell.css`, `index.html` |
 | Layout check | Every scene, reveal, slider, and size; stability sweep | `qa/check.mjs` |
 
 ## Components
@@ -28,6 +28,9 @@ Everything the kit can already do. Read this before building a new opener, and a
 | Information board | Given-information cards before a graph/model reveal | U5 L1 | `src/components/info-board/README.md` |
 | Projectile height graph | Observations, revealed flights, time cursors, maxima, and ground-contact comparisons | U5 L1 | `src/components/projectile/README.md` |
 | Solid of revolution | Paired SVG profiles and shaded discs, washers, cavities, partial turns and orbit | U11 L10/L11 | `src/components/solid-of-revolution/README.md` |
+| Context stage | A drawn, animated scene beside the graph on a shared vertical scale (mall crowd, jelly-bean jars, lamp and light meter with the square-spread diagram) | U5 L2 | `src/components/context-stage/README.md` |
+| Polynomial explorer | Degree 2 to 4, factored or standard form, draggable roots, repeated roots, end-behaviour arrows, turning points, recap cards | U5 L2 | `src/components/polynomial/README.md` |
+| Power family | `y = kx^n` for positive and negative n: doubling markers, ratio and product tests, asymptotes, recap cards | U5 L2 | `src/components/power-family/README.md` |
 
 ## Openers
 
@@ -37,6 +40,7 @@ Everything the kit can already do. Read this before building a new opener, and a
 | MAI HL U5 L1 | Three flights, three forms | SVG | Information board, Projectile height graph |
 | MAI HL U11 L10 | Discs and stretches | three.js + SVG | Solid of revolution, Strips |
 | MAI HL U11 L11 | A hemisphere bowl | three.js + SVG | Solid of revolution, Strips |
+| MAI HL U5 L2 | Three counts, then four | SVG | Context stage, Polynomial explorer, Power family |
 
 ## Wanted next (from the syllabus survey, 2026-10-25)
 

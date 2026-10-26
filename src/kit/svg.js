@@ -10,7 +10,11 @@
 //   { type: 'curve', f: (t) => [x, y], t: [a, b], color, width, dash }
 //   { type: 'rect', x1, x2, y1, y2, color, drag: { param, axis: 'x' | 'y' } }   (the typical strip)
 //   { type: 'dim', from: [x, y], to: [x, y], color }                           (double-headed arrow)
-//   { type: 'points', pts: [[x, y], ...], color, r }
+//   { type: 'points', pts: [[x, y], ...], color, r, hollow }
+//   { type: 'arrow', from: [x, y], to: [x, y], color, width }                  (single-headed arrow)
+//   { type: 'handle', x, y, color, drag: { param, axis } }                      (draggable point)
+// Optional spec.scene = { frac, draw(api) } puts a drawn context scene beside the graph (below 640 px wide,
+// above it). See components/context-stage/README.md for the api the draw function receives.
 // Labels: { id, x, y, html, color, pos, plain, fixed }, placed by kit/labels.js.
 
 import { COLORS, ROLES, ORIGIN, gridStep } from './style.js'
@@ -23,7 +27,10 @@ const TICK = COLORS.tick
 const minus = (s) => String(s).replace('-', '−')
 const r2 = (v) => Math.round(v * 100) / 100
 
+let instances = 0
+
 export function makeSvgGraph(host, { renderLabel, onDrag }) {
+  const uid = `g${++instances}`
   const svg = document.createElementNS(NS, 'svg')
   svg.setAttribute('class', 'sg')
   svg.setAttribute('role', 'img')
@@ -39,24 +46,43 @@ export function makeSvgGraph(host, { renderLabel, onDrag }) {
   const labeller = createLabeller(ov, renderLabel)
   let geo = { pts: [], dots: [] } // what labels must avoid, in px
 
-  const X = (x) => (x - view.left) * view.ppu * view.aspect
-  const Y = (y) => (view.top - y) * view.ppu
-  const toMath = (px, py) => ({ x: view.left + px / (view.ppu * view.aspect), y: view.top - py / view.ppu })
+  const X = (x) => view.ox + (x - view.left) * view.ppu * view.aspect
+  const Y = (y) => view.oy + (view.top - y) * view.ppu
+  const toMath = (px, py) => ({ x: view.left + (px - view.ox) / (view.ppu * view.aspect), y: view.top - (py - view.oy) / view.ppu })
+
+  // The graph's own rectangle inside the svg: the whole svg, or what a context scene leaves free.
+  function layout(W, H) {
+    if (!spec.scene) return { ox: 0, oy: 0, gw: W, gh: H, scene: null }
+    const gap = 14
+    if (W < 640) {
+      const sh = Math.round(H * (spec.scene.stackFrac || 0.42))
+      return { ox: 0, oy: sh + gap, gw: W, gh: H - sh - gap, scene: { x: 0, y: 0, w: W, h: sh, stacked: true } }
+    }
+    const sw = Math.round(W * (spec.scene.frac || 0.4))
+    return { ox: sw + gap, oy: 0, gw: W - sw - gap, gh: H, scene: { x: 0, y: 0, w: sw, h: H, stacked: false } }
+  }
 
   function fit() {
-    const w = host.clientWidth
-    const h = host.clientHeight
-    if (!want || !w || !h) return false
+    const W = host.clientWidth
+    const H = host.clientHeight
+    if (!want || !W || !H) return false
+    const { ox, oy, gw, gh, scene } = layout(W, H)
     const xr = want.right - want.left
     const yr = want.top - want.bottom
     const aspect = spec.axes?.aspect || 1
-    const ppu = Math.min(w / (xr * aspect), h / yr)
+    const ppu = Math.min(gw / (xr * aspect), gh / yr)
     const cx = (want.left + want.right) / 2
     const cy = (want.bottom + want.top) / 2
-    view = { left: cx - w / (ppu * aspect) / 2, right: cx + w / (ppu * aspect) / 2, bottom: cy - h / ppu / 2, top: cy + h / ppu / 2, ppu, aspect, w, h }
-    svg.setAttribute('viewBox', `0 0 ${w} ${h}`)
-    svg.setAttribute('width', w)
-    svg.setAttribute('height', h)
+    view = { left: cx - gw / (ppu * aspect) / 2, right: cx + gw / (ppu * aspect) / 2, bottom: cy - gh / ppu / 2, top: cy + gh / ppu / 2, ppu, aspect, w: ox + gw, h: oy + gh, ox, oy, gw, gh, W, H, scene }
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`)
+    svg.setAttribute('width', W)
+    svg.setAttribute('height', H)
+    ov.style.left = `${ox}px`
+    ov.style.top = `${oy}px`
+    ov.style.width = `${gw}px`
+    ov.style.height = `${gh}px`
+    ov.style.right = 'auto'
+    ov.style.bottom = 'auto'
     return true
   }
 
@@ -70,8 +96,8 @@ export function makeSvgGraph(host, { renderLabel, onDrag }) {
   function grid(g) {
     const step = { x: spec.axes?.xStep || gridStep(view.ppu * view.aspect), y: spec.axes?.yStep || gridStep(view.ppu) }
     const gx = el('g', { stroke: GRID, 'stroke-width': ROLES.grid.lineWidth, 'stroke-dasharray': '1.5 3.5', opacity: ROLES.grid.lineOpacity }, g)
-    for (let x = Math.ceil(view.left / step.x) * step.x; x <= view.right; x += step.x) if (x !== 0) el('line', { x1: X(x), y1: 0, x2: X(x), y2: view.h }, gx)
-    for (let y = Math.ceil(view.bottom / step.y) * step.y; y <= view.top; y += step.y) if (y !== 0) el('line', { x1: 0, y1: Y(y), x2: view.w, y2: Y(y) }, gx)
+    for (let x = Math.ceil(view.left / step.x) * step.x; x <= view.right; x += step.x) if (x !== 0) el('line', { x1: X(x), y1: view.oy, x2: X(x), y2: view.h }, gx)
+    for (let y = Math.ceil(view.bottom / step.y) * step.y; y <= view.top; y += step.y) if (y !== 0) el('line', { x1: view.ox, y1: Y(y), x2: view.w, y2: Y(y) }, gx)
     return step
   }
 
@@ -81,25 +107,25 @@ export function makeSvgGraph(host, { renderLabel, onDrag }) {
     const ox = X(0)
     const oy = Y(0)
     const a = el('g', { stroke: AXIS, 'stroke-width': ROLES.axis.lineWidth, fill: 'none' }, g)
-    el('line', { x1: nonnegativeX ? ox : 6, y1: oy, x2: view.w - 6, y2: oy, 'marker-start': nonnegativeX ? null : 'url(#ar)', 'marker-end': 'url(#ar)' }, a)
-    el('line', { x1: ox, y1: nonnegativeY ? oy : view.h - 6, x2: ox, y2: 6, 'marker-start': nonnegativeY ? null : 'url(#ar)', 'marker-end': 'url(#ar)' }, a)
+    el('line', { x1: nonnegativeX ? ox : view.ox + 6, y1: oy, x2: view.w - 6, y2: oy, 'marker-start': nonnegativeX ? null : 'url(#ar)', 'marker-end': 'url(#ar)' }, a)
+    el('line', { x1: ox, y1: nonnegativeY ? oy : view.h - 6, x2: ox, y2: view.oy + 6, 'marker-start': nonnegativeY ? null : 'url(#ar)', 'marker-end': 'url(#ar)' }, a)
     const t = el('g', { fill: TICK, 'font-family': 'STIX Two Text, Cambria Math, serif', 'font-size': 17 }, g)
     const tk = el('g', { stroke: AXIS, 'stroke-width': 1.4 }, g)
     for (let x = Math.ceil(view.left / step.x) * step.x; x <= view.right; x += step.x) {
-      if (x === 0 || X(x) < 18 || X(x) > view.w - 38 || (nonnegativeX && x < 0)) continue
+      if (x === 0 || X(x) < view.ox + 18 || X(x) > view.w - 38 || (nonnegativeX && x < 0)) continue
       el('line', { x1: X(x), y1: oy - 4, x2: X(x), y2: oy + 4 }, tk)
       const n = el('text', { class: 'sg-tick', x: X(x), y: oy + 22, 'text-anchor': 'middle', 'paint-order': 'stroke', stroke: '#fff', 'stroke-width': 4 }, t)
       n.textContent = minus(r2(x))
     }
     for (let y = Math.ceil(view.bottom / step.y) * step.y; y <= view.top; y += step.y) {
-      if (y === 0 || Y(y) > view.h - 18 || Y(y) < 38 || (nonnegativeY && y < 0)) continue
+      if (y === 0 || Y(y) > view.h - 18 || Y(y) < view.oy + 38 || (nonnegativeY && y < 0)) continue
       el('line', { x1: ox - 4, y1: Y(y), x2: ox + 4, y2: Y(y) }, tk)
       const n = el('text', { class: 'sg-tick', x: ox - 9, y: Y(y) + 6, 'text-anchor': 'end', 'paint-order': 'stroke', stroke: '#fff', 'stroke-width': 4 }, t)
       n.textContent = minus(r2(y))
     }
     const it = el('g', { fill: AXIS, 'font-family': 'STIX Two Text, Cambria Math, serif', 'font-size': 21, 'font-style': 'italic' }, g)
     el('text', { x: view.w - 10, y: oy - 12, 'text-anchor': 'end' }, it).textContent = spec.axes?.x || 'x'
-    el('text', { x: ox + 12, y: 22 }, it).textContent = spec.axes?.y || 'y'
+    el('text', { x: ox + 12, y: view.oy + 22 }, it).textContent = spec.axes?.y || 'y'
   }
 
   function draw() {
@@ -113,20 +139,32 @@ export function makeSvgGraph(host, { renderLabel, onDrag }) {
       const mk = el('marker', { id, viewBox: '0 0 10 10', refX: 9, refY: 5, markerWidth: 8, markerHeight: 8, orient: 'auto-start-reverse', markerUnits: 'userSpaceOnUse' }, defs)
       el('path', { d: 'M0,1 L10,5 L0,9 z', fill: c }, mk)
     }
-    el('rect', { x: 0, y: 0, width: view.w, height: view.h, fill: '#fff' }, svg)
+    el('rect', { x: 0, y: 0, width: view.W, height: view.H, fill: '#fff' }, svg)
+    // everything mathematical is clipped to the graph's rectangle, so a scene beside it stays clean
+    const clip = el('clipPath', { id: `${uid}-clip` }, defs)
+    el('rect', { x: view.ox, y: view.oy, width: view.gw, height: view.gh }, clip)
+    if (view.scene && spec.scene?.draw) {
+      const sc = view.scene
+      const sclip = el('clipPath', { id: `${uid}-sclip` }, defs)
+      el('rect', { x: sc.x, y: sc.y, width: sc.w, height: sc.h }, sclip)
+      const sg = el('g', { 'clip-path': `url(#${uid}-sclip)`, class: 'sg-scene' }, svg)
+      // Shared vertical scale beside the graph; its own scale over the same range when stacked above it.
+      const sy = sc.stacked ? (y) => sc.y + 8 + ((view.top - y) / (view.top - view.bottom)) * (sc.h - 16) : Y
+      spec.scene.draw({ el: (tag, attrs, parent) => el(tag, attrs, parent || sg), g: sg, x: sc.x, y: sc.y, w: sc.w, h: sc.h, Y: sy, stacked: sc.stacked, graphY: Y })
+    }
     // origin circle sits under everything, so the axes run through it
-    el('circle', { cx: X(0), cy: Y(0), r: ORIGIN.radius, fill: 'none', stroke: AXIS, 'stroke-width': ORIGIN.lineWidth }, svg)
-    const step = grid(el('g', {}, svg))
+    el('circle', { cx: X(0), cy: Y(0), r: ORIGIN.radius, fill: 'none', stroke: AXIS, 'stroke-width': ORIGIN.lineWidth, 'clip-path': `url(#${uid}-clip)` }, svg)
+    const step = grid(el('g', { 'clip-path': `url(#${uid}-clip)` }, svg))
     const pts = []
     const dots = []
     const seg = (x1, y1, x2, y2) => {
       const n = Math.max(1, Math.ceil(Math.hypot(x2 - x1, y2 - y1) / 6))
       for (let i = 0; i <= n; i++) pts.push([x1 + ((x2 - x1) * i) / n, y1 + ((y2 - y1) * i) / n])
     }
-    seg(0, Y(0), view.w, Y(0))
-    seg(X(0), 0, X(0), view.h)
+    seg(view.ox, Y(0), view.w, Y(0))
+    seg(X(0), view.oy, X(0), view.h)
     const layer = (type) => spec.items.filter((i) => i.type === type)
-    const body = el('g', {}, svg)
+    const body = el('g', { 'clip-path': `url(#${uid}-clip)` }, svg)
 
     for (const a of layer('area')) {
       const pts = []
@@ -141,8 +179,8 @@ export function makeSvgGraph(host, { renderLabel, onDrag }) {
         el('rect', { x: X(Math.min(x1, x2)), y: Y(Math.max(y1, y2)), width: Math.abs(X(x2) - X(x1)), height: Math.abs(Y(y1) - Y(y2)) }, g)
       }
     }
-    axes(el('g', {}, svg), step)
-    const top = el('g', {}, svg)
+    axes(el('g', { 'clip-path': `url(#${uid}-clip)` }, svg), step)
+    const top = el('g', { 'clip-path': `url(#${uid}-clip)` }, svg)
     for (const l of layer('line')) {
       seg(X(l.x1), Y(l.y1), X(l.x2), Y(l.y2))
       el('line', { x1: X(l.x1), y1: Y(l.y1), x2: X(l.x2), y2: Y(l.y2), stroke: l.color, 'stroke-width': l.width || 3, 'stroke-dasharray': l.dash ? '9 7' : null, 'stroke-linecap': 'round' }, top)
@@ -176,8 +214,29 @@ export function makeSvgGraph(host, { renderLabel, onDrag }) {
       seg(X(d.from[0]), Y(d.from[1]), X(d.to[0]), Y(d.to[1]))
       el('line', { x1: X(d.from[0]), y1: Y(d.from[1]), x2: X(d.to[0]), y2: Y(d.to[1]), stroke: c, 'stroke-width': 2, 'marker-start': `url(#dm${c.slice(1)})`, 'marker-end': `url(#dm${c.slice(1)})` }, top)
     }
+    for (const a of layer('arrow')) {
+      const c = a.color || COLORS.ink
+      const id = 'sa' + c.slice(1)
+      if (!defs.querySelector('#' + id)) {
+        const mk = el('marker', { id, viewBox: '0 0 10 10', refX: 8, refY: 5, markerWidth: 12, markerHeight: 12, orient: 'auto', markerUnits: 'userSpaceOnUse' }, defs)
+        el('path', { d: 'M0,0 L10,5 L0,10 z', fill: c }, mk)
+      }
+      seg(X(a.from[0]), Y(a.from[1]), X(a.to[0]), Y(a.to[1]))
+      el('line', { x1: X(a.from[0]), y1: Y(a.from[1]), x2: X(a.to[0]), y2: Y(a.to[1]), stroke: c, 'stroke-width': a.width || 3, 'stroke-linecap': 'round', 'marker-end': `url(#${id})`, 'stroke-dasharray': a.dash ? '7 6' : null }, top)
+    }
     for (const p of layer('points')) {
-      for (const [x, y] of p.pts) { el('circle', { cx: X(x), cy: Y(y), r: p.r || 6, fill: p.color || COLORS.sel, stroke: '#fff', 'stroke-width': 2 }, top); dots.push([X(x), Y(y)]) }
+      for (const [x, y] of p.pts) {
+        el('circle', p.hollow
+          ? { cx: X(x), cy: Y(y), r: p.r || 6, fill: '#fff', stroke: p.color || COLORS.sel, 'stroke-width': 3 }
+          : { cx: X(x), cy: Y(y), r: p.r || 6, fill: p.color || COLORS.sel, stroke: '#fff', 'stroke-width': 2 }, top)
+        dots.push([X(x), Y(y)])
+      }
+    }
+    for (const hd of layer('handle')) {
+      const g = el('g', { class: 'sg-drag', 'data-param': hd.drag.param, 'data-axis': hd.drag.axis }, svg)
+      el('circle', { cx: X(hd.x), cy: Y(hd.y), r: 18, fill: 'transparent' }, g)
+      el('circle', { cx: X(hd.x), cy: Y(hd.y), r: hd.r || 9, fill: '#fff', stroke: hd.color || COLORS.sel, 'stroke-width': 3.5 }, g)
+      dots.push([X(hd.x), Y(hd.y)])
     }
     // tick numbers crossed by a curve or line are hidden rather than overprinted
     const ticks = []
@@ -191,8 +250,18 @@ export function makeSvgGraph(host, { renderLabel, onDrag }) {
     placeLabels()
   }
 
+  // Labels live in an overlay over the graph's rectangle only, so they never drift into a scene.
   function placeLabels() {
-    labeller.place({ labels: spec.labels, toPx: (x, y) => ({ x: X(x), y: Y(y) }), w: view.w, h: view.h, ...geo, view })
+    const { ox, oy } = view
+    const shift = (list) => list.map(([x, y]) => [x - ox, y - oy])
+    labeller.place({
+      labels: spec.labels,
+      toPx: (x, y) => ({ x: X(x) - ox, y: Y(y) - oy }),
+      w: view.gw, h: view.gh,
+      pts: shift(geo.pts), dots: shift(geo.dots),
+      ticks: (geo.ticks || []).map((q) => ({ ...q, l: q.l - ox, r: q.r - ox, t: q.t - oy, b: q.b - oy })),
+      view,
+    })
   }
 
   // dragging the typical strip: capture on the svg, report the math coordinate to the shell
@@ -235,7 +304,9 @@ export function makeSvgGraph(host, { renderLabel, onDrag }) {
     engine: 'svg',
     apply(next) {
       const changedAxes = JSON.stringify(spec.axes) !== JSON.stringify(next.axes)
-      spec = { items: next.items || [], labels: next.labels || [], axes: next.axes }
+      const hadScene = !!spec.scene
+      spec = { items: next.items || [], labels: next.labels || [], axes: next.axes, scene: next.scene }
+      if (hadScene !== !!spec.scene) want = null
       svg.setAttribute('aria-label', next.description || 'Function graph')
       if (changedAxes || JSON.stringify(next.bounds) !== JSON.stringify(want)) {
         want = next.bounds

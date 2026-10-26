@@ -136,9 +136,21 @@ function answerLines(lines) {
   return result.join('')
 }
 
+// ---------- recap cards: a scene with cards and no prompts shows knowledge that follows the controls
+function cardsHtml(sc) {
+  const cards = sc.cards(ctx()) || []
+  return `<h2 class="col-h">${sc.cardsTitle || 'Key ideas'}</h2>${cards
+    .map((c) => `<article class="rc${c.tone ? ' rc-' + c.tone : ''}"><h3>${md(c.title, { wrap: true })}</h3>${(c.lines || [])
+      .map((l) => `<p>${md(l, { wrap: true })}</p>`)
+      .join('')}${c.html || ''}</article>`)
+    .join('')}<p class="hint">Change the controls: the cards follow what is on the graph.</p>`
+}
+
 // ---------- questions column
 function renderQA() {
   const sc = scene()
+  if (sc.cards && !(sc.prompts || []).length) { setHTML($('qa'), cardsHtml(sc)); $('qa').classList.add('recap'); return }
+  $('qa').classList.remove('recap')
   const html = (sc.prompts || [])
     .map((p, i) => {
       const shown = S.revealed.has(p.id)
@@ -175,7 +187,8 @@ function renderControls() {
           .map(([val, txt]) => `<button type="button" data-seg="${id}" data-val="${val}" aria-pressed="${val === v}">${txt}</button>`)
           .join('')}</div></div>`
       }
-      return `<div class="ctl"><label for="r-${id}"><span>${p.label}</span><output id="o-${id}"></output></label>
+      const play = p.play ? `<button type="button" class="play-btn" data-play="${id}" aria-label="Play ${p.label}" aria-pressed="${S.playing === id}">${S.playing === id ? '❚❚' : '▶'}</button>` : ''
+      return `<div class="ctl"><label for="r-${id}"><span class="lab-l">${play}${p.label}</span><output id="o-${id}"></output></label>
         <input type="range" id="r-${id}" data-range="${id}" min="${p.min}" max="${p.max}" step="${p.step}" value="${v}" class="${p.sel ? 'sel' : ''}"></div>`
     })
     .join('')
@@ -261,6 +274,7 @@ function update({ full = false } = {}) {
       renderControls()
     } else {
       syncControls()
+      if (scene().cards) renderQA()
     }
     renderGraph()
     if (S.open) renderPanel()
@@ -271,6 +285,7 @@ function update({ full = false } = {}) {
 function openLesson(k, { push = true } = {}) {
   const next = byKey.get(k) || MAIN[MAIN.length - 1] || LESSONS[LESSONS.length - 1]
   if (!next) return
+  cancelAnimationFrame(playRaf)
   L = next
   S = freshState(L)
   if (graph) graph.clear()
@@ -283,9 +298,37 @@ function openLesson(k, { push = true } = {}) {
   update({ full: true })
 }
 
+// ---------- play: a slider with play: { seconds } runs from its current value to its maximum
+let playRaf = 0
+function stopPlay() {
+  cancelAnimationFrame(playRaf)
+  if (S && S.playing) { S.playing = null; update({ full: true }) }
+}
+function startPlay(id) {
+  const p = L.params[id]
+  if (S.playing === id) { stopPlay(); return }
+  cancelAnimationFrame(playRaf)
+  if (S.values[id] >= p.max) S.values[id] = p.min
+  S.playing = id
+  update({ full: true })
+  const rate = (p.max - p.min) / ((p.play.seconds || 10) * 1000)
+  let last = performance.now()
+  const tick = (now) => {
+    if (S.playing !== id) return
+    const v = Math.min(p.max, S.values[id] + rate * (now - last))
+    last = now
+    S.values[id] = +v.toFixed(6)
+    if (v >= p.max) { S.playing = null; update({ full: true }); return }
+    update()
+    playRaf = requestAnimationFrame(tick)
+  }
+  playRaf = requestAnimationFrame(tick)
+}
+
 function goScene(i) {
   const n = Math.max(0, Math.min(L.scenes.length - 1, i))
   if (n === S.scene) return
+  stopPlay()
   S.scene = n
   update({ full: true })
 }
@@ -341,6 +384,7 @@ document.addEventListener('click', (e) => {
     if (!S.revealed.has(t.dataset.choose)) { S.chosen[t.dataset.choose] = +t.dataset.j; update({ full: true }) }
     return
   }
+  if (t.dataset.play) { startPlay(t.dataset.play); return }
   if (t.dataset.seg) { S.values[t.dataset.seg] = t.dataset.val; update({ full: true }); return }
   if (t.dataset.show) { S.show = t.dataset.show; renderPanel(); return }
   if (t.id === 'pclose') { setOpen(false); return }
@@ -352,6 +396,7 @@ document.addEventListener('click', (e) => {
 document.addEventListener('input', (e) => {
   const id = e.target.dataset?.range
   if (!id) return
+  if (S.playing === id) { cancelAnimationFrame(playRaf); S.playing = null }
   S.values[id] = +e.target.value
   update()
 })
