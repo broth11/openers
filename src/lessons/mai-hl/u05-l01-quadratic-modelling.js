@@ -110,7 +110,7 @@ export default {
       working: ({ shown }) => ({ blocks: [
         ['Given', 'h_A(0)&=2\\\\\\text{Vertex}&=(0.6,3.8)'],
         ...(shown('a-form') ? [['Vertex form', 'h_A(t)&=a(t-0.6)^2+3.8']] : []),
-        ...(shown('a-model') ? [['Substitute', '2&=0.36a+3.8'], ['Solve', 'a&=\\frac{2-3.8}{0.36}\\\\&=-5'], ['Model', 'h_A(t)&=-5(t-0.6)^2\\\\&\\quad+3.8', true]] : []),
+        ...(shown('a-model') ? [['Substitute', '2&=0.36a+3.8'], ['Solve', 'a&=\\frac{2-3.8}{0.36}\\\\&=-5'], ['Model', 'h_A(t)&=-5(t-0.6)^2+3.8', true]] : []),
       ], note: 'Vertex information fixes the horizontal and vertical shifts. One other point fixes the remaining coefficient.' }),
       keys: ({ shown }) => shown('a-model') ? modelKeys('A', '−5(x−0.6)²+3.8', '0.6', '3.8') : noKeys,
     },
