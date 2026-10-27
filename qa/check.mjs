@@ -31,10 +31,45 @@ for (const [w, h] of sizes) {
   const stability = []
   for (let s = 0; s < n; s++) {
     if (await page.locator(`#stepper [data-scene="${s}"]`).count()) { await page.click(`#stepper [data-scene="${s}"]`); await page.waitForTimeout(150) }
+    // Stepped scenes: walk every beat so each posed question is exercised, ending on the last beat
+    // (all questions posed). The panel pass below then steps each one's working to its tallest state.
+    const lastDot = page.locator('#beatBar .beat-dot').last()
+    if (await page.locator('#beatBar .beat-dot').count() > 1) {
+      if (await lastDot.isVisible()) { await lastDot.click(); await page.waitForTimeout(200) }
+      else { for (let b = 1; b < await page.locator('#beatBar .beat-dot').count(); b++) await page.keyboard.press('ArrowRight'); await page.waitForTimeout(200) }
+    }
     for (const panel of [false, true]) {
       // a scene without working or calculator steps hides its Working button: nothing to open
       if (panel && !(await page.locator('#workBtn').isVisible())) continue
-      if (panel) { await page.click('#workBtn'); await page.waitForTimeout(600) } else {
+      if (panel) {
+        await page.click('#workBtn'); await page.waitForTimeout(600)
+        // Stepped panel: for each posed question, step its working fully out (tallest state) and
+        // check overflow/scroll there, which is where a stepped scene is most at risk.
+        const picks = await page.locator('.qsel button').count()
+        const nq = Math.max(1, picks)
+        for (let qi = 0; qi < nq; qi++) {
+          if (picks && await page.locator('.qsel button').nth(qi).isVisible()) { await page.locator('.qsel button').nth(qi).click(); await page.waitForTimeout(120) }
+          let guard = 0
+          while (await page.locator('.step-btn[data-wstep="1"]:not([disabled])').count() && await page.locator('.step-btn[data-wstep="1"]').isVisible() && guard++ < 20) {
+            await page.locator('.step-btn[data-wstep="1"]').click(); await page.waitForTimeout(90)
+          }
+          if (await page.locator('.step-btn').count()) {
+            const sm = await page.evaluate(() => {
+              const pnl = document.querySelector('.pnl')
+              const body = document.querySelector('.pbody')
+              return {
+                panelHScroll: pnl.scrollWidth > pnl.clientWidth + 1,
+                panelScrolls: pnl.scrollHeight > pnl.clientHeight + 2,
+                bodyScrolls: body ? body.scrollHeight > body.clientHeight + 2 : false,
+                workingOverflow: [...document.querySelectorAll('.work-equation')].filter((n) => n.scrollWidth > n.clientWidth + 1).length,
+              }
+            })
+            const sbad = sm.panelHScroll || sm.panelScrolls || sm.workingOverflow
+            if (sbad) failures++
+            console.log(JSON.stringify({ size: `${w}x${h}`, scene: s + 1, steppedQ: qi + 1, ok: !sbad, ...sm }))
+          }
+        }
+      } else {
         if (await page.locator('.choices button').count()) { await page.locator('.choices button').first().click(); await page.waitForTimeout(60) }
         while (await page.locator('.reveal').count()) { await page.locator('.reveal').first().click(); await page.waitForTimeout(60) }
         // nothing moves when a slider moves (rule from aasl-online-lesson-deck): sweep each slider
@@ -61,8 +96,15 @@ for (const [w, h] of sizes) {
           return Math.round(worst * 10) / 10
         })
         stability.push({ scene: s + 1, moved })
+        // Click each segmented control. A toggle (for example Factored/Standard) can change which
+        // controls show, so re-read the live count each step and skip indices that no longer exist.
         const segs = await page.locator('.controls .seg button').count()
-        for (let i = segs - 1; i >= 0; i--) { await page.locator('.controls .seg button').nth(i).click(); await page.waitForTimeout(100) }
+        for (let i = segs - 1; i >= 0; i--) {
+          const btns = page.locator('.controls .seg button')
+          if (i >= await btns.count()) continue
+          const b = btns.nth(i)
+          if (await b.isVisible().catch(() => false)) { await b.click().catch(() => {}); await page.waitForTimeout(100) }
+        }
       }
       const m = await page.evaluate(() => {
         const de = document.documentElement
@@ -84,7 +126,11 @@ for (const [w, h] of sizes) {
       if (bad) failures++
       console.log(JSON.stringify({ size: `${w}x${h}`, scene: s + 1, panel, ok: !bad, ...m }))
       await page.screenshot({ path: new URL(`${w}x${h}-s${s + 1}${panel ? '-panel' : ''}.png`, outDir).pathname })
-      if (panel) { await page.click('#pclose'); await page.waitForTimeout(500) }
+      if (panel) {
+        if (await page.locator('#pclose').isVisible()) await page.click('#pclose')
+        else await page.keyboard.press('Escape')
+        await page.waitForTimeout(500)
+      }
     }
   }
   if (errs.length) { failures++; console.log(JSON.stringify({ size: `${w}x${h}`, pageErrors: errs })) }

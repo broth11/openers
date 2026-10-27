@@ -201,6 +201,46 @@ input.sel::-moz-range-thumb { border-color: #e8890c; }
 .out-line { margin: 0; font-size: clamp(14px, 2vh, 17px); color: var(--muted); }
 .out { font-family: var(--f-mono); font-weight: 700; font-size: 1.1em; color: var(--ink); }
 
+/* ---------- stepped model: beat bar, posed-question cards, question selector, step controls */
+/* Beat ticker under the heading: one dot per beat, filled up to the current one. */
+.beat-bar { display: flex; gap: 6px; align-items: center; margin: 4px 0 2px; flex: none; }
+.beat-dot { width: 11px; height: 11px; border-radius: 50%; border: 2px solid var(--line); background: var(--surface); padding: 0; flex: none; }
+.beat-dot.past { background: color-mix(in srgb, var(--acc) 40%, transparent); border-color: var(--acc); }
+.beat-dot.on { background: var(--acc); border-color: var(--acc); box-shadow: 0 0 0 3px var(--acc-soft); }
+
+/* A posed question that carries working is selectable; the active one is marked. */
+.q.posed { padding: 2px; border-radius: 12px; }
+.q.posed[data-pick] { cursor: pointer; }
+.q.posed[data-pick]:hover { background: var(--acc-soft); }
+.q.posed.sel { background: var(--acc-soft); box-shadow: inset 0 0 0 2px var(--acc); }
+.q-open { margin: 2px 0 0; font-size: clamp(11px, 1.5vh, 13px); font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--acc); }
+
+/* The working pane keeps its step controls pinned at the foot so they never need scrolling to. */
+.page.panel-open .pnl { display: flex; flex-direction: column; }
+.pnl .pbody { flex: 1 1 auto; min-height: 0; overflow-y: auto; overflow-x: hidden; }
+.ptitle { font-size: clamp(13px, 1.9vh, 16px); font-weight: 700; color: var(--ink); }
+
+/* Question selector chips: one per posed question with working. */
+.qsel { display: flex; flex-wrap: wrap; gap: 6px; flex: none; }
+.qsel button { border: 2px solid var(--line); background: var(--surface); color: var(--muted); border-radius: 999px; padding: 2px 12px; font-weight: 700; font-size: clamp(12px, 1.7vh, 14px); }
+.qsel button:hover { border-color: var(--acc); }
+.qsel button.on { border-color: var(--acc); background: var(--acc); color: #fff; }
+
+/* The current step gets a soft rule so the eye lands on what just appeared. */
+.work-block.current { animation: stepIn 0.2s ease; }
+.work-block.current .work-equation { box-shadow: -3px 0 0 var(--acc); padding-left: 8px; }
+@keyframes stepIn { from { opacity: 0.2; } to { opacity: 1; } }
+
+/* Next / Back row, pinned at the panel foot. */
+.step-nav { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding-top: clamp(8px, 1.4vh, 14px); margin-top: auto; border-top: 2px solid var(--line); }
+.step-btn { border: 2px solid var(--acc); background: var(--surface); color: var(--acc); border-radius: 10px; padding: 4px 14px; font-weight: 700; font-size: clamp(13px, 1.8vh, 16px); }
+.step-btn:hover:not(:disabled) { background: var(--acc); color: #fff; }
+.step-btn:disabled { opacity: 0.4; border-color: var(--line); color: var(--muted); }
+.step-count { font-family: var(--f-mono); font-weight: 700; font-size: clamp(13px, 1.8vh, 16px); color: var(--muted); font-variant-numeric: tabular-nums; }
+
+/* The 'stepped' tag in the menu. */
+.pnav-menu .tag { margin-left: auto; padding-left: 10px; font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--sel-ink); }
+
 /* ---------- lesson menu (upper left) */
 .pnav { position: relative; flex: none; }
 .pnav summary {

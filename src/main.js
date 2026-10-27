@@ -20,7 +20,11 @@ import { COURSES, EXPLORERS } from './lessons/courses.js'
 const $ = (id) => document.getElementById(id)
 const infoBoard = makeInfoBoard($('graph'), md)
 const pad = (n) => String(n).padStart(2, '0')
-const baseKey = (L) => `${L.course}-u${pad(L.unit)}-l${pad(L.lesson)}`
+// A lesson's identity in the menu. `tag` (for example 'stepped') makes a second, independent menu
+// entry for the same unit and lesson: its own deep link (#mai-hl-u05-l02-stepped) and its own card,
+// so a reworked lesson can sit beside the original for comparison without touching it. A `variant`
+// is still the same lesson drawn another way, chosen by the header toggle and hidden from the menu.
+const baseKey = (L) => `${L.course}-u${pad(L.unit)}-l${pad(L.lesson)}` + (L.tag ? `-${L.tag}` : '')
 const keyOf = (L) => baseKey(L) + (L.variant ? `-${L.variant}` : '')
 
 // ---------- registry
@@ -30,8 +34,8 @@ const ONLY = import.meta.env.VITE_LESSON || ''
 const LESSONS = Object.values(modules)
   .map((m) => m.default)
   .filter((L) => L && L.course && L.scenes?.length)
-  .filter((L) => !ONLY || `${L.course}-u${String(L.unit).padStart(2, '0')}-l${String(L.lesson).padStart(2, '0')}` === ONLY)
-  .sort((a, b) => a.course.localeCompare(b.course) || a.unit - b.unit || a.lesson - b.lesson || (a.variant ? 1 : 0) - (b.variant ? 1 : 0))
+  .filter((L) => !ONLY || baseKey(L) === ONLY)
+  .sort((a, b) => a.course.localeCompare(b.course) || a.unit - b.unit || a.lesson - b.lesson || (a.tag ? 1 : 0) - (b.tag ? 1 : 0) || (a.variant ? 1 : 0) - (b.variant ? 1 : 0))
 const byKey = new Map(LESSONS.map((L) => [keyOf(L), L]))
 // A variant (for example an SVG version) is the same lesson drawn another way; the default is the plain version.
 const MAIN = LESSONS.filter((x) => !x.variant)
@@ -56,14 +60,90 @@ let raf = 0
 function freshState(lesson) {
   const values = {}
   for (const [k, p] of Object.entries(lesson.params || {})) values[k] = p.value
-  return { scene: 0, values, revealed: new Set(), chosen: {}, open: false, show: 'work' }
+  return {
+    scene: 0, values, revealed: new Set(), chosen: {}, open: false, show: 'work',
+    // ---- stepped model (scenes with a `beats` array)
+    // beat: index into the scene's beats, advanced with the stepper arrows just like old scenes.
+    // step: per posed-question cumulative step position, keyed `${sceneIndex}:${questionId}`.
+    // pick: which posed question the working pane is currently showing, per scene.
+    beat: 0, step: {}, pick: {},
+  }
 }
 
-const ctx = () => ({ v: S.values, shown: (id) => S.revealed.has(id) })
+// A scene is "stepped" when it declares a beats array. Old scenes (prompts + shown reveals) keep
+// their exact behaviour; the shell branches on this one flag.
+const isStepped = (sc) => Array.isArray(sc.beats)
+
+// For stepped scenes, `shown(id)` means "this question has been posed by a beat at or before the
+// current beat", so graph/readout code reads the same `shown` it always did. `beat` is the current
+// beat index. Old scenes never see `beat` and keep using `shown` as a reveal flag.
+function ctx() {
+  const sc = L.scenes[S.scene]
+  if (isStepped(sc)) {
+    const posed = posedSet(sc, S.beat)
+    return { v: S.values, beat: S.beat, shown: (id) => posed.has(id), posed }
+  }
+  return { v: S.values, shown: (id) => S.revealed.has(id) }
+}
 const scene = () => L.scenes[S.scene]
-// A scene with no working and no calculator steps has no panel: its Working button is hidden.
-const hasPanel = (sc) => !!(sc.working || sc.keys)
+
+// The questions a scene's beats pose at or before beat index b, in beat order.
+function posedList(sc, b) {
+  const out = []
+  sc.beats.forEach((beat, i) => { if (i <= b && beat.poses) out.push(beat.poses) })
+  return out
+}
+function posedSet(sc, b) { return new Set(posedList(sc, b)) }
+const promptById = (sc, id) => (sc.prompts || []).find((p) => p.id === id)
+const stepKey = (id) => `${S.scene}:${id}`
+// The ordered working steps for a posed question: prompt.steps = [{ caption, latex, answer, cue }]
+const stepsFor = (sc, id) => (promptById(sc, id)?.steps || [])
+
+// A scene with no working and no calculator steps has no panel. A stepped scene has a panel once a
+// beat has posed a question that carries steps or keys.
+function hasPanel(sc) {
+  if (isStepped(sc)) {
+    const posed = posedList(sc, S.beat)
+    return posed.some((id) => { const p = promptById(sc, id); return p && (p.steps?.length || p.keys) })
+  }
+  return !!(sc.working || sc.keys)
+}
 const controlsOf = (sc) => (typeof sc.controls === 'function' ? sc.controls(ctx()) : sc.controls || [])
+
+// The posed question the working pane shows. Defaults to the latest posed question for the scene.
+function activePick(sc) {
+  const posed = posedList(sc, S.beat).filter((id) => { const p = promptById(sc, id); return p && (p.steps?.length || p.keys) })
+  if (!posed.length) return null
+  const want = S.pick[S.scene]
+  return posed.includes(want) ? want : posed[posed.length - 1]
+}
+
+// How many steps of the active question are revealed (cumulative). 0 means nothing stepped yet.
+const stepPos = (id) => S.step[stepKey(id)] || 0
+// Advance or reverse the active question's working by one step. Cumulative: position N shows 1..N.
+function stepWorking(dir) {
+  const sc = scene()
+  const id = activePick(sc)
+  if (!id) return
+  const total = stepsFor(sc, id).length
+  const k = stepKey(id)
+  const n = Math.max(0, Math.min(total, (S.step[k] || 0) + dir))
+  if (n === (S.step[k] || 0)) return
+  S.step[k] = n
+  renderPanel()
+  renderGraph() // the active step may carry a graph cue
+}
+// The graph cue of the active question's current step, if any (merged into the beat's graph spec).
+function activeCue() {
+  const sc = scene()
+  if (!isStepped(sc) || S.show !== 'work') return null
+  const id = activePick(sc)
+  if (!id) return null
+  const pos = stepPos(id)
+  if (!pos) return null
+  const step = stepsFor(sc, id)[pos - 1]
+  return step && step.cue ? step.cue(ctx()) : null
+}
 
 // ---------- menu
 function renderMenu() {
@@ -78,10 +158,11 @@ function renderMenu() {
       for (const x of ls.filter((y) => y.unit === u)) {
         const k = keyOf(x)
         const cur = L && baseKey(L) === baseKey(x)
+        const tag = x.tag ? `<span class="tag">${x.tagLabel || x.tag}</span>` : ''
         parts.push(
           cur
-            ? `<span class="cur" aria-current="page"><span class="ln">L${x.lesson}</span>${x.title}</span>`
-            : `<a href="#${k}" data-lesson="${k}"><span class="ln">L${x.lesson}</span>${x.title}</a>`,
+            ? `<span class="cur" aria-current="page"><span class="ln">L${x.lesson}</span>${x.title}${tag}</span>`
+            : `<a href="#${k}" data-lesson="${k}"><span class="ln">L${x.lesson}</span>${x.title}${tag}</a>`,
         )
       }
     }
@@ -114,10 +195,24 @@ function renderHeader() {
     const btns = L.scenes
       .map((sc, i) => `<button type="button" data-scene="${i}" aria-pressed="${i === S.scene}"><span class="sn">${i + 1}</span><span class="st">${sc.short}</span></button>`)
       .join('')
+    // Arrows advance a beat (stepped scenes) or a scene (old scenes), rolling over at the ends.
+    const atStart = S.scene === 0 && (!isStepped(scene()) || S.beat === 0)
+    const atEnd = S.scene === L.scenes.length - 1 && (!isStepped(scene()) || S.beat === scene().beats.length - 1)
     setHTML(
       $('stepper'),
-      `<button type="button" class="arrow" data-step="-1" aria-label="Previous scene" ${S.scene === 0 ? 'disabled' : ''}>‹</button>${btns}<button type="button" class="arrow" data-step="1" aria-label="Next scene" ${S.scene === L.scenes.length - 1 ? 'disabled' : ''}>›</button>`,
+      `<button type="button" class="arrow" data-adv="-1" aria-label="Back" ${atStart ? 'disabled' : ''}>‹</button>${btns}<button type="button" class="arrow" data-adv="1" aria-label="Next" ${atEnd ? 'disabled' : ''}>›</button>`,
     )
+  }
+  // A beat ticker under the heading, only on stepped scenes with more than one beat.
+  const sc = scene()
+  const bt = $('beatBar')
+  if (bt) {
+    if (isStepped(sc) && sc.beats.length > 1) {
+      bt.hidden = false
+      setHTML(bt, sc.beats.map((_, i) => `<button type="button" class="beat-dot${i === S.beat ? ' on' : ''}${i < S.beat ? ' past' : ''}" data-beat="${i}" aria-label="Beat ${i + 1}" aria-pressed="${i === S.beat}"></button>`).join(''))
+    } else {
+      bt.hidden = true
+    }
   }
 }
 
@@ -155,6 +250,7 @@ function renderQA() {
   const sc = scene()
   if (sc.cards && !(sc.prompts || []).length) { setHTML($('qa'), cardsHtml(sc)); $('qa').classList.add('recap'); return }
   $('qa').classList.remove('recap')
+  if (isStepped(sc)) { renderSteppedQA(sc); return }
   const html = (sc.prompts || [])
     .map((p, i) => {
       const shown = S.revealed.has(p.id)
@@ -177,6 +273,41 @@ function renderQA() {
     })
     .join('')
   setHTML($('qa'), `<h2 class="col-h">Questions</h2>${html}<p class="hint">Write your answer first, then reveal.</p>`)
+}
+
+// Stepped scenes: the left pane poses the questions and never shows answers. Only questions the
+// animation has reached (posed by a beat at or before the current beat) appear. A posed question
+// with working is selectable; clicking it points the working pane at it.
+function renderSteppedQA(sc) {
+  const posed = posedList(sc, S.beat)
+  const active = activePick(sc)
+  const html = posed
+    .map((id) => {
+      const p = promptById(sc, id)
+      if (!p) return ''
+      const n = (sc.prompts || []).indexOf(p) + 1
+      const chosen = S.chosen[p.id]
+      const choices = p.choices
+        ? `<div class="choices" role="group" aria-label="Prediction">${p.choices
+            .map((c, j) => `<button type="button" class="${j === chosen ? 'picked' : ''}" data-choose="${p.id}" data-j="${j}" aria-pressed="${j === chosen}">${md(c, { wrap: true })}</button>`)
+            .join('')}</div>`
+        : ''
+      const workable = !!(p.steps?.length || p.keys)
+      const sel = workable && p.id === active ? ' sel' : ''
+      const openAttr = workable ? ` data-pick="${p.id}" role="button" tabindex="0"` : ''
+      const cue = workable ? `<p class="q-open">${p.id === active && S.open ? 'Working here →' : 'Open working'}</p>` : ''
+      return `<article class="q posed${sel}" data-prompt="${p.id}"${openAttr}>
+        <div class="qn">${n}</div>
+        <div class="qb">
+          <p class="qq">${md(p.q, { wrap: true })}</p>${choices}${cue}
+        </div>
+      </article>`
+    })
+    .join('')
+  const hint = posed.length
+    ? '<p class="hint">Step the scene to pose each question. Open its working on the right.</p>'
+    : '<p class="hint">Step the scene to begin.</p>'
+  setHTML($('qa'), `<h2 class="col-h">Questions</h2>${html}${hint}`)
 }
 
 // ---------- controls
@@ -216,6 +347,7 @@ function syncControls() {
 // ---------- working panel
 function renderPanel() {
   const sc = scene()
+  if (isStepped(sc)) { renderSteppedPanel(sc); return }
   const w = sc.working ? sc.working(ctx()) : null
   const k = sc.keys ? sc.keys(ctx()) : null
   const rows = w?.blocks
@@ -245,6 +377,77 @@ function renderPanel() {
   )
 }
 
+// Stepped scenes: one posed question at a time, its working stepped cumulatively with Next/Back,
+// the Working/Casio toggle scoped to that question.
+function renderSteppedPanel(sc) {
+  const posed = posedList(sc, S.beat).filter((id) => { const p = promptById(sc, id); return p && (p.steps?.length || p.keys) })
+  const active = activePick(sc)
+  if (!active) {
+    setHTML($('pnl'), `<div class="phead"><span class="ptitle">Working</span><button type="button" class="pclose" id="pclose" aria-label="Close panel">×</button></div><div class="pbody"><p class="note">Step the scene to pose a question, then its working opens here.</p></div>`)
+    return
+  }
+  const p = promptById(sc, active)
+  const steps = stepsFor(sc, active)
+  const pos = stepPos(active)
+  const hasWork = steps.length > 0
+  const hasKeys = !!p.keys
+  // The toggle shows only the views this question has. Fall back to whichever it has.
+  let show = S.show
+  if (show === 'work' && !hasWork) show = 'calc'
+  if (show === 'calc' && !hasKeys) show = 'work'
+
+  // Question selector: one chip per posed workable question. The active one is pressed.
+  const selector = posed.length > 1
+    ? `<div class="qsel" role="group" aria-label="Question">${posed.map((id) => {
+        const n = (sc.prompts || []).indexOf(promptById(sc, id)) + 1
+        return `<button type="button" data-pick="${id}" aria-pressed="${id === active}" class="${id === active ? 'on' : ''}">Q${n}</button>`
+      }).join('')}</div>`
+    : ''
+
+  const toggle = hasWork && hasKeys
+    ? `<div class="seg sm" role="group" aria-label="Panel view">
+        <button type="button" data-show="work" aria-pressed="${show === 'work'}">Working</button>
+        <button type="button" data-show="calc" aria-pressed="${show === 'calc'}">Casio fx-CG50</button>
+      </div>`
+    : `<span class="ptitle">${show === 'calc' ? 'Casio fx-CG50' : 'Working'}</span>`
+
+  let body
+  if (show === 'work') {
+    const shownSteps = steps.slice(0, pos)
+    const blocks = shownSteps.length
+      ? `<div class="display-working">${shownSteps.map((st, i) => `<section class="work-block${st.answer ? ' answer' : ''}${i === pos - 1 ? ' current' : ''}">
+          ${st.caption ? `<h3>${md(st.caption, { wrap: true })}</h3>` : ''}
+          ${st.latex ? `<div class="work-equation">${tex(`\\begin{aligned}${st.latex}\\end{aligned}`, true)}</div>` : ''}
+          ${st.note ? `<p class="note">${md(st.note, { wrap: true })}</p>` : ''}
+        </section>`).join('')}</div>`
+      : `<p class="note">Press Next to work through it one step at a time.</p>`
+    const controls = `<div class="step-nav">
+        <button type="button" class="step-btn" data-wstep="-1" ${pos === 0 ? 'disabled' : ''} aria-label="Back one step">‹ Back</button>
+        <span class="step-count">${pos} / ${steps.length}</span>
+        <button type="button" class="step-btn" data-wstep="1" ${pos >= steps.length ? 'disabled' : ''} aria-label="Next step">Next ›</button>
+      </div>`
+    body = `${blocks}${controls}`
+  } else {
+    const k = typeof p.keys === 'function' ? p.keys(ctx()) : p.keys
+    body = k
+      ? `${(k.sections || [{ steps: k.steps }]).map((sec) => `<section class="goal-block">
+           ${sec.goal ? `<h3 class="goal">${md(sec.goal, { wrap: true })}</h3>` : ''}
+           <ol class="casio">${sec.steps.map((s) => `<li><span>${md(s, { wrap: true })}</span></li>`).join('')}</ol>
+         </section>`).join('')}
+         ${k.out ? `<p class="out-line">Display <span class="out">${k.out}</span></p>` : ''}
+         ${k.watch ? `<p class="watch"><b>Watch out.</b> ${md(k.watch, { wrap: true })}</p>` : ''}`
+      : '<p class="note">No calculator steps for this question.</p>'
+  }
+
+  setHTML(
+    $('pnl'),
+    `<div class="phead">${toggle}<button type="button" class="pclose" id="pclose" aria-label="Close panel">×</button></div>
+     ${selector}
+     <div class="pbody">${body}</div>`,
+  )
+  if (S.show !== show) S.show = show
+}
+
 function setOpen(open) {
   S.open = open
   if (open) renderPanel()
@@ -260,7 +463,16 @@ function renderGraph() {
   setHTML($('heading'), md(sc.heading || ''))
   setHTML($('readout'), sc.readout ? md(sc.readout(ctx())) : '')
   infoBoard.apply(sc.board ? sc.board(ctx()) : null)
-  if (graph && sc.graph) graph.apply(sc.graph(ctx()))
+  if (graph && sc.graph) {
+    const spec = sc.graph(ctx())
+    // A stepped scene's active working step may add a transient cue (extra items and labels).
+    const cue = activeCue()
+    if (cue && spec) {
+      if (cue.items) spec.items = [...(spec.items || []), ...cue.items]
+      if (cue.labels) spec.labels = [...(spec.labels || []), ...cue.labels]
+    }
+    graph.apply(spec)
+  }
 }
 
 // Batch updates into one frame. A full render requested earlier in the frame is never dropped.
@@ -334,7 +546,37 @@ function goScene(i) {
   if (n === S.scene) return
   stopPlay()
   S.scene = n
+  S.beat = 0
   update({ full: true })
+}
+
+// One beat within a stepped scene; clamps to the scene's beats.
+function goBeat(i) {
+  const sc = scene()
+  if (!isStepped(sc)) return
+  const n = Math.max(0, Math.min(sc.beats.length - 1, i))
+  if (n === S.beat) return
+  stopPlay()
+  S.beat = n
+  update({ full: true })
+}
+
+// The ‹ › arrows and the Left/Right keys. On a stepped scene they walk beats and roll into the next
+// or previous scene at the ends; on an old scene they walk scenes, exactly as before.
+function advance(dir) {
+  const sc = scene()
+  if (isStepped(sc)) {
+    const next = S.beat + dir
+    if (next >= 0 && next < sc.beats.length) { goBeat(next); return }
+    const ns = S.scene + dir
+    if (ns < 0 || ns >= L.scenes.length) return
+    stopPlay()
+    S.scene = ns
+    S.beat = dir > 0 ? 0 : (isStepped(L.scenes[ns]) ? L.scenes[ns].beats.length - 1 : 0)
+    update({ full: true })
+    return
+  }
+  goScene(S.scene + dir)
 }
 
 // Same lesson, other engine: keep the scene, values, reveals, and predictions.
@@ -377,15 +619,27 @@ function ensureGraph() {
 
 // ---------- events
 document.addEventListener('click', (e) => {
+  // A posed-question card (not a button) selects itself in the working pane.
+  const card = e.target.closest('[data-pick]')
+  if (card && !e.target.closest('button, a')) {
+    S.pick[S.scene] = card.dataset.pick
+    if (!S.open) setOpen(true)
+    update({ full: true })
+    return
+  }
   const t = e.target.closest('button, a')
   if (!t) return
   if (t.dataset.lesson) { e.preventDefault(); openLesson(t.dataset.lesson); return }
   if (t.dataset.variant) { switchVariant(t.dataset.variant); return }
   if (t.dataset.scene) { goScene(+t.dataset.scene); return }
-  if (t.dataset.step) { goScene(S.scene + +t.dataset.step); return }
+  if (t.dataset.adv) { advance(+t.dataset.adv); return }
+  if (t.dataset.beat) { goBeat(+t.dataset.beat); return }
+  if (t.dataset.step) { goScene(S.scene + +t.dataset.step); return } // old scenes (no beats)
   if (t.dataset.reveal) { S.revealed.add(t.dataset.reveal); update({ full: true }); return }
+  if (t.dataset.pick) { S.pick[S.scene] = t.dataset.pick; renderPanel(); renderGraph(); return }
+  if (t.dataset.wstep) { stepWorking(+t.dataset.wstep); return }
   if (t.dataset.choose) {
-    if (!S.revealed.has(t.dataset.choose)) { S.chosen[t.dataset.choose] = +t.dataset.j; update({ full: true }) }
+    if (isStepped(scene()) || !S.revealed.has(t.dataset.choose)) { S.chosen[t.dataset.choose] = +t.dataset.j; update({ full: true }) }
     return
   }
   if (t.dataset.play) { startPlay(t.dataset.play); return }
@@ -428,9 +682,12 @@ document.addEventListener('keydown', (e) => {
   const k = e.key.toLowerCase()
   if (k === 'w') { if (hasPanel(scene())) setOpen(!S.open) }
   else if (k === 'f') toggleFs()
-  else if (e.key === 'ArrowRight' || e.key === 'PageDown') goScene(S.scene + 1)
-  else if (e.key === 'ArrowLeft' || e.key === 'PageUp') goScene(S.scene - 1)
-  else if (k === 'r') {
+  else if (e.key === 'ArrowRight' || e.key === 'PageDown') advance(1)
+  else if (e.key === 'ArrowLeft' || e.key === 'PageUp') advance(-1)
+  else if (isStepped(scene())) {
+    // Stepped scenes: S steps the working forward, Shift+S back (if the panel is open on a question).
+    if (k === 's') { if (!S.open && hasPanel(scene())) setOpen(true); stepWorking(e.shiftKey ? -1 : 1) }
+  } else if (k === 'r') {
     const p = (scene().prompts || []).find((q) => !S.revealed.has(q.id))
     if (p) { S.revealed.add(p.id); update({ full: true }) }
   }
