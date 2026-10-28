@@ -33,10 +33,27 @@ for (const [w, h] of sizes) {
     if (await page.locator(`#stepper [data-scene="${s}"]`).count()) { await page.click(`#stepper [data-scene="${s}"]`); await page.waitForTimeout(150) }
     // Stepped scenes: walk every beat so each posed question is exercised, ending on the last beat
     // (all questions posed). The panel pass below then steps each one's working to its tallest state.
-    const lastDot = page.locator('#beatBar .beat-dot').last()
-    if (await page.locator('#beatBar .beat-dot').count() > 1) {
+    const stepped = await page.locator('#beatBar:not([hidden]) .beat-dot').count() > 1
+    if (stepped) {
+      const lastDot = page.locator('#beatBar .beat-dot').last()
       if (await lastDot.isVisible()) { await lastDot.click(); await page.waitForTimeout(200) }
       else { for (let b = 1; b < await page.locator('#beatBar .beat-dot').count(); b++) await page.keyboard.press('ArrowRight'); await page.waitForTimeout(200) }
+    }
+    // Reveal discipline: with every question posed but NO working stepped yet, no model equation
+    // (a function label carries an "=" / "≈") may be on the graph, and no answer value may be in the
+    // readout. Answers must wait for the working step that derives them, never appear on posing.
+    if (stepped) {
+      const leak = await page.evaluate(() => {
+        const eqLabels = [...document.querySelectorAll('.dl:not([hidden])')]
+          .map((n) => n.textContent.trim())
+          .filter((t) => /[=≈]/.test(t))
+        const readout = document.querySelector('#readout')?.textContent || ''
+        const readoutLeak = /[=≈]\s*-?\d/.test(readout.replace(/t\s*=|d\s*=/g, '')) // a computed value, not "t ="
+        return { eqLabels, readoutLeak, readout: readout.slice(0, 80) }
+      })
+      const bad = leak.eqLabels.length > 0 || leak.readoutLeak
+      if (bad) failures++
+      console.log(JSON.stringify({ size: `${w}x${h}`, scene: s + 1, revealDiscipline: !bad, ...(bad ? leak : {}) }))
     }
     for (const panel of [false, true]) {
       // a scene without working or calculator steps hides its Working button: nothing to open

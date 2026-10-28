@@ -18,8 +18,34 @@ The **scene animation is the master**. Each scene is a short ordered timeline of
 a beat may **pose a question** in the left pane. The left pane only ever poses questions: it shows no
 answers and has no reveal button. A posed question's answer lives entirely in the **working pane**,
 revealed one **step** at a time with Next / Back, scoped to one question at a time. A working step
-may carry a transient **graph cue**. So two things advance independently: beats (persistent, unlock
-questions) and working steps (bounded by what the beats have posed).
+may carry a transient **graph cue**, and may **reveal** a persistent graphic. So two things advance
+independently: beats (persistent, unlock questions) and working steps (bounded by what the beats
+have posed).
+
+## Reveal discipline (the rule that matters most)
+
+Posing a question must NOT reveal its answer, in the left pane, the graph, or the readout. This was
+the whole point of the rework, and it is easy to get wrong because the first cut keyed graphics on
+"posed". The rule:
+
+- **Givens show from the scene start.** The data the problem provides (given points, axes, the
+  context drawing) is on screen before any beat. "Commit before you see the answer" means before the
+  answer, not before the problem.
+- **Answers wait for the working step that derives them.** A fitted curve, a solved point, a model
+  label, and the live cursor that traces a model appear only when the working reaches the step that
+  produces them. The shell exposes `revealed(tag)` for exactly this, separate from `posed(id)`.
+- **A step reveals by naming tags.** `{ ..., reveals: ['quad'] }` on a step makes `revealed('quad')`
+  true once that step is shown; the graph gates the quadratic on it. Reveals are cumulative with the
+  step position and un-reveal when you step back.
+- **Lock the slider until its curve is revealed.** A `controls` function returns the tracing slider
+  (Clock, Distance, Growing dimension) only once the curve it would trace is revealed, so a student
+  cannot drag out the answer during the prediction phase. The readout states the setup until then
+  and never prints a computed model value early.
+- **Predictions are answers too.** The (4, 25) point a "predict the reading at 4 m" question asks
+  for is revealed by that question's own working, never when it is posed.
+
+The layout check enforces this: on every stepped scene, with all questions posed but no working
+stepped, it fails if any model equation is on the graph or any computed value is in the readout.
 
 ## What changed in the shell (`src/main.js`)
 
@@ -81,7 +107,7 @@ the original path unchanged. The whole U11 and U5-L1 set, and the original U5 L2
 ### A working step
 
 ```js
-{ caption, latex, answer, note, cue }
+{ caption, latex, answer, note, cue, reveals }
 ```
 
 - `caption` sits above the display maths (same look as the original `blocks` captions). Optional.
@@ -92,7 +118,13 @@ the original path unchanged. The whole U11 and U5-L1 set, and the original U5 L2
 - `note` wraps below the maths. Use it for the sentence of explanation, especially on a narrow panel.
 - `cue: (ctx) => ({ items?, labels? })` adds transient graph marks while this step is current. Keep
   it to a highlight (a hollow point, a guide line), not a new curve; persistent curves belong to the
-  beat via the graph function.
+  graph function gated on a reveal.
+- `reveals: ['tag', ...]` makes `revealed('tag')` true from this step onward (cumulative, and it
+  un-reveals on stepping back). This is how a persistent graphic (the fitted curve, the solved
+  point, the model label) and its tracing slider appear exactly when the working derives them. The
+  graph function reads `revealed(tag)`; givens read nothing and show from the start. Put the reveal
+  on the step that produces the thing: the "Model" step reveals the curve, the prediction's answer
+  step reveals the predicted point.
 
 ### Recap scenes are unchanged
 

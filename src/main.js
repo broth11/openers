@@ -74,18 +74,43 @@ function freshState(lesson) {
 // their exact behaviour; the shell branches on this one flag.
 const isStepped = (sc) => Array.isArray(sc.beats)
 
-// For stepped scenes, `shown(id)` means "this question has been posed by a beat at or before the
-// current beat", so graph/readout code reads the same `shown` it always did. `beat` is the current
-// beat index. Old scenes never see `beat` and keep using `shown` as a reveal flag.
+// Two separate predicates on a stepped scene:
+//   posed(id)     a beat at or before the current beat has posed this question. Unlocks the question
+//                 in the left pane and its working in the panel. Does NOT reveal any answer.
+//   revealed(tag) some posed question's working has been stepped to a step marked `reveals: [tag]`.
+//                 This is what gates graphical answers (fitted curves, solved points, model labels)
+//                 and the sliders that would trace them. Answers follow the working, never posing.
+// For back-compatibility `shown(id)` is kept as an alias of posed(id) for any code that still reads
+// it. Old (non-stepped) scenes never see beat/posed/revealed and keep shown = reveal flag.
 function ctx() {
   const sc = L.scenes[S.scene]
   if (isStepped(sc)) {
     const posed = posedSet(sc, S.beat)
-    return { v: S.values, beat: S.beat, shown: (id) => posed.has(id), posed }
+    const revealed = revealedSet(sc)
+    return {
+      v: S.values, beat: S.beat,
+      posed, shown: (id) => posed.has(id),
+      revealed: (tag) => revealed.has(tag),
+    }
   }
   return { v: S.values, shown: (id) => S.revealed.has(id) }
 }
 const scene = () => L.scenes[S.scene]
+
+// Every tag revealed so far in this scene: for each posed question, walk the steps it has been
+// stepped through and collect the `reveals` of each. A tag is revealed the moment its step is shown.
+function revealedSet(sc) {
+  const out = new Set()
+  for (const id of posedList(sc, S.beat)) {
+    const steps = stepsFor(sc, id)
+    const pos = stepPos(id)
+    for (let i = 0; i < pos && i < steps.length; i++) {
+      const r = steps[i].reveals
+      if (r) for (const tag of r) out.add(tag)
+    }
+  }
+  return out
+}
 
 // The questions a scene's beats pose at or before beat index b, in beat order.
 function posedList(sc, b) {
@@ -130,8 +155,10 @@ function stepWorking(dir) {
   const n = Math.max(0, Math.min(total, (S.step[k] || 0) + dir))
   if (n === (S.step[k] || 0)) return
   S.step[k] = n
+  // A step can reveal a graphic and unlock its slider, so controls and the readout may change too.
   renderPanel()
-  renderGraph() // the active step may carry a graph cue
+  renderControls()
+  renderGraph()
 }
 // The graph cue of the active question's current step, if any (merged into the beat's graph spec).
 function activeCue() {
@@ -212,6 +239,7 @@ function renderHeader() {
       setHTML(bt, sc.beats.map((_, i) => `<button type="button" class="beat-dot${i === S.beat ? ' on' : ''}${i < S.beat ? ' past' : ''}" data-beat="${i}" aria-label="Beat ${i + 1}" aria-pressed="${i === S.beat}"></button>`).join(''))
     } else {
       bt.hidden = true
+      setHTML(bt, '') // clear stale dots so nothing (and no test) sees a previous scene's beats
     }
   }
 }
