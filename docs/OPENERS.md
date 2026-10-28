@@ -86,6 +86,7 @@ export default {
 - Graph on white always: dotted teal grid at whole units (thinning to 2, 5, 10 as the window grows), axes with arrowheads at all four ends, open origin circle, STIX tick numbers with true minus signs and no 0, axis titles x and y.
 - Colours and line weights come from `src/kit/style.js`, by role. Curves teal `#0f8b8d`, second boundary coral `#e4572e`, strips accent blue, orange `#e8890c` only for the typical strip, its slider, and answers. Never invent a colour.
 - Function labels: white box, thin rounded black border, text in the curve colour, using the source's notation (`y=\sqrt{x}`, `x=y^2`).
+- Walk lessons (`walk: true`) use a different page: question and working in one left pane (2/5), the animation on the right (3/5), and a beat timeline along the bottom. See `docs/OPENERS-WALK.md`; the rest of this file still applies to what goes in a scene.
 - Page: questions column on the left (answers hidden until revealed, in class and at home), stage in the centre, working and Casio fx-CG50 panel sliding in from the right. Keys: arrows change scene, R reveals the next answer, W opens the panel, F full screen, Esc closes the panel.
 
 ## Rules learned on the pilot

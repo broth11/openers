@@ -7,6 +7,10 @@ model is backward compatible: a scene opts in only by declaring a `beats` array,
 still describes every non-stepped lesson exactly. New context scenes should use this model; fold its
 rules into `docs/OPENERS.md` as more lessons adopt it.
 
+The walk-through model (`docs/OPENERS-WALK.md`, `walk: true`) builds on this one: the same prompts, steps,
+and reveal rules, played as one timeline on a bottom bar with the question and working in one pane.
+U5 L3 moved to it on 28 October 2026.
+
 ## Why this exists
 
 In the original model, one "Show answer" click did three things at once: it revealed the left-pane

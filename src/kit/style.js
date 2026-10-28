@@ -17,6 +17,18 @@ export const COLORS = {
   grid: '#0f8b8d', // dotted grid
 }
 
+// Walk-through timeline: one fixed colour per beat kind, always the same across lessons (Ben, 28 October
+// 2026). Every value is an existing role: scene start is ink, a posed question is the strip blue, the
+// payoff step is the answer orange, an animation is the curve teal, and a plain working step is muted.
+// shell.css mirrors these as --k-* variables; keep the two in step.
+export const BEAT_COLORS = {
+  scene: COLORS.ink,
+  pose: COLORS.strip,
+  step: COLORS.muted,
+  answer: COLORS.sel,
+  animate: COLORS.teal,
+}
+
 // Line weights in screen pixels, by role.
 export const ROLES = {
   grid: { lineWidth: 1.2, lineOpacity: 0.55, dotted: true },

@@ -11,6 +11,7 @@ import { md, tex, texWrap } from './kit/math.js'
 import { makeSvgGraph } from './kit/svg.js'
 import { makeThreeGraph } from './kit/three.js'
 import { makeInfoBoard } from './components/info-board/index.js'
+import { buildTimeline, stateAt, allTags } from './kit/timeline.js'
 
 // Graph engines by name. A lesson sets engine: 'svg' (the default). New engines (jsxgraph, three)
 // are added here when a lesson first needs them, with the same apply/clear/destroy interface.
@@ -56,12 +57,23 @@ let L = null
 let S = null
 let graph = null
 let raf = 0
+// A lesson with `walk: true` runs as one flat timeline of beats (src/kit/timeline.js), shown on the
+// bottom bar, with the question and its working in one left pane. TL is that beat list; every other
+// lesson keeps TL null and runs the original shells unchanged.
+let TL = null
+const isWalk = () => !!(L && L.walk && TL)
 
 function freshState(lesson) {
   const values = {}
   for (const [k, p] of Object.entries(lesson.params || {})) values[k] = p.value
+  if (TL) Object.assign(values, stateAt(lesson, TL, 0).values)
   return {
     scene: 0, values, revealed: new Set(), chosen: {}, open: false, show: 'work',
+    // ---- walk model (lessons with `walk: true`)
+    // wbeat: index into the flat timeline. furthest: the highest beat reached, shaded on the bar.
+    // paused: free play at this beat; Resume snaps the sliders back to the authored state.
+    // wst: the folded state at wbeat, cached until the beat changes.
+    wbeat: 0, furthest: 0, paused: false, wst: null,
     // ---- stepped model (scenes with a `beats` array)
     // beat: index into the scene's beats, advanced with the stepper arrows just like old scenes.
     // step: per posed-question cumulative step position, keyed `${sceneIndex}:${questionId}`.
@@ -83,6 +95,7 @@ const isStepped = (sc) => Array.isArray(sc.beats)
 // For back-compatibility `shown(id)` is kept as an alias of posed(id) for any code that still reads
 // it. Old (non-stepped) scenes never see beat/posed/revealed and keep shown = reveal flag.
 function ctx() {
+  if (isWalk()) return walkCtx(false)
   const sc = L.scenes[S.scene]
   if (isStepped(sc)) {
     const posed = posedSet(sc, S.beat)
@@ -96,6 +109,23 @@ function ctx() {
   return { v: S.values, shown: (id) => S.revealed.has(id) }
 }
 const scene = () => L.scenes[S.scene]
+
+// ---------- walk model: state at the current beat
+// The state is folded from beats 0..wbeat (stateAt), so Back, a jump, and Resume all land on exactly
+// the authored picture. `final` is the pause view: the scene's controls as they stand once the scene
+// is done, so free play has every slider the scene ever offers. The graph and readout still follow
+// the real reveals, so a pause never gives an answer away.
+function walkState() {
+  if (!S.wst || S.wst.n !== S.wbeat) S.wst = stateAt(L, TL, S.wbeat)
+  return S.wst
+}
+function walkCtx(final) {
+  const st = walkState()
+  const sc = L.scenes[st.scene]
+  const tags = final ? allTags(sc) : st.revealed
+  const posed = final ? new Set((sc.prompts || []).map((p) => p.id)) : st.posed
+  return { v: S.values, beat: st.local, posed, shown: (id) => posed.has(id), revealed: (tag) => tags.has(tag) }
+}
 
 // Every tag revealed so far in this scene: for each posed question, walk the steps it has been
 // stepped through and collect the `reveals` of each. A tag is revealed the moment its step is shown.
@@ -127,13 +157,14 @@ const stepsFor = (sc, id) => (promptById(sc, id)?.steps || [])
 // A scene with no working and no calculator steps has no panel. A stepped scene has a panel once a
 // beat has posed a question that carries steps or keys.
 function hasPanel(sc) {
+  if (isWalk()) return false // the working lives in the left pane
   if (isStepped(sc)) {
     const posed = posedList(sc, S.beat)
     return posed.some((id) => { const p = promptById(sc, id); return p && (p.steps?.length || p.keys) })
   }
   return !!(sc.working || sc.keys)
 }
-const controlsOf = (sc) => (typeof sc.controls === 'function' ? sc.controls(ctx()) : sc.controls || [])
+const controlsOf = (sc) => (typeof sc.controls === 'function' ? sc.controls(isWalk() && S.paused ? walkCtx(true) : ctx()) : sc.controls || [])
 
 // The posed question the working pane shows. Defaults to the latest posed question for the scene.
 function activePick(sc) {
@@ -163,6 +194,12 @@ function stepWorking(dir) {
 // The graph cue of the active question's current step, if any (merged into the beat's graph spec).
 function activeCue() {
   const sc = scene()
+  if (isWalk()) {
+    const st = walkState()
+    if (!st.q || !st.pos || S.show !== 'work') return null
+    const step = stepsFor(sc, st.q)[st.pos - 1]
+    return step && step.cue ? step.cue(ctx()) : null
+  }
   if (!isStepped(sc) || S.show !== 'work') return null
   const id = activePick(sc)
   if (!id) return null
@@ -216,7 +253,14 @@ function renderHeader() {
   }
   $('workBtn').hidden = !hasPanel(scene())
   if (!hasPanel(scene()) && S.open) setOpen(false)
-  const multi = L.scenes.length > 1
+  // Walk lessons: the scene chips give way to the bottom timeline, and Pause joins the tools.
+  const walk = isWalk()
+  $('page').classList.toggle('walk', walk)
+  $('page').classList.toggle('paused', walk && S.paused)
+  $('pauseBtn').hidden = !walk
+  $('pauseBtn').textContent = S.paused ? 'Resume' : 'Pause'
+  $('pauseBtn').setAttribute('aria-pressed', walk && S.paused)
+  const multi = L.scenes.length > 1 && !walk
   $('stepper').hidden = !multi
   if (multi) {
     const btns = L.scenes
@@ -276,8 +320,10 @@ function cardsHtml(sc) {
 // ---------- questions column
 function renderQA() {
   const sc = scene()
-  if (sc.cards && !(sc.prompts || []).length) { setHTML($('qa'), cardsHtml(sc)); $('qa').classList.add('recap'); return }
+  if (sc.cards && !(sc.prompts || []).length) { setHTML($('qa'), cardsHtml(sc)); $('qa').classList.add('recap'); $('qa').classList.remove('walk-pane'); return }
   $('qa').classList.remove('recap')
+  if (isWalk()) { renderWalkPane(sc); return }
+  $('qa').classList.remove('walk-pane')
   if (isStepped(sc)) { renderSteppedQA(sc); return }
   const html = (sc.prompts || [])
     .map((p, i) => {
@@ -336,6 +382,164 @@ function renderSteppedQA(sc) {
     ? '<p class="hint">Step the scene to pose each question. Open its working on the right.</p>'
     : '<p class="hint">Step the scene to begin.</p>'
   setHTML($('qa'), `<h2 class="col-h">Questions</h2>${html}${hint}`)
+}
+
+// ---------- walk model: the left pane and the bottom timeline
+// Calculator steps, shared by the walk pane (the original panel code keeps its own copy).
+function keysHtml(k) {
+  return `${(k.sections || [{ steps: k.steps }]).map((sec) => `<section class="goal-block">
+       ${sec.goal ? `<h3 class="goal">${md(sec.goal, { wrap: true })}</h3>` : ''}
+       <ol class="casio">${sec.steps.map((s) => `<li><span>${md(s, { wrap: true })}</span></li>`).join('')}</ol>
+     </section>`).join('')}
+     ${k.out ? `<p class="out-line">Display <span class="out">${k.out}</span></p>` : ''}
+     ${k.watch ? `<p class="watch"><b>Watch out.</b> ${md(k.watch, { wrap: true })}</p>` : ''}`
+}
+
+// One pane: the current question, then its working stacked beneath it a step at a time. The pane
+// never scrolls: when the stack is taller than the pane, the oldest steps fold to their captions
+// (fitWalkPane), and stepping Back opens them again. Nothing here shows an answer before its step.
+function renderWalkPane(sc) {
+  const el = $('qa')
+  el.classList.add('walk-pane')
+  const st = walkState()
+  const prompts = sc.prompts || []
+  const p = st.q ? promptById(sc, st.q) : null
+  const qi = p ? prompts.indexOf(p) : -1
+  const steps = p ? stepsFor(sc, p.id) : []
+  const hasWork = steps.length > 0
+  const hasKeys = !!p?.keys
+  let show = S.show
+  if (show === 'work' && !hasWork && hasKeys) show = 'calc'
+  if (show === 'calc' && !hasKeys) show = 'work'
+  const head = p
+    ? `<span class="col-h">Question ${qi + 1} of ${prompts.length}</span>`
+    : `<span class="col-h">${sc.short}</span>`
+  const toggle = hasWork && hasKeys
+    ? `<div class="seg sm" role="group" aria-label="Pane view">
+        <button type="button" data-show="work" aria-pressed="${show === 'work'}">Working</button>
+        <button type="button" data-show="calc" aria-pressed="${show === 'calc'}">Casio fx-CG50</button>
+      </div>`
+    : ''
+  let body
+  if (!p) {
+    body = '<p class="hint walk-hint">Press → to pose the first question.</p>'
+  } else {
+    const chosen = S.chosen[p.id]
+    const choices = p.choices
+      ? `<div class="choices" role="group" aria-label="Prediction">${p.choices
+          .map((c, j) => `<button type="button" class="${j === chosen ? 'picked' : ''}" data-choose="${p.id}" data-j="${j}" aria-pressed="${j === chosen}">${md(c, { wrap: true })}</button>`)
+          .join('')}</div>`
+      : ''
+    const question = `<article class="q posed" data-prompt="${p.id}">
+        <div class="qn">${qi + 1}</div>
+        <div class="qb"><p class="qq">${md(p.q, { wrap: true })}</p>${choices}</div>
+      </article>`
+    let work
+    if (show === 'calc') {
+      const k = typeof p.keys === 'function' ? p.keys(ctx()) : p.keys
+      work = keysHtml(k)
+    } else {
+      const shown = steps.slice(0, st.pos)
+      work = shown.length
+        ? `<div class="display-working">${shown.map((s, i) => `<section class="work-block${s.answer ? ' answer' : ''}${i === shown.length - 1 ? ' current' : ''}">
+            ${s.caption ? `<h3>${md(s.caption, { wrap: true })}</h3>` : ''}
+            ${s.latex ? `<div class="work-equation">${tex(`\\begin{aligned}${s.latex}\\end{aligned}`, true)}</div>` : ''}
+            ${s.note ? `<p class="note">${md(s.note, { wrap: true })}</p>` : ''}
+          </section>`).join('')}</div>`
+        : ''
+    }
+    body = `${question}${work}`
+  }
+  setHTML(el, `<div class="walk-head">${head}${toggle}</div>${body}`)
+  if (S.show !== show) S.show = show
+  fitWalkPane()
+}
+
+// Fold the oldest working steps to their captions until the pane fits without scrolling. The current
+// step is never folded. A stacked page (phone) does not scroll inside the pane, so nothing folds there.
+function fitWalkPane() {
+  const el = $('qa')
+  if (!el.classList.contains('walk-pane')) return
+  const blocks = [...el.querySelectorAll('.work-block')]
+  for (const b of blocks) b.classList.remove('collapsed')
+  for (let i = 0; i < blocks.length - 1 && el.scrollHeight > el.clientHeight + 1; i++) blocks[i].classList.add('collapsed')
+}
+window.addEventListener('resize', () => requestAnimationFrame(fitWalkPane))
+document.fonts?.ready.then(() => fitWalkPane())
+
+// The timeline: one segment per beat, coloured by kind (shell.css --k-*), shaded up to the furthest beat
+// reached, the current beat ringed, each scene's first beat set apart with a gap.
+const KIND_NAME = { scene: 'Scene start', pose: 'Question', step: 'Working', answer: 'Answer', animate: 'Animation' }
+const plain = (s) => String(s || '').replace(/[$\\{}^_]/g, '').replace(/\s+/g, ' ').trim()
+function beatTip(i) {
+  const b = TL[i]
+  const sc = L.scenes[b.scene]
+  return b.kind === 'scene' ? sc.short : `${sc.short}: ${plain(b.label)}`
+}
+function renderTimeline() {
+  const tl = $('timeline')
+  if (!isWalk()) { tl.hidden = true; return }
+  tl.hidden = false
+  const n = TL.length
+  setHTML($('tlTrack'), TL.map((b, i) => {
+    const cls = ['tl-b', `k-${b.kind}`, i <= S.furthest ? 'reached' : '', i === S.wbeat ? 'now' : '', b.kind === 'scene' && i > 0 ? 'gap' : ''].filter(Boolean).join(' ')
+    return `<button type="button" class="${cls}" data-wbeat="${i}" data-tip="${beatTip(i).replace(/"/g, '&quot;')}" aria-label="Beat ${i + 1} of ${n}: ${KIND_NAME[b.kind]}, ${plain(b.label).replace(/"/g, '')}" aria-current="${i === S.wbeat}"></button>`
+  }).join(''))
+  $('tlCount').textContent = `${S.wbeat + 1} / ${n}`
+  $('tlBack').disabled = S.wbeat === 0
+  $('tlNext').disabled = S.wbeat === n - 1
+}
+// Hover, focus, or a long press on a segment names the scene and the beat.
+function showTip(btn) {
+  const tip = $('tlTip')
+  tip.textContent = btn.dataset.tip
+  tip.hidden = false
+  const nav = $('timeline').getBoundingClientRect()
+  const r = btn.getBoundingClientRect()
+  const half = tip.offsetWidth / 2
+  tip.style.left = `${Math.max(half, Math.min(nav.width - half, r.left - nav.left + r.width / 2))}px`
+}
+const hideTip = () => { $('tlTip').hidden = true }
+{
+  const track = $('tlTrack')
+  const segs = () => [...track.querySelectorAll('.tl-b')]
+  // The segment nearest to x, so a finger anywhere along the bar lands on a beat.
+  const segAt = (x) => {
+    let best = 0
+    let dist = Infinity
+    segs().forEach((b, i) => {
+      const r = b.getBoundingClientRect()
+      const d = x < r.left ? r.left - x : x > r.right ? x - r.right : 0
+      if (d < dist) { dist = d; best = i }
+    })
+    return best
+  }
+  let scrubbing = false
+  let hideTimer = 0
+  const scrubTo = (e, touch, reset = false) => {
+    const i = segAt(e.clientX)
+    goWalk(i, { reset })
+    if (touch) { const b = segs()[i]; if (b) showTip(b) }
+  }
+  track.addEventListener('pointerover', (e) => { const b = e.target.closest('.tl-b'); if (b && e.pointerType === 'mouse') showTip(b) })
+  track.addEventListener('pointerout', (e) => { if (e.pointerType === 'mouse') hideTip() })
+  track.addEventListener('focusin', (e) => { const b = e.target.closest('.tl-b'); if (b) showTip(b) })
+  track.addEventListener('focusout', hideTip)
+  // Press and drag along the bar to scrub; a tap jumps. Touch shows the beat's name while you scrub.
+  track.addEventListener('pointerdown', (e) => {
+    if (e.button) return
+    window.clearTimeout(hideTimer)
+    scrubbing = true
+    track.setPointerCapture?.(e.pointerId)
+    scrubTo(e, e.pointerType !== 'mouse', true)
+  })
+  track.addEventListener('pointermove', (e) => { if (scrubbing) scrubTo(e, e.pointerType !== 'mouse') })
+  for (const ev of ['pointerup', 'pointercancel']) {
+    track.addEventListener(ev, (e) => {
+      scrubbing = false
+      if (e.pointerType !== 'mouse') hideTimer = window.setTimeout(hideTip, 1000)
+    })
+  }
 }
 
 // ---------- controls
@@ -516,6 +720,7 @@ function update({ full = false } = {}) {
       renderMenu()
       renderQA()
       renderControls()
+      renderTimeline()
     } else {
       syncControls()
       if (scene().cards) renderQA()
@@ -531,6 +736,7 @@ function openLesson(k, { push = true } = {}) {
   if (!next) return
   cancelAnimationFrame(playRaf)
   L = next
+  TL = L.walk ? buildTimeline(L) : null
   S = freshState(L)
   if (graph) graph.clear()
   ensureGraph()
@@ -589,9 +795,40 @@ function goBeat(i) {
   update({ full: true })
 }
 
+// Walk lessons: move to beat n. Every arrival snaps the sliders to the authored state for that beat, so
+// Back, a jump on the bar, and Resume all look exactly as written. Arriving by Next on an animation beat
+// plays its slider once; arriving any other way shows the finished state with no replay.
+function goWalk(n, { next = false, reset = false } = {}) {
+  const i = Math.max(0, Math.min(TL.length - 1, n))
+  const prev = S.wbeat
+  // Choosing the beat you are on resets it (the sliders and switches snap back); stepping past an end does nothing.
+  if (i === prev && !S.paused && !reset) return
+  stopPlay()
+  S.wbeat = i
+  S.scene = TL[i].scene
+  S.paused = false
+  S.furthest = Math.max(S.furthest, i)
+  S.wst = null
+  S.values = { ...walkState().values }
+  const b = TL[i]
+  const sweep = next && i === prev + 1 && b.play
+  if (sweep) S.values[b.play] = L.params[b.play].min
+  update({ full: true })
+  if (sweep) startPlay(b.play)
+}
+
+// Pause: free play at this beat with every slider the scene offers. Resume snaps back to the beat.
+function togglePause() {
+  if (!isWalk()) return
+  stopPlay()
+  if (S.paused) { S.paused = false; S.values = { ...walkState().values } } else S.paused = true
+  update({ full: true })
+}
+
 // The ‹ › arrows and the Left/Right keys. On a stepped scene they walk beats and roll into the next
 // or previous scene at the ends; on an old scene they walk scenes, exactly as before.
 function advance(dir) {
+  if (isWalk()) { goWalk(S.wbeat + dir, { next: dir > 0 }); return }
   const sc = scene()
   if (isStepped(sc)) {
     const next = S.beat + dir
@@ -661,6 +898,8 @@ document.addEventListener('click', (e) => {
   if (t.dataset.variant) { switchVariant(t.dataset.variant); return }
   if (t.dataset.scene) { goScene(+t.dataset.scene); return }
   if (t.dataset.adv) { advance(+t.dataset.adv); return }
+  if (t.dataset.wadv) { advance(+t.dataset.wadv); return }
+  if (t.dataset.wbeat) { goWalk(+t.dataset.wbeat, { reset: true }); return }
   if (t.dataset.beat) { goBeat(+t.dataset.beat); return }
   if (t.dataset.step) { goScene(S.scene + +t.dataset.step); return } // old scenes (no beats)
   if (t.dataset.reveal) { S.revealed.add(t.dataset.reveal); update({ full: true }); return }
@@ -672,7 +911,8 @@ document.addEventListener('click', (e) => {
   }
   if (t.dataset.play) { startPlay(t.dataset.play); return }
   if (t.dataset.seg) { S.values[t.dataset.seg] = t.dataset.val; update({ full: true }); return }
-  if (t.dataset.show) { S.show = t.dataset.show; renderPanel(); return }
+  if (t.dataset.show) { S.show = t.dataset.show; if (isWalk()) renderQA(); else renderPanel(); return }
+  if (t.id === 'pauseBtn') { togglePause(); return }
   if (t.id === 'pclose') { setOpen(false); return }
   if (t.id === 'workBtn') { setOpen(!S.open); return }
   if (t.id === 'resetBtn') { openLesson(keyOf(L), { push: false }); return }
@@ -705,9 +945,19 @@ document.addEventListener('keydown', (e) => {
   const tag = (e.target.tagName || '').toLowerCase()
   const inRange = tag === 'input' && e.target.type === 'range'
   if (tag === 'input' && !inRange) return
-  if (e.key === 'Escape') { if (S.open) setOpen(false); $('pnav').open = false; return }
+  if (e.key === 'Escape') { if (isWalk() && S.paused) togglePause(); else if (S.open) setOpen(false); $('pnav').open = false; return }
   if (inRange) return
   const k = e.key.toLowerCase()
+  if (isWalk()) {
+    // Walk lessons: arrows and Page keys step beats, Home and End jump to the ends, P pauses.
+    if (k === 'p') togglePause()
+    else if (k === 'f') toggleFs()
+    else if (e.key === 'ArrowRight' || e.key === 'PageDown') advance(1)
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') advance(-1)
+    else if (e.key === 'Home') goWalk(0)
+    else if (e.key === 'End') goWalk(TL.length - 1)
+    return
+  }
   if (k === 'w') { if (hasPanel(scene())) setOpen(!S.open) }
   else if (k === 'f') toggleFs()
   else if (e.key === 'ArrowRight' || e.key === 'PageDown') advance(1)

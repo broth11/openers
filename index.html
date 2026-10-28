@@ -26,6 +26,7 @@
         <div class="seg engine-seg" id="engineSeg" role="group" aria-label="Graph engine" hidden></div>
         <nav class="stepper" id="stepper" aria-label="Scenes"></nav>
         <div class="tools">
+          <button class="btn" id="pauseBtn" type="button" aria-pressed="false" title="Pause the walk and play freely (P). Resume returns to this beat." hidden>Pause</button>
           <button class="btn" id="workBtn" type="button" aria-expanded="false" aria-controls="side" title="Working and calculator steps (W)">Working</button>
           <button class="btn icon" id="fsBtn" type="button" aria-pressed="false" title="Full screen (F)" aria-label="Full screen">
             <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 6V2h4M10 2h4v4M14 10v4h-4M6 14H2v-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg>
@@ -51,6 +52,14 @@
           <div class="pnl" id="pnl" data-show="work"></div>
         </aside>
       </div>
+
+      <nav class="timeline" id="timeline" aria-label="Lesson timeline" hidden>
+        <button type="button" class="tl-arrow" id="tlBack" data-wadv="-1" aria-label="Back one beat">‹</button>
+        <div class="tl-track" id="tlTrack" role="group" aria-label="Beats"></div>
+        <button type="button" class="tl-arrow" id="tlNext" data-wadv="1" aria-label="Next beat">›</button>
+        <span class="tl-count" id="tlCount" aria-live="polite"></span>
+        <div class="tl-tip" id="tlTip" role="tooltip" hidden></div>
+      </nav>
     </div>
     <script type="module" src="/src/main.js"></script>
   </body>

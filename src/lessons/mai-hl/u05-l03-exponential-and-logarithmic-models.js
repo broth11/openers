@@ -1,8 +1,9 @@
-// Unit 5 Lesson 3: exponential and logarithmic models, log scales. Stepped (beat-driven) authoring
-// model, see docs/OPENERS-STEPPED.md. Three context scenes (coffee, typing, pH) then one recap
-// explorer. No Casio panel for this lesson (Ben, 28 October 2026): the printed Notes carry the GDC
-// steps, so no scene or question here has `keys`. Every exact value is checked in
-// qa/verify-u05-l03.py.
+// Unit 5 Lesson 3: exponential and logarithmic models, log scales. Walk-through model (`walk: true`),
+// see docs/OPENERS-WALK.md: one flat timeline of beats built from the prompts below, a left pane with
+// the question and its working, the animation on the right. Three context scenes (coffee, typing, pH)
+// then one recap explorer. No Casio panel for this lesson (Ben, 28 October 2026): the printed Notes
+// carry the GDC steps, so no scene or question here has `keys`. Every exact value is checked in
+// qa/verify-u05-l03.py. The previous stepped version is kept in _archive/ (outside the lesson glob).
 import { COLORS as C } from '../../kit/style.js'
 import { fmt } from '../../kit/math.js'
 import { drawCoffee, drawTyping, drawPhStrip } from '../../components/context-stage/index.js'
@@ -29,7 +30,7 @@ function coffeeGraph({ v, revealed }) {
   const labels = []
   if (revealed('c')) {
     items.push({ type: 'line', x1: -2, y1: 22, x2: 31, y2: 22, color: C.muted, width: 2, dash: true })
-    labels.push({ id: 'room', x: 29, y: 22, html: '$y=22$', color: C.muted, pos: 'n', plain: true })
+    labels.push({ id: 'room', x: 19, y: 22, html: '$y=22$', color: C.muted, pos: 's', plain: true }) // clear of the t axis title in the narrower graph
   }
   if (live) {
     items.push({ type: 'curve', f: (x) => [x, coffee(x)], t: [0, 30], color: C.teal })
@@ -124,7 +125,7 @@ const growthState = (v) => ({ fam: v.fam, k: v.gk, a: v.ga, r: v.gr, c: v.gc, la
 
 export default {
   course: 'mai-hl', unit: 5, lesson: 3,
-  title: 'Exponential and logarithmic models, log scales', engine: 'svg',
+  title: 'Exponential and logarithmic models, log scales', engine: 'svg', walk: true,
   bridge: 'Lesson 2: fit a model through stated conditions, then use it both ways.',
   params: {
     cool: { type: 'range', label: 'Time', min: 0, max: 30, step: 0.1, value: 0, show: (v) => `$t=${fmt(v, 1)}$ min`, sel: true, play: { seconds: 12 } },
@@ -146,9 +147,8 @@ export default {
       heading: 'A cup of coffee is left on a table in a room. Readings: $92$ °C at $t=0$ and $78.7$ °C two minutes later.',
       readout: ({ v, revealed }) => (revealed('coffee')
         ? `$t=${fmt(v.cool, 1)}$ min: $T=${fmt(coffee(v.cool), 1)}$ °C`
-        : 'Predict where it settles, then work out the model on the right.'),
+        : 'Predict where it settles, then work out the model on the left.'),
       controls: ({ revealed }) => (revealed('coffee') ? ['cool'] : []),
-      beats: [{ poses: 'c1' }, { poses: 'c2' }, { poses: 'c3' }],
       prompts: [
         {
           id: 'c1', q: 'Predict: after a very long time, what temperature does the coffee approach?',
@@ -167,6 +167,7 @@ export default {
             { caption: 'Subtract the second equation from the first', latex: '92-78.7&=k-0.81k\\\\13.3&=0.19k\\\\k&=70' },
             { caption: 'Find c', latex: 'c&=92-70\\\\&=22', reveals: ['c'], note: '$c$ is the horizontal asymptote: the temperature of the room, $22$ °C.' },
             { caption: 'Model', latex: 'T&=70(0.9)^t+22', answer: true, reveals: ['c', 'coffee'], note: 'Two readings fix the two unknowns $k$ and $c$.' },
+            { caption: 'Trace the model', note: 'Watch the temperature fall quickly at first, then settle toward the room temperature, $22$ °C.', play: 'cool', reveals: ['c', 'coffee'] },
           ],
         },
         {
@@ -187,9 +188,8 @@ export default {
       heading: 'A student practises typing. After $1$ hour she types $20$ words per minute. After $10$ hours, $43.03$.',
       readout: ({ v, revealed }) => (revealed('model')
         ? `$h=${fmt(v.hours, 1)}$ h: $S=${fmt(typing(v.hours), 1)}$ wpm`
-        : 'The gains slow down. Predict the speed at $100$ hours, then fit a model on the right.'),
+        : 'The gains slow down. Predict the speed at $100$ hours, then fit a model on the left.'),
       controls: ({ revealed }) => (revealed('model') ? ['hours'] : []),
-      beats: [{ poses: 't1' }, { poses: 't2' }, { poses: 't3' }],
       prompts: [
         {
           id: 't1', q: 'Predict: how fast does she type after $100$ hours?',
@@ -206,6 +206,7 @@ export default {
             { caption: 'Substitute (10, 43.03)', latex: '43.03&=20+b\\ln 10\\\\23.03&=b\\ln 10' },
             { caption: 'Solve for b', latex: 'b&=\\frac{23.03}{\\ln 10}\\\\&=10.0' },
             { caption: 'Model', latex: 'S&=20+10\\ln h', answer: true, reveals: ['model'], note: 'Two readings fix two unknowns, as with the coffee.' },
+            { caption: 'Trace the model', note: 'Each extra hour of practice adds less than the one before.', play: 'hours', reveals: ['model'] },
           ],
         },
         {
@@ -225,9 +226,8 @@ export default {
       heading: 'The pH scale measures acidity. Lemon juice has pH $2.0$ and a tomato has pH $4.4$. Here, $\\mathrm{pH}=-\\log_{10}[\\mathrm{H}^+]$.',
       readout: ({ v, revealed }) => (revealed('curve') || revealed('pts')
         ? `$\\mathrm{pH}=${fmt(v.phv, 2)}$: $[\\mathrm{H}^+]=${sci(hplus(v.phv))}$ mol/L`
-        : 'Predict how many times stronger the lemon is, then work it out on the right.'),
+        : 'Predict how many times stronger the lemon is, then work it out on the left.'),
       controls: ({ revealed }) => (revealed('curve') || revealed('pts') ? ['phv'] : []),
-      beats: [{ poses: 'p1' }, { poses: 'p2' }, { poses: 'p3' }],
       prompts: [
         {
           id: 'p1', q: 'Predict: how many times stronger (more $[\\mathrm{H}^+]$) is the lemon juice than the tomato?',

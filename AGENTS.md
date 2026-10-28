@@ -7,6 +7,7 @@ Before changing anything, read:
 1. `docs/OPENERS.md`: the method, the lesson module contract, the house style, the rules learned so far, and how to build and check.
 2. `docs/CATALOG.md`: what already exists. Reuse it before writing anything new.
 3. `docs/ENGINES.md`: the engine interface, and how to add JSXGraph or three.js.
+4. `docs/OPENERS-WALK.md`, only when the lesson sets `walk: true` (U5 L3 so far): the timeline, the two-pane layout, and the rewind rule.
 
 Working rules:
 

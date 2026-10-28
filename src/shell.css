@@ -338,3 +338,71 @@ input.sel::-moz-range-thumb { border-color: #e8890c; }
 .zoom-ctl { position: absolute; right: 10px; bottom: 10px; display: flex; gap: 6px; z-index: 3; }
 .zoom-ctl button { border: 2px solid #d3dfe9; background: #fff; color: #0e2233; border-radius: 10px; min-width: 34px; height: 34px; padding: 0 10px; font-weight: 700; font-size: 15px; box-shadow: 0 2px 6px rgba(15, 50, 85, 0.15); }
 .zoom-ctl button:hover { border-color: var(--acc); }
+
+/* ---------- walk model (lessons with walk: true): two panes and a bottom timeline */
+/* Beat-kind colours: one per kind, the same in every lesson. These are the roles in kit/style.js
+   (BEAT_COLORS): scene start is ink, a posed question the strip blue, the payoff the answer orange,
+   an animation the curve teal, a plain working step muted. Keep the two in step. */
+:root {
+  --k-scene: var(--ink);
+  --k-pose: #1572b8;
+  --k-step: #55697b;
+  --k-answer: #e8890c;
+  --k-animate: #0f8b8d;
+}
+
+/* 2/5 for the question and its working, 3/5 for the animation */
+.page.walk .main { gap: clamp(10px, 1.2vw, 18px); }
+.page.walk .qa { flex: 2 1 0; width: auto; margin-right: 0; }
+.page.walk .stage { flex: 3 1 0; }
+.page.walk .side, .page.walk #workBtn { display: none !important; }
+
+.walk-pane > * { flex: none; }
+.walk-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 2em; }
+.walk-pane .work-block h3 { font-size: clamp(11px, 1.45vh, 13px); }
+.walk-pane .work-equation { font-size: clamp(18px, 2.7vh, 26px); }
+.walk-pane .display-working { gap: clamp(6px, 1.2vh, 12px); }
+/* the oldest steps fold to their captions when the pane would otherwise scroll */
+.work-block.collapsed { border-left: 3px solid var(--line); padding-left: 8px; }
+.work-block.collapsed .work-equation, .work-block.collapsed .note { display: none; }
+.work-block.collapsed h3 { margin: 0; }
+
+/* pause: free play at this beat */
+.page.paused .stage { box-shadow: 0 0 0 4px var(--sel), var(--shadow); }
+#pauseBtn[aria-pressed='true'] { background: var(--sel); border-color: var(--sel); color: #1b1100; }
+
+/* the timeline along the bottom */
+.timeline {
+  position: relative; flex: none; display: flex; align-items: center; gap: clamp(6px, 0.8vw, 12px);
+  background: var(--surface); border-radius: 14px; box-shadow: var(--shadow); padding: clamp(4px, 0.8vh, 8px) clamp(8px, 1vw, 14px);
+}
+.tl-track { flex: 1 1 auto; min-width: 0; display: flex; align-items: center; gap: 2px; height: clamp(24px, 3.6vh, 34px); touch-action: none; user-select: none; }
+.tl-b {
+  flex: 1 1 0; min-width: 3px; height: 62%; padding: 0; border: none; border-radius: 4px;
+  background: var(--k-step); opacity: 0.28; cursor: pointer; transition: opacity 0.15s;
+}
+.tl-b.reached { opacity: 1; }
+.tl-b:hover { opacity: 1; }
+.tl-b.k-scene { height: 100%; background: var(--k-scene); }
+.tl-b.k-pose { background: var(--k-pose); }
+.tl-b.k-step { background: var(--k-step); }
+.tl-b.k-answer { background: var(--k-answer); }
+.tl-b.k-animate { background: var(--k-animate); }
+.tl-b.gap { margin-left: clamp(6px, 0.8vw, 12px); }
+.tl-b.now { opacity: 1; box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--ink); position: relative; z-index: 1; }
+.tl-arrow { flex: none; height: clamp(26px, 3.8vh, 34px); padding: 0 12px; border: 2px solid var(--line); background: var(--surface); border-radius: 10px; font-size: 1.4em; line-height: 1; font-weight: 700; }
+.tl-arrow:hover:not(:disabled) { border-color: var(--acc); color: var(--acc); }
+.tl-arrow:disabled { opacity: 0.3; cursor: default; }
+.tl-count { flex: none; min-width: 5.6em; text-align: right; font-family: var(--f-mono); font-weight: 700; font-size: clamp(12px, 1.7vh, 15px); color: var(--muted); font-variant-numeric: tabular-nums; }
+.tl-tip {
+  position: absolute; bottom: calc(100% + 8px); transform: translateX(-50%); z-index: 20; pointer-events: none;
+  background: var(--ink); color: var(--bg); padding: 4px 10px; border-radius: 8px; font-size: 13px; font-weight: 600; white-space: nowrap; max-width: 90vw; overflow: hidden; text-overflow: ellipsis;
+}
+@media (prefers-reduced-motion: reduce) { .tl-b { transition: none; } }
+
+/* phone: animation on top, question and working below, the timeline pinned to the foot */
+@media (max-width: 860px) {
+  .page.walk .qa { flex: none; }
+  .page.walk .stage { flex: none; }
+  .page.walk .timeline { position: sticky; bottom: 0; z-index: 30; }
+}

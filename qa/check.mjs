@@ -5,6 +5,7 @@
 import { createRequire } from 'module'
 import { mkdirSync } from 'fs'
 import { execSync } from 'child_process'
+import { walkCheck } from './walk-check.mjs'
 
 const require = createRequire(import.meta.url)
 let chromium
@@ -27,6 +28,13 @@ for (const [w, h] of sizes) {
   await page.route('**/fonts.googleapis.com/**', (r) => r.fulfill({ status: 200, contentType: 'text/css', body: '' }))
   await page.goto(base + (key ? '#' + key : ''), { waitUntil: 'load' })
   await page.waitForTimeout(500)
+  // Walk lessons (walk: true) have the bottom timeline instead of scene chips: qa/walk-check.mjs.
+  if (await page.locator('#timeline:not([hidden]) .tl-b').count()) {
+    failures += await walkCheck(page, w, h, outDir)
+    if (errs.length) { failures++; console.log(JSON.stringify({ size: `${w}x${h}`, pageErrors: errs })) }
+    await page.close()
+    continue
+  }
   const n = Math.max(1, await page.locator('#stepper [data-scene]').count())
   const stability = []
   for (let s = 0; s < n; s++) {
