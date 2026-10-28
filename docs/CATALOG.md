@@ -28,7 +28,8 @@ Everything the kit can already do. Read this before building a new opener, and a
 | Information board | Given-information cards before a graph/model reveal | U5 L1 | `src/components/info-board/README.md` |
 | Projectile height graph | Observations, revealed flights, time cursors, maxima, and ground-contact comparisons | U5 L1 | `src/components/projectile/README.md` |
 | Solid of revolution | Paired SVG profiles and shaded discs, washers, cavities, partial turns and orbit | U11 L10/L11 | `src/components/solid-of-revolution/README.md` |
-| Context stage | A drawn, animated scene beside the graph on a shared vertical scale (mall crowd, jelly-bean jars, lamp and light meter with the square-spread diagram) | U5 L2 | `src/components/context-stage/README.md` |
+| Context stage | A drawn, animated scene beside the graph on a shared vertical scale (mall crowd, jelly-bean jars, lamp and light meter with the square-spread diagram, cooling coffee with thermometer, typing laptop with wpm gauge, pH strip) | U5 L2, U5 L3 | `src/components/context-stage/README.md` |
+| Growth family | Exponential `ka^x+c`, `ke^(rx)+c` and logarithmic `a+b ln x` with asymptote, initial value, half-life or doubling time, and the inverse reflected in `y = x`: recap cards | U5 L3 | `src/components/growth-family/README.md` |
 | Polynomial explorer | Degree 2 to 4, factored or standard form, draggable roots, repeated roots, end-behaviour arrows, turning points, recap cards | U5 L2 | `src/components/polynomial/README.md` |
 | Power family | `y = kx^n` for positive and negative n: doubling markers, ratio and product tests, asymptotes, recap cards | U5 L2 | `src/components/power-family/README.md` |
 
@@ -40,6 +41,7 @@ Everything the kit can already do. Read this before building a new opener, and a
 | MAI HL U5 L1 | Three flights, three forms | SVG | Information board, Projectile height graph |
 | MAI HL U11 L10 | Discs and stretches | three.js + SVG | Solid of revolution, Strips |
 | MAI HL U11 L11 | A hemisphere bowl | three.js + SVG | Solid of revolution, Strips |
+| MAI HL U5 L3 | Exponential and logarithmic models, log scales | SVG | Context stage, Growth family |
 | MAI HL U5 L2 | Cubic fitting, direct and inverse variation | SVG | Context stage, Polynomial explorer, Power family |
 
 ## Wanted next (from the syllabus survey, 2026-10-25)

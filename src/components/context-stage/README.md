@@ -38,3 +38,11 @@ Shared helpers in `shared.js`: `PALETTE`, `PEOPLE` and `BEANS` colours, `rand(i,
 
 - The SVG clips everything mathematical to the graph's rectangle, so y tick numbers need room left of the y-axis: give `bounds.left` enough negative room (about 10% of the x range).
 - Labels for the graph are placed in an overlay over the graph's rectangle only, so they never drift into the scene.
+
+## Added for U5 L3
+
+| Drawing | Call | Notes |
+|---|---|---|
+| Coffee | `drawCoffee(api, { T, t, top })` | Cup whose steam fades as `T` falls; thermometer on the graph's Y scale; `t` and `T` readouts. |
+| Typing | `drawTyping(api, { S, h, top })` | Laptop with a growing block of text lines; words-per-minute gauge on the graph's Y scale. |
+| pH strip | `drawPhStrip(api, { foods, marker, top })` | Coloured pH strip (0 to 8) with foods at their pH and a marker that follows the slider. |
