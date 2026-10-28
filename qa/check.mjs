@@ -135,11 +135,17 @@ for (const [w, h] of sizes) {
         const answerMathOverflow = [...document.querySelectorAll('.answer-math')].some((n)=>n.scrollWidth>n.clientWidth+1)
         const answerRowsClash = [...document.querySelectorAll('.qa-rows')].some((g) => [...g.children].some((n,i,rows) => i > 0 && n.getBoundingClientRect().top - rows[i-1].getBoundingClientRect().bottom < 4))
         const workingOverflow = [...document.querySelectorAll('.work-equation')].filter((n) => n.scrollWidth > n.clientWidth + 1).length
-        return { answerMathOverflow, answerRowsClash, hscroll: de.scrollWidth > de.clientWidth + 1, panelHScroll: pnl.scrollWidth > pnl.clientWidth + 1, workingOverflow, panelScrolls: pnl.scrollHeight > pnl.clientHeight + 2, questionsScroll: qa.scrollHeight > qa.clientHeight + 2, labelsOutside: out }
+        // A control label that wraps to a second line changes its row height and shoves the slider
+        // down: a label taller than ~1.8 of its own line-height has wrapped.
+        const labelWrap = [...document.querySelectorAll('.ctl label, .ctl .lab')].filter((n) => {
+          const lh = parseFloat(getComputedStyle(n).lineHeight) || 20
+          return n.getBoundingClientRect().height > lh * 1.8
+        }).map((n) => n.textContent.trim().slice(0, 24))
+        return { answerMathOverflow, answerRowsClash, hscroll: de.scrollWidth > de.clientWidth + 1, panelHScroll: pnl.scrollWidth > pnl.clientWidth + 1, workingOverflow, panelScrolls: pnl.scrollHeight > pnl.clientHeight + 2, questionsScroll: qa.scrollHeight > qa.clientHeight + 2, labelsOutside: out, labelWrap }
       })
       const shift = panel ? 0 : stability.find((x) => x.scene === s + 1)?.moved || 0
       m.shiftWhileSliding = shift
-      const bad = m.answerMathOverflow || m.answerRowsClash || m.hscroll || m.panelHScroll || m.workingOverflow || m.panelScrolls || (w > 860 && m.questionsScroll) || m.labelsOutside.length || (w > 860 && shift > 0.5)
+      const bad = m.answerMathOverflow || m.answerRowsClash || m.hscroll || m.panelHScroll || m.workingOverflow || m.panelScrolls || (w > 860 && m.questionsScroll) || m.labelsOutside.length || m.labelWrap.length || (w > 860 && shift > 0.5)
       if (bad) failures++
       console.log(JSON.stringify({ size: `${w}x${h}`, scene: s + 1, panel, ok: !bad, ...m }))
       await page.screenshot({ path: new URL(`${w}x${h}-s${s + 1}${panel ? '-panel' : ''}.png`, outDir).pathname })

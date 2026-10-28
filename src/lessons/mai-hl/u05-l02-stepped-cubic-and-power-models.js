@@ -92,31 +92,36 @@ function jarGraph({ v, revealed }) {
   const labels = []
   const s = v.size
   const mode = v.grow
-  // Each jar curve is revealed by the working step that establishes it: taller/wider on j2, the
-  // same-shape cubic on j3. Before that, only the given (10, 200) jar and the context drawing show;
-  // the three models are not previewed when j1 is merely posed.
-  const curves = [
+  // Each jar CURVE on the graph is revealed by the working step that establishes it: taller/wider on
+  // j2, the same-shape cubic on j3. That reveal discipline stays on the graph only. The jar DRAWING
+  // and its grow/size controls are a separate explorer: once any curve is out, the controls unlock
+  // and every mode draws a solid, filled jar that grows with the slider (never a dashed '?').
+  const allModes = [
     ['h', JAR.h, 'taller only', '$N=20h$', 'jar-h'],
     ['w', JAR.w, 'wider only', '$N=2w^2$', 'jar-w'],
     ['both', JAR.both, 'same shape', '$N=0.2h^3$', 'jar-both'],
-  ].filter(([, , , , tag]) => revealed(tag))
-  const anyCurve = curves.length > 0
-  // A revealed curve the student can trace: the moving cursor only appears once some curve is out.
-  for (const [id, f, name, eq] of curves) {
+  ]
+  const exploring = allModes.some(([, , , , tag]) => revealed(tag))
+  // Draw each curve only once its own working step has revealed it; the selected mode is highlighted.
+  for (const [id, f, name, eq, tag] of allModes) {
+    if (!revealed(tag)) continue
     const on = id === mode
     items.push({ type: 'curve', f: (x) => [x, f(x)], t: [0, 21], color: on ? C.teal : C.muted, width: on ? 4 : 2, dash: !on })
     const lx = id === 'h' ? 17 : id === 'w' ? 15.5 : 17.5
     labels.push({ id: `j-${id}`, x: lx, y: f(lx), html: `${name}: ${eq}`, color: on ? C.teal : C.muted, pos: id === 'h' ? 'n' : 'nw', plain: !on })
   }
-  // The cursor follows the currently selected growth mode, but only if that mode's curve is revealed.
+  // The cursor traces the selected mode only once that mode's own curve is on the graph, so the graph
+  // never shows a value the maths has not reached. The jar drawing below has no such restriction.
   const modeRevealed = revealed(`jar-${mode}`)
-  if (anyCurve && modeRevealed) {
+  if (modeRevealed) {
     items.push({ type: 'line', x1: s, y1: 0, x2: s, y2: JAR[mode](s), color: C.sel, width: 2, dash: true, ghost: true })
     items.push({ type: 'points', pts: [[s, JAR[mode](s)]], color: C.sel, r: 9, ghost: true })
   }
   items.push({ type: 'points', pts: [[10, 200]], color: C.strip, r: 7 })
   labels.push({ id: 'ref', x: 10, y: 200, html: '$(10,\\,200)$', color: C.strip, pos: 'nw', attached: true })
-  const big = !modeRevealed ? null : mode === 'h' ? { h: s, w: 10 } : mode === 'w' ? { h: 10, w: s } : { h: s, w: s }
+  // While exploring, the competition jar is always a real filled jar for the selected mode at the
+  // current slider size. Before any reveal (pure prediction) it is the dashed 20x20 target with a '?'.
+  const big = exploring ? (mode === 'h' ? { h: s, w: 10 } : mode === 'w' ? { h: 10, w: s } : { h: s, w: s }) : null
   return {
     bounds: { left: -2.6, right: 22.6, bottom: -230, top: 1820 },
     axes: { x: 'size (cm)', y: 'N', aspect: 72, xStep: 5, yStep: 200, nonnegative: true },
@@ -204,7 +209,7 @@ export default {
     r: { type: 'range', label: 'r', min: -4.5, max: 4.5, step: 0.1, value: 1.5 },
     s: { type: 'range', label: 's', min: -4.5, max: 4.5, step: 0.1, value: 3.5 },
     grow: { type: 'seg', label: 'Grow', options: [['h', 'Taller only'], ['w', 'Wider only'], ['both', 'Same shape']], value: 'both' },
-    size: { type: 'range', label: 'Growing dimension', min: 5, max: 20, step: 0.1, value: 10, show: (v) => `${fmt(v, 1)} cm`, sel: true, play: { seconds: 8 } },
+    size: { type: 'range', label: 'Grow to', min: 5, max: 20, step: 0.1, value: 10, show: (v) => `${fmt(v, 1)} cm`, sel: true, play: { seconds: 8 } },
     dn: { type: 'seg', label: 'Power n', options: [['0.5', '½'], ['1', '1'], ['2', '2'], ['3', '3']], value: '3' },
     dk: { type: 'range', label: 'k', min: 0.5, max: 4, step: 0.1, value: 1, show: (v) => `$k=${fmt(v, 1)}$` },
     ddbl: { type: 'seg', label: 'Double x', options: OFF_ON, value: 'on' },

@@ -139,8 +139,11 @@ h1 { margin: 0; font-size: clamp(17px, 2.8vh, 26px); font-weight: 600; line-heig
 /* controls under the graph */
 .controls { flex: none; display: flex; flex-wrap: wrap; gap: 4px clamp(14px, 2vw, 30px); align-items: flex-end; }
 .ctl { flex: 1 1 200px; min-width: 0; max-width: 420px; display: flex; flex-direction: column; }
-.ctl label, .ctl .lab { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font-weight: 500; color: #55697b; font-size: clamp(12px, 1.7vh, 15px); }
-.ctl output { font-family: var(--f-math); font-size: clamp(16px, 2.6vh, 23px); color: #0e2233; font-variant-numeric: tabular-nums; white-space: nowrap; }
+/* The label row is a fixed-height single line: a long label (for example "Growing dimension") must
+   never wrap, or it would change the row height and shove the slider down as the panel narrows. */
+.ctl label, .ctl .lab { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font-weight: 500; color: #55697b; font-size: clamp(12px, 1.7vh, 15px); min-height: 1.6em; }
+.ctl .lab-l { display: inline-flex; align-items: baseline; gap: 6px; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.ctl output { font-family: var(--f-math); font-size: clamp(16px, 2.6vh, 23px); color: #0e2233; font-variant-numeric: tabular-nums; white-space: nowrap; flex: none; }
 .seg-ctl { flex: 0 0 auto; gap: 4px; }
 input[type='range'] { -webkit-appearance: none; appearance: none; width: 100%; height: 28px; margin: 0; background: transparent; cursor: pointer; }
 input[type='range']::-webkit-slider-runnable-track { height: 9px; border-radius: 6px; background: linear-gradient(to right, var(--acc) var(--pct, 50%), #d3dfe9 var(--pct, 50%)); }

@@ -43,9 +43,19 @@ the whole point of the rework, and it is easy to get wrong because the first cut
   and never prints a computed model value early.
 - **Predictions are answers too.** The (4, 25) point a "predict the reading at 4 m" question asks
   for is revealed by that question's own working, never when it is posed.
+- **A context explorer is not the graph.** A drawn manipulative beside the graph (the growing jar,
+  the moving lamp) is a separate explorer once its controls are unlocked: every switch position
+  draws a real, complete object that responds to the slider, and it never collapses to a dashed
+  placeholder just because a particular graph curve has not been revealed yet. The reveal discipline
+  governs the mathematical graph (curves, solved points, model labels, the cursor that traces a
+  model), not the physical picture of the situation. Gate the two separately: unlock the explorer
+  once the scene has something to explore, but keep each graph curve waiting for its own step. In
+  U5 L2 jars, the Grow switch and size slider always show a filled jar; only the matching graph
+  curve waits for its working.
 
 The layout check enforces this: on every stepped scene, with all questions posed but no working
-stepped, it fails if any model equation is on the graph or any computed value is in the readout.
+stepped, it fails if any model equation is on the graph or any computed value is in the readout. It
+also fails on any control label that wraps to a second line (which would shove its slider down).
 
 ## What changed in the shell (`src/main.js`)
 
