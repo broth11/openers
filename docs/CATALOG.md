@@ -43,7 +43,7 @@ Everything the kit can already do. Read this before building a new opener, and a
 | MAI HL U11 L10 | Discs and stretches | three.js + SVG | Solid of revolution, Strips |
 | MAI HL U11 L11 | A hemisphere bowl | three.js + SVG | Solid of revolution, Strips |
 | MAI HL U5 L3 | Exponential and logarithmic models, log scales (walk-through) | SVG | Context stage, Growth family |
-| MAI HL U5 L2 | Cubic fitting, direct and inverse variation | SVG | Context stage, Polynomial explorer, Power family |
+| MAI HL U5 L2 | Cubic fitting, direct and inverse variation (legacy stepped) | SVG | Context stage, Polynomial explorer, Power family |
 
 ## Wanted next (from the syllabus survey, 2026-10-25)
 

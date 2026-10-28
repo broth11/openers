@@ -1,5 +1,7 @@
 # How to build an opener: the walk-through model
 
+**This is the model for every new opener.** Ben locked it in on 28 October 2026.
+
 The walk-through model plays an opener as one curated sequence of beats, like advancing slides: a question is posed, its working appears a step at a time, a graph appears, a slider animates, the next question is posed. A timeline along the bottom shows every beat, so Ben can pause, go back to an earlier point, and return. U5 L3 is the pilot and the live example (`src/lessons/mai-hl/u05-l03-exponential-and-logarithmic-models.js`); its stepped predecessor is kept in `src/lessons/mai-hl/_archive/`. A lesson opts in with `walk: true`. Every other lesson, stepped or not, runs its original shell unchanged, and `docs/OPENERS.md` and `docs/OPENERS-STEPPED.md` still describe them exactly.
 
 ## The decisions (Ben, 28 October 2026)
@@ -72,6 +74,20 @@ export default {
 - **Every Solution step needs `latex`.** The answer is restated in the coloured box, not only in a sentence. On a predict question, end the box with the conclusion (`&\\approx 66\\text{ wpm}`); for a worded answer use `&\\text{...}` lines. The walk check fails on a Solution step with no box.
 - **Controls:** when a scene has switches (`type: 'seg'`) and sliders, the switches share the top row and every slider sits on the bottom row. A scene with only sliders is unchanged.
 - `shown(id)` is true once the question is posed; `beat` is the beat's index within its scene.
+
+## Building a new opener, step by step
+
+1. Branch from `main`. Copy `u05-l03-exponential-and-logarithmic-models.js` as the starting shape; set `course`, `unit`, `lesson`, `title`, `walk: true`.
+2. Take the scenes and prompts from the lesson outline Ben approved. Each scene is a story (a context, a model, a limit); each prompt is one question with its working steps.
+3. Write each prompt: `q`, optional `choices` and `correct` for a prediction, then `steps`. Pose never shows the answer. Gate every graph answer with `reveals`.
+4. Make the last step of each prompt `answer: true` with `latex`: the answer restated in the coloured box. On a predict question the box ends with the conclusion.
+5. Where a model has a slider, reveal it, then add a step with `play: '<param>'` so the sweep plays as an Animation beat.
+6. End with a recap scene (`cards`, no prompts): switches and sliders for free play. Switches show on the top row, sliders on the bottom row.
+7. Check every exact value with sympy (`qa/verify-<key>.py`).
+8. `npm run lint`, `npm run build`, `npm run serve`, `node qa/check.mjs <key>`; look at one screenshot per scene start in `qa/out/`.
+9. Publish the artifact (`npm run artifact -- <key> "<Title>"`) so Ben can preview, push the branch, and stop. Ben approves the merge.
+
+Anything the walk shell cannot yet do (a 3D camera or cutaway in the rewind state, see Known edges) goes to Ben before you build around it.
 
 ## Checking
 

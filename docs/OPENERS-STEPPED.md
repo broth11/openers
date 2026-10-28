@@ -1,11 +1,12 @@
-# How to build an opener: the stepped model
+# How to build an opener: the stepped model (legacy)
+
+**Legacy.** New openers use the walk-through model in `docs/OPENERS-WALK.md`. This file stays for U5 L2 and as the source of the reveal rules the walk model inherits.
 
 The stepped (beat-driven) authoring model. U5 L2 (`src/lessons/mai-hl/u05-l02-cubic-and-power-models.js`)
 is the live example on the site; its earlier all-at-once version is kept for reference at
 `src/lessons/mai-hl/_archive/u05-l02-cubic-and-power-models.js.orig` (outside the lesson glob). The
 model is backward compatible: a scene opts in only by declaring a `beats` array, so `docs/OPENERS.md`
-still describes every non-stepped lesson exactly. New context scenes should use this model; fold its
-rules into `docs/OPENERS.md` as more lessons adopt it.
+still describes every non-stepped lesson exactly. It was the first step toward the walk model, which replaces it for new work.
 
 The walk-through model (`docs/OPENERS-WALK.md`, `walk: true`) builds on this one: the same prompts, steps,
 and reveal rules, played as one timeline on a bottom bar with the question and working in one pane.
