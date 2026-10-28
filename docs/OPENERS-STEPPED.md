@@ -1,9 +1,11 @@
-# How to build an opener: the stepped model (candidate)
+# How to build an opener: the stepped model
 
-This is a parallel authoring spec, logged while building the U5 L2 proof of concept
-(`src/lessons/mai-hl/u05-l02-stepped-cubic-and-power-models.js`, tag `stepped`). It is NOT yet the
-house rule. If Ben prefers it after previewing, fold the relevant parts into `docs/OPENERS.md` and
-migrate lessons; until then, `docs/OPENERS.md` stays authoritative and old lessons are untouched.
+The stepped (beat-driven) authoring model. U5 L2 (`src/lessons/mai-hl/u05-l02-cubic-and-power-models.js`)
+is the live example on the site; its earlier all-at-once version is kept for reference at
+`src/lessons/mai-hl/_archive/u05-l02-cubic-and-power-models.js.orig` (outside the lesson glob). The
+model is backward compatible: a scene opts in only by declaring a `beats` array, so `docs/OPENERS.md`
+still describes every non-stepped lesson exactly. New context scenes should use this model; fold its
+rules into `docs/OPENERS.md` as more lessons adopt it.
 
 ## Why this exists
 
@@ -142,13 +144,15 @@ A scene with `cards` and no `beats` stays a pure explorer: cards follow the cont
 no working. In U5 L2 stepped these are scenes 4 to 6 (polynomial, direct, inverse), identical to the
 original. Mixing stepped context scenes and card recap scenes in one lesson is expected.
 
-### A second menu entry for the same lesson
+### A second menu entry for the same lesson (`tag`)
 
-`tag: 'stepped'` (with an optional `tagLabel`) gives a lesson its own menu card and deep link
-(`#mai-hl-u05-l02-stepped`) beside the original, for A/B comparison without touching it. A `tag` is
-different from a `variant`: a variant is the same lesson drawn by another engine, chosen by the
-header toggle and hidden from the menu; a tag is a separate menu entry. `npm run artifact -- <key>`
-accepts the tagged key.
+`tag: '<name>'` (with an optional `tagLabel`) gives a lesson its own menu card and deep link
+(`#mai-hl-u05-l02-<name>`) beside another lesson of the same unit and lesson, for A/B comparison
+without touching the other. A `tag` is different from a `variant`: a variant is the same lesson drawn
+by another engine, chosen by the header toggle and hidden from the menu; a tag is a separate menu
+entry. `npm run artifact -- <key>` accepts the tagged key. The U5 L2 rework used a tag during review;
+once accepted it dropped the tag and took the canonical `#mai-hl-u05-l02`, and the old version moved
+to `_archive/`. Keep the tag mechanism for the next such comparison.
 
 ## Authoring rules carried over (still apply)
 
@@ -185,9 +189,9 @@ segmented toggle is clicked (it re-reads the live control count each step). Run:
 
 ```bash
 npm run build && npm run serve
-node qa/check.mjs mai-hl-u05-l02-stepped     # the stepped proof of concept
-node qa/check.mjs mai-hl-u05-l02             # the original, to confirm no regression
-npm run artifact -- mai-hl-u05-l02-stepped "U5 L2 Opener (Stepped)"
+node qa/check.mjs mai-hl-u05-l02             # the stepped U5 L2 (canonical)
+node qa/check.mjs mai-hl-u11-l09             # a non-stepped lesson, to confirm no regression
+npm run artifact -- mai-hl-u05-l02 "U5 L2 Opener"
 ```
 
 ## Open questions for Ben
