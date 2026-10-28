@@ -17,13 +17,16 @@ The walk-through model plays an opener as one curated sequence of beats, like ad
 
 One segment per beat, one fixed colour per beat kind, shaded up to the furthest beat reached. The current beat is ringed. Scene starts are taller and set apart by a gap.
 
-| Kind | Colour (role in `src/kit/style.js`) | Made by |
-|---|---|---|
-| Scene start | ink | the first beat of every scene, built automatically |
-| Question posed | strip blue | each prompt, built automatically |
-| Working step | muted | each step without `answer` or `play` |
-| Answer (payoff) | answer orange | a step with `answer: true` |
-| Animation | curve teal | a step with `play: '<param>'` |
+| Kind | Letter | Colour (role in `src/kit/style.js`) | Made by |
+|---|---|---|---|
+| Scene start | scene number (`1`, `2`, `3`) | ink | the first beat of every scene, built automatically |
+| Recap (explore) | `E` | ink | a scene with `cards` and no prompts |
+| Question posed | `Q` | strip blue | each prompt, built automatically |
+| Working step | `W` | muted | each step without `answer` or `play` |
+| Solution | `S` | answer orange | a step with `answer: true` |
+| Animation | `A` | curve teal | a step with `play: '<param>'` |
+
+Each segment carries its letter (`beatLetter` in `src/main.js`). Scene starts show their number because `S` is taken by Solution. When segments get narrower than 13 px (a long walk, or a phone) the letters hide and the colours carry the meaning; the walk check enforces this.
 
 Hover, focus, or touch a segment to see the scene and beat name. Press and drag along the bar to scrub. Click the beat you are on to reset it. `BEAT_COLORS` in `src/kit/style.js` and the `--k-*` variables in `src/shell.css` hold the colours; keep them in step.
 

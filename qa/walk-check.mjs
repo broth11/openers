@@ -159,6 +159,35 @@ export async function walkCheck(page, w, h, outDir) {
   }
   report('every beat fits (no sideways scroll, no scrolling pane, labels inside the graph)', true)
 
+  // ---------- the letters on the bar (every beat has been reached by now, so every segment is solid)
+  const marks = await page.evaluate(() => {
+    const rgb = (c) => (c.match(/[\d.]+/g) || []).slice(0, 3).map(Number)
+    const lum = ([r, g, b]) => { const f = (v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4 }; return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b) }
+    const ratio = (a, b) => { const [x, y] = [lum(rgb(a)), lum(rgb(b))].sort((p, q) => q - p); return (x + 0.05) / (y + 0.05) }
+    return [...document.querySelectorAll('.tl-b')].map((b) => {
+      const sp = b.querySelector('span')
+      const cs = getComputedStyle(b)
+      return {
+        kind: (b.className.match(/k-(\w+)/) || [])[1], letter: sp?.textContent,
+        shown: sp ? getComputedStyle(sp).display !== 'none' : false,
+        fits: sp ? sp.scrollWidth <= b.clientWidth + 1 && sp.getBoundingClientRect().width <= b.getBoundingClientRect().width + 0.5 : false,
+        bg: cs.backgroundColor, contrast: Math.round(ratio(cs.color, cs.backgroundColor) * 10) / 10,
+      }
+    })
+  })
+  const want = { pose: 'Q', step: 'W', answer: 'S', animate: 'A' }
+  const wrongLetter = marks.filter((m) => (m.kind === 'scene' ? !/^(\d|E)$/.test(m.letter || '') : m.letter !== want[m.kind]))
+  report('every segment carries the right letter', wrongLetter.length === 0, { wrong: wrongLetter.slice(0, 3) })
+  const byKind = {}
+  for (const m of marks) byKind[m.kind] = m.bg
+  report('reached segments have one distinct colour per kind', new Set(Object.values(byKind)).size === Object.keys(byKind).length, { byKind })
+  if (wide) {
+    report('letters are shown and fit their segments', marks.every((m) => m.shown && m.fits), { hidden: marks.filter((m) => !m.shown || !m.fits).length, of: marks.length })
+    report('letters have enough contrast (3:1)', marks.every((m) => m.contrast >= 3), { low: marks.filter((m) => m.contrast < 3).map((m) => [m.kind, m.contrast]).slice(0, 3) })
+  } else {
+    report('letters are left off a narrow bar', marks.every((m) => !m.shown), { shown: marks.filter((m) => m.shown).length })
+  }
+
   // ---------- determinism: the same state going back, and after jumps in a scrambled order
   const back = []
   for (let i = n - 1; i >= 0; i--) { await jump(i); await page.waitForTimeout(40); back[i] = await fingerprint(page) }

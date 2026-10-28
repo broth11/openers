@@ -469,7 +469,10 @@ document.fonts?.ready.then(() => fitWalkPane())
 
 // The timeline: one segment per beat, coloured by kind (shell.css --k-*), shaded up to the furthest beat
 // reached, the current beat ringed, each scene's first beat set apart with a gap.
-const KIND_NAME = { scene: 'Scene start', pose: 'Question', step: 'Working', answer: 'Answer', animate: 'Animation' }
+const KIND_NAME = { scene: 'Scene start', pose: 'Question', step: 'Working', answer: 'Solution', animate: 'Animation' }
+// The letter on a segment: Q question, W working, S solution, A animation. A scene start shows its scene
+// number (S is taken), and the recap's free-play beat shows E for explore.
+const beatLetter = (b) => (b.kind === 'scene' ? (b.explore ? 'E' : String(b.scene + 1)) : { pose: 'Q', step: 'W', answer: 'S', animate: 'A' }[b.kind])
 const plain = (s) => String(s || '').replace(/[$\\{}^_]/g, '').replace(/\s+/g, ' ').trim()
 function beatTip(i) {
   const b = TL[i]
@@ -483,12 +486,20 @@ function renderTimeline() {
   const n = TL.length
   setHTML($('tlTrack'), TL.map((b, i) => {
     const cls = ['tl-b', `k-${b.kind}`, i <= S.furthest ? 'reached' : '', i === S.wbeat ? 'now' : '', b.kind === 'scene' && i > 0 ? 'gap' : ''].filter(Boolean).join(' ')
-    return `<button type="button" class="${cls}" data-wbeat="${i}" data-tip="${beatTip(i).replace(/"/g, '&quot;')}" aria-label="Beat ${i + 1} of ${n}: ${KIND_NAME[b.kind]}, ${plain(b.label).replace(/"/g, '')}" aria-current="${i === S.wbeat}"></button>`
+    return `<button type="button" class="${cls}" data-wbeat="${i}" data-tip="${beatTip(i).replace(/"/g, '&quot;')}" aria-label="Beat ${i + 1} of ${n}: ${KIND_NAME[b.kind]}, ${plain(b.label).replace(/"/g, '')}" aria-current="${i === S.wbeat}"><span aria-hidden="true">${beatLetter(b)}</span></button>`
   }).join(''))
+  fitTimelineLetters()
   $('tlCount').textContent = `${S.wbeat + 1} / ${n}`
   $('tlBack').disabled = S.wbeat === 0
   $('tlNext').disabled = S.wbeat === n - 1
 }
+// The letters need about 13 px a segment. On a narrow bar (a phone) they are left off and the colours carry it.
+function fitTimelineLetters() {
+  const track = $('tlTrack')
+  const first = track.querySelector('.tl-b')
+  if (first) track.classList.toggle('bare', first.getBoundingClientRect().width < 13)
+}
+window.addEventListener('resize', () => requestAnimationFrame(fitTimelineLetters))
 // Hover, focus, or a long press on a segment names the scene and the beat.
 function showTip(btn) {
   const tip = $('tlTip')
