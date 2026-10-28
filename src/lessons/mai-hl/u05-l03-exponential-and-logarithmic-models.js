@@ -155,7 +155,7 @@ export default {
           choices: ['$0$ °C', 'the temperature of the room', '$78.7$ °C'], correct: 1,
           steps: [
             { caption: 'Heat flows from hot to cool', note: 'The coffee loses heat to the air in the room, quickly at first.' },
-            { caption: 'It levels off', note: 'Once it is as warm as the room there is nothing left to lose, so the temperature stops falling. It does not go to $0$ °C.', answer: true },
+            { caption: 'It levels off', latex: '&\\text{It approaches the}\\\\&\\text{temperature of the room}', note: 'Once it is as warm as the room there is nothing left to lose, so the temperature stops falling. It does not go to $0$ °C.', answer: true },
           ],
         },
         {
@@ -196,7 +196,7 @@ export default {
           choices: ['$43$ wpm, no more gains', 'about $66$ wpm', 'about $270$ wpm'], correct: 1,
           steps: [
             { caption: 'From 1 hour to 10 hours', latex: '43.03-20&=23.03', note: 'Ten times the practice added $23.03$ words per minute.' },
-            { caption: 'From 10 hours to 100 hours', latex: '43.03+23.03&=66.06', answer: true, reveals: ['p100'], note: 'Another tenfold increase adds about the same again. Steady gains would give about $270$, so the gains are slowing.' },
+            { caption: 'From 10 hours to 100 hours', latex: '43.03+23.03&=66.06\\\\&\\approx 66\\text{ wpm}', answer: true, reveals: ['p100'], note: 'Another tenfold increase adds about the same again. Steady gains would give about $270$, so the gains are slowing.' },
           ],
         },
         {
@@ -214,7 +214,7 @@ export default {
           steps: [
             { caption: 'At 0.1 hours', latex: 'S(0.1)&=20+10\\ln 0.1\\\\&=-3.03', reveals: ['model', 'neg'], note: 'A negative typing speed is impossible.' },
             { caption: 'At 5000 hours', latex: 'S(5000)&=20+10\\ln 5000\\\\&=105', note: 'Still rising after 5000 hours, with no ceiling.' },
-            { caption: 'Limitation', answer: true, note: 'The model gives a negative speed for $h<0.135$, so it fails for very little practice. It also never levels off, so it cannot hold for very long practice. Say which, and say why.' },
+            { caption: 'Limitation', latex: '&\\text{Negative for }h<0.135\\\\&\\text{No ceiling at large }h', answer: true, note: 'The model gives a negative speed for $h<0.135$, so it fails for very little practice. It also never levels off, so it cannot hold for very long practice. Say which, and say why.' },
           ],
         },
       ],
@@ -234,7 +234,7 @@ export default {
           choices: ['about $2$ times', 'about $24$ times', 'about $250$ times'], correct: 2,
           steps: [
             { caption: 'Each pH step is a factor of 10', note: 'Lowering the pH by $1$ multiplies $[\\mathrm{H}^+]$ by $10$.' },
-            { caption: 'The lemon is 2.4 steps below the tomato', latex: '10^2&=100\\\\10^3&=1000', answer: true, note: '$2.4$ steps lies between $2$ and $3$, so the answer is between $100$ and $1000$: about $250$. Question 3 finds it exactly.' },
+            { caption: 'The lemon is 2.4 steps below the tomato', latex: '10^2&=100\\\\10^3&=1000\\\\&\\Rightarrow\\text{about }250\\\\&\\text{times stronger}', answer: true, note: '$2.4$ steps lies between $2$ and $3$, so the answer is between $100$ and $1000$: about $250$. Question 3 finds it exactly.' },
           ],
         },
         {

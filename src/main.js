@@ -470,9 +470,9 @@ document.fonts?.ready.then(() => fitWalkPane())
 // The timeline: one segment per beat, coloured by kind (shell.css --k-*), shaded up to the furthest beat
 // reached, the current beat ringed, each scene's first beat set apart with a gap.
 const KIND_NAME = { scene: 'Scene start', pose: 'Question', step: 'Working', answer: 'Solution', animate: 'Animation' }
-// The letter on a segment: Q question, W working, S solution, A animation. A scene start shows its scene
-// number (S is taken), and the recap's free-play beat shows E for explore.
-const beatLetter = (b) => (b.kind === 'scene' ? (b.explore ? 'E' : String(b.scene + 1)) : { pose: 'Q', step: 'W', answer: 'S', animate: 'A' }[b.kind])
+// The letter on a segment: Q1, Q2... a question (with its number in the scene), W working, S solution,
+// A animation. A scene start shows its scene number (S is taken) and the recap's free-play beat shows R.
+const beatLetter = (b) => (b.kind === 'scene' ? (b.explore ? 'R' : String(b.scene + 1)) : b.kind === 'pose' ? `Q${b.qi + 1}` : { step: 'W', answer: 'S', animate: 'A' }[b.kind])
 const plain = (s) => String(s || '').replace(/[$\\{}^_]/g, '').replace(/\s+/g, ' ').trim()
 function beatTip(i) {
   const b = TL[i]
@@ -488,18 +488,22 @@ function renderTimeline() {
     const cls = ['tl-b', `k-${b.kind}`, i <= S.furthest ? 'reached' : '', i === S.wbeat ? 'now' : '', b.kind === 'scene' && i > 0 ? 'gap' : ''].filter(Boolean).join(' ')
     return `<button type="button" class="${cls}" data-wbeat="${i}" data-tip="${beatTip(i).replace(/"/g, '&quot;')}" aria-label="Beat ${i + 1} of ${n}: ${KIND_NAME[b.kind]}, ${plain(b.label).replace(/"/g, '')}" aria-current="${i === S.wbeat}"><span aria-hidden="true">${beatLetter(b)}</span></button>`
   }).join(''))
-  fitTimelineLetters()
+  scrollTimelineToNow()
   $('tlCount').textContent = `${S.wbeat + 1} / ${n}`
   $('tlBack').disabled = S.wbeat === 0
   $('tlNext').disabled = S.wbeat === n - 1
 }
-// The letters need about 13 px a segment. On a narrow bar (a phone) they are left off and the colours carry it.
-function fitTimelineLetters() {
+// The bar scrolls sideways when the beats do not fit at a readable size. Keep the current beat in view.
+function scrollTimelineToNow() {
   const track = $('tlTrack')
-  const first = track.querySelector('.tl-b')
-  if (first) track.classList.toggle('bare', first.getBoundingClientRect().width < 13)
+  const now = track.querySelector('.tl-b.now')
+  if (!now) return
+  const t = track.getBoundingClientRect()
+  const r = now.getBoundingClientRect()
+  const pad = 48
+  if (r.left < t.left + pad) track.scrollLeft += r.left - t.left - pad
+  else if (r.right > t.right - pad) track.scrollLeft += r.right - t.right + pad
 }
-window.addEventListener('resize', () => requestAnimationFrame(fitTimelineLetters))
 // Hover, focus, or a long press on a segment names the scene and the beat.
 function showTip(btn) {
   const tip = $('tlTip')
@@ -556,21 +560,29 @@ const hideTip = () => { $('tlTip').hidden = true }
 // ---------- controls
 function renderControls() {
   const ids = controlsOf(scene())
-  const html = ids
-    .map((id) => {
+  const parts = {}
+  ids.forEach((id) => {
       const p = L.params[id]
       const v = S.values[id]
       if (p.type === 'seg') {
-        return `<div class="ctl seg-ctl"><span class="lab">${p.label}</span><div class="seg" role="group" aria-label="${p.label}">${p.options
+        parts[id] = `<div class="ctl seg-ctl"><span class="lab">${p.label}</span><div class="seg" role="group" aria-label="${p.label}">${p.options
           .map(([val, txt]) => `<button type="button" data-seg="${id}" data-val="${val}" aria-pressed="${val === v}">${txt}</button>`)
           .join('')}</div></div>`
+        return
       }
       const play = p.play ? `<button type="button" class="play-btn" data-play="${id}" aria-label="Play ${p.label}" aria-pressed="${S.playing === id}">${S.playing === id ? '❚❚' : '▶'}</button>` : ''
-      return `<div class="ctl"><label for="r-${id}"><span class="lab-l">${play}${p.label}</span><output id="o-${id}"></output></label>
+      parts[id] = `<div class="ctl"><label for="r-${id}"><span class="lab-l">${play}${p.label}</span><output id="o-${id}"></output></label>
         <input type="range" id="r-${id}" data-range="${id}" min="${p.min}" max="${p.max}" step="${p.step}" value="${v}" class="${p.sel ? 'sel' : ''}"></div>`
-    })
-    .join('')
-  setHTML($('controls'), html)
+  })
+  const html = { parts, all: ids.map((id) => parts[id]).join('') }
+  // Walk lessons: switches share the top row and the sliders (parameters) take the bottom row.
+  const segIds = ids.filter((id) => L.params[id].type === 'seg')
+  const rows = isWalk() && segIds.length && segIds.length < ids.length
+  $('controls').classList.toggle('rows', !!rows)
+  if (rows) {
+    const mk = (id) => html.parts[id]
+    setHTML($('controls'), `<div class="ctl-row ctl-top">${segIds.map(mk).join('')}</div><div class="ctl-row ctl-bottom">${ids.filter((id) => !segIds.includes(id)).map(mk).join('')}</div>`)
+  } else setHTML($('controls'), html.all)
   syncControls()
 }
 

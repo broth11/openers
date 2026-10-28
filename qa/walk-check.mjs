@@ -55,7 +55,7 @@ export async function walkCheck(page, w, h, outDir) {
     const seg = [...document.querySelectorAll('.tl-b')].map((b) => b.getBoundingClientRect().width)
     return { visible: r.height > 0 && r.left >= -1 && r.right <= innerWidth + 1, present, colors, distinct: new Set(colors).size === colors.length, minSeg: Math.min(...seg) }
   })
-  report('timeline', n >= 2 && tl.visible && tl.distinct && tl.minSeg >= 2 && tl.present.includes('scene') && tl.present.includes('pose'), { n, ...tl })
+  report('timeline', n >= 2 && tl.visible && tl.distinct && tl.minSeg >= 26 && tl.present.includes('scene') && tl.present.includes('pose'), { n, ...tl })
   if (wide) {
     const ratio = await page.evaluate(() => {
       const a = document.querySelector('#qa').getBoundingClientRect().width
@@ -175,18 +175,57 @@ export async function walkCheck(page, w, h, outDir) {
       }
     })
   })
-  const want = { pose: 'Q', step: 'W', answer: 'S', animate: 'A' }
-  const wrongLetter = marks.filter((m) => (m.kind === 'scene' ? !/^(\d|E)$/.test(m.letter || '') : m.letter !== want[m.kind]))
+  // Q1, Q2... for a question (numbered in its scene), W, S, A; a scene start shows its number, the recap R.
+  const wrongLetter = marks.filter((m) => !(m.kind === 'scene' ? /^(\d|R)$/.test(m.letter || '')
+    : m.kind === 'pose' ? /^Q[1-9]$/.test(m.letter || '') : m.letter === { step: 'W', answer: 'S', animate: 'A' }[m.kind]))
   report('every segment carries the right letter', wrongLetter.length === 0, { wrong: wrongLetter.slice(0, 3) })
+  const qLetters = marks.filter((m) => m.kind === 'pose').map((m) => m.letter)
+  report('question letters count up from Q1 in each scene', qLetters.every((l, i) => l === 'Q1' ? true : l === `Q${+qLetters[i - 1].slice(1) + 1}`), { qLetters })
   const byKind = {}
   for (const m of marks) byKind[m.kind] = m.bg
   report('reached segments have one distinct colour per kind', new Set(Object.values(byKind)).size === Object.keys(byKind).length, { byKind })
-  if (wide) {
-    report('letters are shown and fit their segments', marks.every((m) => m.shown && m.fits), { hidden: marks.filter((m) => !m.shown || !m.fits).length, of: marks.length })
-    report('letters have enough contrast (3:1)', marks.every((m) => m.contrast >= 3), { low: marks.filter((m) => m.contrast < 3).map((m) => [m.kind, m.contrast]).slice(0, 3) })
-  } else {
-    report('letters are left off a narrow bar', marks.every((m) => !m.shown), { shown: marks.filter((m) => m.shown).length })
+  report('letters are shown and fit their segments', marks.every((m) => m.shown && m.fits), { hidden: marks.filter((m) => !m.shown || !m.fits).length, of: marks.length })
+  report('letters have enough contrast (3:1)', marks.every((m) => m.contrast >= 3), { low: marks.filter((m) => m.contrast < 3).map((m) => [m.kind, m.contrast]).slice(0, 3) })
+  // The bar scrolls sideways when the beats do not fit; the current beat is always inside it.
+  const inView = []
+  for (const i of [n - 1, 0, Math.floor(n / 2)]) {
+    await jump(i)
+    inView.push(await page.evaluate((k) => {
+      const t = document.querySelector('#tlTrack').getBoundingClientRect()
+      const r = document.querySelector(`.tl-b[data-wbeat="${k}"]`).getBoundingClientRect()
+      return r.left >= t.left - 1 && r.right <= t.right + 1
+    }, i))
   }
+  report('the current beat stays in view on the bar', inView.every(Boolean), { inView })
+  // Every Solution step restates its answer in a coloured box (a worked equation), not only in a sentence.
+  const unboxed = []
+  for (let i = 0; i < n; i++) {
+    if (kinds[i] !== 'answer') continue
+    await jump(i)
+    const boxed = await page.evaluate(() => {
+      const eq = document.querySelector('.work-block.current.answer .work-equation')
+      return !!eq && getComputedStyle(eq).backgroundColor !== 'rgba(0, 0, 0, 0)'
+    })
+    if (!boxed) unboxed.push(i)
+  }
+  report('every Solution step is in a coloured box', unboxed.length === 0, { unboxed })
+  // The recap: switches share the top row and every parameter sits on the bottom row.
+  await jump(n - 1)
+  const rc2 = await page.evaluate(() => {
+    const top = document.querySelector('.controls .ctl-top'), bot = document.querySelector('.controls .ctl-bottom')
+    if (!top || !bot) return null
+    const ids = [...top.querySelectorAll('.ctl')].map((c) => c.getBoundingClientRect())
+    const sl = [...bot.querySelectorAll('.ctl')].map((c) => c.getBoundingClientRect())
+    return {
+      segsOnTop: top.querySelectorAll('.seg').length >= 2 && !top.querySelector('input[type=range]'),
+      slidersOnBottom: sl.length >= 2 && !bot.querySelector('.seg'),
+      oneRowEach: new Set(ids.map((r) => Math.round(r.top))).size === 1 && new Set(sl.map((r) => Math.round(r.top))).size === 1,
+      topAboveBottom: Math.max(...ids.map((r) => r.bottom)) <= Math.min(...sl.map((r) => r.top)) + 1,
+    }
+  })
+  // (on a phone the two switches may wrap onto two lines; the rows themselves still hold)
+  if (rc2 && !wide) delete rc2.oneRowEach
+  report('recap controls: switches on the top row, parameters on the bottom row', !!rc2 && Object.values(rc2).every(Boolean), { rc2 })
 
   // ---------- determinism: the same state going back, and after jumps in a scrambled order
   const back = []

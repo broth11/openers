@@ -20,15 +20,15 @@ One segment per beat, one fixed colour per beat kind, shaded up to the furthest 
 | Kind | Letter | Colour (role in `src/kit/style.js`) | Made by |
 |---|---|---|---|
 | Scene start | scene number (`1`, `2`, `3`) | ink | the first beat of every scene, built automatically |
-| Recap (explore) | `E` | ink | a scene with `cards` and no prompts |
-| Question posed | `Q` | strip blue | each prompt, built automatically |
+| Recap (explore) | `R` | ink | a scene with `cards` and no prompts |
+| Question posed | `Q1`, `Q2`, ... (the question's number in its scene) | strip blue | each prompt, built automatically |
 | Working step | `W` | muted | each step without `answer` or `play` |
 | Solution | `S` | answer orange | a step with `answer: true` |
 | Animation | `A` | curve teal | a step with `play: '<param>'` |
 
-Each segment carries its letter (`beatLetter` in `src/main.js`). Scene starts show their number because `S` is taken by Solution. When segments get narrower than 13 px (a long walk, or a phone) the letters hide and the colours carry the meaning; the walk check enforces this.
+Each segment carries its letter (`beatLetter` in `src/main.js`). Scene starts show their number because `S` is taken by Solution. The bar scrolls sideways when the beats do not fit at a readable size (each segment is at least 30 px), and it keeps the current beat in view. On a touch screen a drag scrolls the bar and a tap jumps; with a mouse, press and drag still scrubs.
 
-Hover, focus, or touch a segment to see the scene and beat name. Press and drag along the bar to scrub. Click the beat you are on to reset it. `BEAT_COLORS` in `src/kit/style.js` and the `--k-*` variables in `src/shell.css` hold the colours; keep them in step.
+Hover, focus, or touch a segment to see the scene and beat name. With a mouse, press and drag along the bar to scrub. Click the beat you are on to reset it. `BEAT_COLORS` in `src/kit/style.js` and the `--k-*` variables in `src/shell.css` hold the colours; keep them in step.
 
 Keys: Right and Left (or Page Down and Page Up) step a beat, Home and End jump to the ends, `P` pauses, `F` is full screen.
 
@@ -69,13 +69,16 @@ export default {
 - `play: '<param>'` makes the step an animation beat. The param must be a range with `play: { seconds }`. The beat sets that slider to its maximum, which is where the sweep ends; put the step after the one that reveals the slider.
 - `set: { param: value }` on a step is a delta on the slider values from that beat on. Use it to start a beat from a chosen value. Values fold across the whole lesson, because sliders are shared by every scene.
 - `cue(ctx)` on a step adds transient graph marks while that step is current.
+- **Every Solution step needs `latex`.** The answer is restated in the coloured box, not only in a sentence. On a predict question, end the box with the conclusion (`&\\approx 66\\text{ wpm}`); for a worded answer use `&\\text{...}` lines. The walk check fails on a Solution step with no box.
+- **Controls:** when a scene has switches (`type: 'seg'`) and sliders, the switches share the top row and every slider sits on the bottom row. A scene with only sliders is unchanged.
 - `shown(id)` is true once the question is posed; `beat` is the beat's index within its scene.
 
 ## Checking
 
 `node qa/check.mjs <lesson-key>` detects a walk lesson (the bottom bar is visible) and runs `qa/walk-check.mjs` at 1366x768, 1440x860, 1920x1080, and a 412-wide phone. It fails on:
 
-- a timeline that is hidden, has two beat kinds of the same colour, or has segments narrower than 2 px
+- a timeline that is hidden, has two beat kinds of the same colour, has segments narrower than 26 px, a wrong letter (Q1, Q2 count up in each scene), a letter that does not fit, or a current beat scrolled out of view
+- a Solution step with no coloured box, or a recap whose switches and sliders are not on separate rows
 - a split other than 2/5 and 3/5 on a wide screen
 - at any beat: sideways scroll, a scrolling left pane (wide screens), a label outside the graph, working that overflows, or a control label that wraps
 - a scene's first beat showing a question, working, a model equation, or a computed value; a pose beat that adds any label to the graph, changes the readout, or shows working
