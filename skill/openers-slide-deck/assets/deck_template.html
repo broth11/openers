@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!--PART-A-->
+<title>{{TITLE}}</title>
+{{FONT_CSS}}
+{{KATEX_CSS}}
+<style>
+/* ===== Theme: very light sky blue, fixed in both colour schemes. Indigo = answer, teal = [NC]/[C] tag. ===== */
+:root{
+  --pagebg:#EAF4FB; --stagebg:#F4FAFE; --ground:#F4FAFE;
+  --card:#FFFFFF; --cardline:#CBDDEA; --cardshadow:none;
+  --title:#14202B; --titledim:#55636F; --eyebrow:#46566A;
+  --tagtx:#0B6E63; --tagline:#0B6E63; --tagbg:transparent; --tagbgC:rgba(11,110,99,.10);
+  --framing:#34424F; --framingem:#14202B;
+  --mathink:#14202B; --prose:#23303B; --note:#55636F; --noteem:#14202B;
+  --code:#EAF2F8; --codetx:#14202B;
+  --foot:#46566A; --navtx:#2B3844; --navline:#C3D6E4; --navbg:rgba(255,255,255,.7);
+  --navbghover:#fff; --dot:#BCD0DF; --doton:#4230A8; --hint:#55636F;
+  --gr:#55636F; --bl:#4230A8; --hl:#8A5A00;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+  --pagebg:#EAF4FB; --stagebg:#F4FAFE; --ground:#F4FAFE;
+  --card:#FFFFFF; --cardline:#CBDDEA; --cardshadow:none;
+  --title:#14202B; --titledim:#55636F; --eyebrow:#46566A;
+  --tagtx:#0B6E63; --tagline:#0B6E63; --tagbg:transparent; --tagbgC:rgba(11,110,99,.10);
+  --framing:#34424F; --framingem:#14202B;
+  --mathink:#14202B; --prose:#23303B; --note:#55636F; --noteem:#14202B;
+  --code:#EAF2F8; --codetx:#14202B;
+  --foot:#46566A; --navtx:#2B3844; --navline:#C3D6E4; --navbg:rgba(255,255,255,.7);
+  --navbghover:#fff; --dot:#BCD0DF; --doton:#4230A8; --hint:#55636F;
+  --gr:#55636F; --bl:#4230A8; --hl:#8A5A00;
+  color-scheme: light;
+  }
+}
+:root[data-theme="dark"]{
+  --pagebg:#EAF4FB; --stagebg:#F4FAFE; --ground:#F4FAFE;
+  --card:#FFFFFF; --cardline:#CBDDEA; --cardshadow:none;
+  --title:#14202B; --titledim:#55636F; --eyebrow:#46566A;
+  --tagtx:#0B6E63; --tagline:#0B6E63; --tagbg:transparent; --tagbgC:rgba(11,110,99,.10);
+  --framing:#34424F; --framingem:#14202B;
+  --mathink:#14202B; --prose:#23303B; --note:#55636F; --noteem:#14202B;
+  --code:#EAF2F8; --codetx:#14202B;
+  --foot:#46566A; --navtx:#2B3844; --navline:#C3D6E4; --navbg:rgba(255,255,255,.7);
+  --navbghover:#fff; --dot:#BCD0DF; --doton:#4230A8; --hint:#55636F;
+  --gr:#55636F; --bl:#4230A8; --hl:#8A5A00;
+  color-scheme: light;
+}
+
+/* ===== Frame ===== */
+html,body{height:100%;margin:0}
+body{--textfont:'STIX Two Text','STIX Two Math',Georgia,'Times New Roman',serif;background:var(--pagebg);color:var(--prose);font-family:var(--textfont);overflow:hidden}
+#frame{position:fixed;inset:0;padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px);
+  background:var(--stagebg);container-type:size;display:grid;grid-template-rows:1fr auto;overflow:hidden;
+  /* Manim units: 1 u = 1/8 of the slide height; a Manim font size f is f x 0.1347cqh.
+     hero 78, title 42, stem/prompt/working/Your turn 26, small 21 (eyebrow, tag, ticks, readouts):
+     the corpus ratios title : text : small = 1.6 : 1 : 0.8, set at 26 so a worked example fits at
+     1280x800 (teacher, 29/09/2026 — 30 left ~4 working rows under a 3-line stem) */
+  --u:12.5cqh;
+  --b1:max(4px,1.25cqh); --b2:max(8px,3.125cqh); --b3:max(12px,6.25cqh); --b4:max(20px,12.5cqh);
+  --fs-eyebrow:calc(max(11px,min(1.63cqw,2.83cqh))*var(--G,1));
+  --fs-title:calc(max(16.2px,min(3.23cqw,5.66cqh))*var(--G,1));
+  --fs-hero:calc(max(38px,min(5.97cqw,10.51cqh))*var(--G,1));
+  --fs-body:calc(max(12px,min(1.95cqw,3.5cqh))*var(--G,1));
+  --fs-stem:calc(max(13px,min(1.95cqw,3.5cqh))*var(--G,1));
+  --fs-math:calc(max(11px,min(1.95cqw,3.5cqh))*var(--G,1));
+  --fs-small:calc(max(11px,min(1.63cqw,2.83cqh))*var(--G,1));
+  --fs-foot:max(11px,min(0.98cqw,1.7cqh));
+  /* to_edge: the same absolute length on all four sides (0.5 u) */
+  --padx:max(16px,6.25cqh); --pady:max(14px,6.25cqh);
+}
+/* registered as lengths: resolved once on #frame, so a cqw inside a graph (an inline-size container) never rescales them */
+@property --fs-eyebrow{syntax:'<length>';inherits:true;initial-value:12px}
+@property --fs-title{syntax:'<length>';inherits:true;initial-value:18px}
+@property --fs-hero{syntax:'<length>';inherits:true;initial-value:40px}
+@property --fs-body{syntax:'<length>';inherits:true;initial-value:14px}
+@property --fs-stem{syntax:'<length>';inherits:true;initial-value:14px}
+@property --fs-math{syntax:'<length>';inherits:true;initial-value:14px}
+@property --fs-small{syntax:'<length>';inherits:true;initial-value:12px}
+@property --fs-foot{syntax:'<length>';inherits:true;initial-value:12px}
+@property --b1{syntax:'<length>';inherits:true;initial-value:4px}
+@property --b2{syntax:'<length>';inherits:true;initial-value:8px}
+@property --b3{syntax:'<length>';inherits:true;initial-value:12px}
+@property --b4{syntax:'<length>';inherits:true;initial-value:20px}
+@property --padx{syntax:'<length>';inherits:true;initial-value:16px}
+@property --pady{syntax:'<length>';inherits:true;initial-value:14px}
+#slides{position:relative;overflow:hidden;min-height:0}
+.slide{position:absolute;inset:0;display:none;flex-direction:column;gap:var(--b2);
+  padding:var(--pady) var(--padx);box-sizing:border-box;overflow:hidden}
+.slide.active{display:flex}
+.slide.measure:not(.active){display:flex;visibility:hidden}
+.eyebrow{font-size:var(--fs-eyebrow);font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--eyebrow);display:flex;gap:.8em;align-items:center;flex-wrap:wrap}
+.tag{display:inline-block;border:0;color:var(--tagtx);background:none;padding:0;letter-spacing:.08em;font-weight:700}   /* no frame (teacher, 29/09/2026) */
+h1,h2{margin:0;color:var(--title);font-weight:600;letter-spacing:-.015em;text-wrap:balance;line-height:1.12}
+h2{font-size:var(--fs-title)}
+h2 .dim{color:var(--note);font-weight:600}
+.panel{background:var(--card);border:1px solid var(--cardline);border-radius:4px;box-shadow:var(--cardshadow);
+  padding:max(12px,2.6cqh) max(14px,2.4cqw);box-sizing:border-box;min-height:0}
+.katex{color:var(--mathink)}
+/* one family throughout: STIX Two Text for prose and headings, STIX Two Math for maths (embedded, OFL): STIX Two Math for symbols and upright, STIX Two Text italic for variables */
+.katex{font-family:'STIX Two Math','KaTeX_Main',serif;font-size:1.1em}
+.katex .mathnormal,.katex .mathit,.katex .boldsymbol{font-family:'STIX Two Text','KaTeX_Math',serif;font-style:italic}
+.katex .mathrm,.katex .textrm,.katex .text,.katex .mord.text{font-family:'STIX Two Text','STIX Two Math','KaTeX_Main',serif;font-style:normal}
+.ans,.ans .katex{color:var(--bl)!important;font-weight:600}
+
+/* title slide */
+.s-title{justify-content:center;align-items:center;text-align:center;gap:max(12px,2.6cqh)}
+.s-title h1{font-size:var(--fs-hero);font-weight:600}
+.s-title .lede{font-size:var(--fs-stem);color:var(--framing);margin:0}
+.s-title .meta{font-size:var(--fs-body);color:var(--prose);margin:0;display:flex;gap:.7em;align-items:center;justify-content:center;flex-wrap:wrap}
+.s-title .rule{height:1px;background:var(--cardline);width:min(100%,40cqw)}
+.s-title .keys{font-size:var(--fs-small);color:var(--foot);margin:0}
+
+/* today */
+.can{margin:0;padding:0;list-style:none;display:grid;gap:max(6px,1.2cqh);font-size:var(--fs-stem);color:var(--title);max-width:62ch}
+.can li{padding-left:1.1em;position:relative;line-height:1.35}
+.can li::before{content:"";position:absolute;left:0;top:.62em;width:.45em;height:1.5px;background:var(--title)}
+.groups{display:grid;grid-template-columns:auto auto 1fr;gap:max(4px,.9cqh) max(12px,2cqw);font-size:var(--fs-body);align-items:baseline;
+  border-top:1px solid var(--cardline);padding-top:max(10px,2cqh)}
+.groups .c{font-weight:800;color:var(--title)}
+.groups .q{font-variant-numeric:tabular-nums;color:var(--eyebrow);font-weight:600}
+.groups .l{color:var(--prose)}
+
+/* question */
+.s-question .panel{font-size:var(--fs-stem);line-height:1.5;color:var(--title);max-width:70ch;display:flex;flex-direction:column;gap:max(10px,2cqh)}
+.s-question .panel p{margin:0}
+.s-question .prompt{font-size:var(--fs-body);color:var(--prose)}
+.follow{margin-top:auto;font-size:var(--fs-body);color:var(--eyebrow);border-top:1px solid var(--cardline);padding-top:max(8px,1.5cqh)}
+.follow b{color:var(--title);font-weight:700}
+
+/* solution */
+.framing{font-size:var(--fs-body);color:var(--framing);margin:0;max-width:70ch}
+.s-solution .panel{display:flex;flex-direction:column;gap:max(6px,1.4cqh);font-size:var(--fs-math);align-self:flex-start;max-width:100%;overflow:hidden}
+.s-solution .panel .katex-display{margin:0;text-align:left}
+.work-block .v-narrow{display:none} .work-block.narrow .v-wide{display:none} .work-block.narrow .v-narrow{display:block}
+.s-solution .panel .katex-display>.katex{text-align:left}
+.s-solution .panel p{margin:0;font-size:var(--fs-body);line-height:1.45;color:var(--prose);max-width:68ch}
+.note{font-size:var(--fs-body);color:var(--note);margin:0;line-height:1.45;max-width:68ch}
+.note .katex{color:var(--note)}
+[data-step].hid, .st.hid{visibility:hidden;opacity:0}
+
+/* example: question, graph and step-by-step solution on one slide */
+.s-example{--k:1}
+.ex{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"stem fig" "work fig" "note fig";grid-template-rows:auto auto auto;
+  column-gap:var(--b3);row-gap:var(--b2);min-height:0;flex:1;align-content:start}
+.ex .stem{grid-area:stem;font-size:calc(var(--fs-stem)*var(--k));line-height:1.35;color:var(--title);display:flex;flex-direction:column;gap:var(--b2)}
+.ex .stem p{margin:0} .ex .stem .prompt{font-size:calc(var(--fs-body)*var(--k));color:var(--prose)}
+.ex .panel.work{grid-area:work;display:flex;flex-direction:column;gap:0.6em;font-size:calc(var(--fs-stem)*var(--k));align-self:start;justify-self:start;max-width:100%;overflow:visible}
+.ex > *{min-height:auto}
+.ex .panel.work p{margin:0;font-size:calc(var(--fs-stem)*var(--k));line-height:1.5;color:var(--prose);max-width:68ch}
+.ex .note{grid-area:note;font-size:calc(var(--fs-body)*var(--k))}
+.ex .fig{grid-area:fig;display:flex;flex-direction:column;gap:var(--b2)}
+.ex .fig .lab-graph{width:min(40cqw,62cqh)}
+.ex .panel.work .katex-display{margin:0;text-align:left}
+@container (min-aspect-ratio: 3/4){
+  .ex{grid-template-areas:"stem fig" "work fig" "note fig";grid-template-rows:auto minmax(0,1fr) auto;align-content:stretch}
+  /* the working is anchored under the stem, left-aligned with it (Manim arrange(DOWN, aligned_edge=LEFT)); free space stays at the bottom */
+  .ex .panel.work{align-self:start;justify-self:start}
+  .ex .fig{align-self:stretch;min-height:0;height:100%}
+  .ex .fig .lab-graph{height:min(100%,43cqw);width:auto}
+  /* a stem over 3 lines in the text column spans the full width above the graph (set by fit) */
+  .ex.wide{grid-template-areas:"stem stem" "work fig" "note fig"}
+  .ex.wide .stem{max-width:none}
+}
+/* 16:9 screens (1470x830 MacBook window, 1920x1080, 1000x570): the text is height-bound there, so the square graph
+   gives up some width to the text column (33cqw: --G 0.946 -> 0.994 on Y2 L15 at 1470x830; 34cqw was not enough) */
+@container (min-aspect-ratio: 17/10){ .ex .fig .lab-graph{height:min(100%,33cqw)} }
+.ex .panel.work .katex-display>.katex{text-align:left}
+@container (max-aspect-ratio: 3/4){
+  .ex{grid-template-columns:minmax(0,1fr);grid-template-areas:"stem" "fig" "work" "note";grid-template-rows:auto}
+  .ex .fig .lab-graph{width:min(88cqw,33cqh)}
+}
+
+/* lab */
+.s-lab .lab{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto 1fr;grid-template-areas:"left head" "left ctl";
+  column-gap:max(16px,3.2cqw);row-gap:max(10px,2.2cqh);align-items:start;align-content:start;min-height:0;flex:1}
+.s-lab .lab-left{grid-area:left} .s-lab .lab-head{grid-area:head} .s-lab .lab-controls{grid-area:ctl}
+@container (min-aspect-ratio: 3/4){
+  .s-lab .lab{align-items:stretch;align-content:stretch;grid-template-rows:auto minmax(0,1fr)}
+  .s-lab .lab-left{align-self:stretch;min-height:0;height:100%}
+  .s-lab .lab-graph{height:min(100%,52cqw);width:auto;max-width:none} /* 52cqw: the controls keep ~40 % of the width on a 3:2 screen (MacBook Air) */
+  .s-lab .lab-head,.s-lab .lab-controls{align-self:start}
+}
+@container (max-aspect-ratio: 3/4){
+  .s-lab .lab{grid-template-columns:minmax(0,1fr);grid-template-rows:auto;grid-template-areas:"head" "left" "ctl"}
+  .s-lab .lab-graph{width:min(88cqw,42cqh)} .s-lab .lab-instruction{max-width:none}
+  .s-lab .lab-controls{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:max(8px,1.4cqh) 4cqw}
+  .s-lab .lab.sys2 .lab-group:first-child{grid-column:auto} .s-lab .lab.sys2 .lab-group:last-child{grid-column:1/-1}
+
+  .s-lab .lab-group:first-child{grid-column:1/-1}
+}
+.lab-left{display:flex;flex-direction:column;gap:max(6px,1.2cqh);flex:none}
+.lab-graph{position:relative;width:min(48cqw,70cqh);aspect-ratio:1/1;max-width:100%;container-type:inline-size}
+.lab-svg{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;background:var(--card)}
+.lab-labels{position:absolute;inset:0;pointer-events:none}
+.lab-tick{position:absolute;font-size:var(--fs-small);color:var(--note);font-variant-numeric:tabular-nums;white-space:nowrap}
+.lab-tick.tx{transform:translate(-50%,35%)}
+.lab-tick.ty{transform:translate(-130%,-50%)}
+.lab-tick.ax{transform:translate(-140%,-120%);font-style:italic}
+.lab-tick.ay{transform:translate(35%,10%);font-style:italic}
+.lab-label{position:absolute;font-size:max(10px,3.6cqi);white-space:nowrap;line-height:1.1}
+.lab-handle{cursor:grab;outline:none} .lab-handle.active{cursor:grabbing}
+.lab-handle:focus-visible .halo{fill-opacity:.4}
+.lab-instruction{margin:0;font-size:var(--fs-body);color:var(--framing);max-width:min(48cqw,70cqh)}
+.s-lab{--g:1;--ctl:1} /* --ctl: per-lab control text scale, content.json lab.controlScale */
+.lab-controls{flex:1;min-width:0;display:flex;flex-direction:column;gap:calc(var(--b2)*var(--g));font-size:calc(var(--fs-small)*var(--g)*var(--ctl))}
+.lab-head{display:flex;flex-direction:column;gap:var(--b1);margin-bottom:0} /* fit() spreads the free height afterwards */
+.lab-group{display:flex;flex-direction:column;gap:calc(var(--b1)*var(--g));border-top:1px solid var(--cardline);padding-top:calc(var(--b1)*var(--g));min-width:0}
+.lab-group-title{font-size:calc(var(--fs-eyebrow)*var(--g)*var(--ctl));font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--eyebrow)}
+.lab-group-title sub{font-size:.72em;letter-spacing:0;vertical-align:-.25em;line-height:0}
+.lab-readout{font-size:calc(var(--fs-small)*var(--g)*var(--ctl));min-width:0;overflow-x:auto;overflow-y:hidden;padding-block:.15em;line-height:1.4}
+.lab-slider{display:grid;grid-template-columns:2.2em 1fr 3.2em;align-items:center;gap:.6em}
+.lab-slider input{width:100%;accent-color:var(--bl);min-width:0}
+.lab-slider output{text-align:right}
+.lab-toggle{display:inline-flex;border:1px solid var(--navline);border-radius:4px;overflow:hidden;align-self:flex-start;flex-wrap:wrap}
+.lab.sys2 .lab-slider{grid-template-columns:2.2em minmax(0,9em) 3.2em;justify-content:start}
+.lab-toggle button{font:inherit;font-size:calc(var(--fs-small)*var(--g)*var(--ctl));font-weight:600;letter-spacing:.04em;padding:.45em .9em;border:0;background:var(--navbg);color:var(--navtx);cursor:pointer}
+.lab-toggle button[aria-checked="true"]{background:var(--title);color:var(--card)}
+.lab-toggle button:focus-visible{outline:2px solid var(--bl);outline-offset:-2px}
+
+/* your turn — --g grows the type until the slide is full (fit) */
+.s-turn{--g:1} /* kept at 1: the deck-wide --G does the sizing */ .s-turn>*{flex-shrink:0}
+.turn{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,30ch),1fr));gap:calc(max(10px,2cqh)*var(--g)) max(18px,3.5cqw);align-content:start;font-size:calc(var(--fs-body)*var(--g))}
+.turn h3{margin:0 0 .5em;font-size:calc(var(--fs-eyebrow)*var(--g));font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--eyebrow)}
+.turn .rows{display:grid;grid-template-columns:auto auto 1fr auto;gap:calc(max(4px,.9cqh)*var(--g)) max(10px,1.4cqw);font-size:calc(var(--fs-body)*var(--g));align-items:baseline;border-top:1px solid var(--cardline);padding-top:calc(max(8px,1.4cqh)*var(--g))}
+.turn .c{font-weight:800;color:var(--title)} .turn .q{font-weight:600;color:var(--eyebrow);font-variant-numeric:tabular-nums}
+.turn .t{font-variant-numeric:tabular-nums;color:var(--eyebrow);text-align:right;white-space:nowrap}
+.open{font-size:calc(var(--fs-body)*var(--g));line-height:1.45}
+/* last slide: very light green ground; the table and the open question share the free space evenly */
+.s-turn{background:#EEF8F1}
+/* labs: very light violet ground */
+.s-lab{background:#F4F1FC}
+.s-turn .turn{margin-top:auto}
+/* G9X (28/09/2026): no open question → the table sits mid-slide, rows and headings enlarged */
+.s-turn .turn:last-child{margin-block:auto}
+.s-turn .turn:last-child .rows{font-size:calc(var(--fs-body)*1.45*var(--g))}
+.s-turn .turn:last-child h3{font-size:calc(var(--fs-stem)*1.3*var(--g))}
+/* last slide: larger title and section headings (asked for this slide only) */
+.s-turn h2{font-size:calc(var(--fs-title)*1.5)}
+.s-turn .turn h3{font-size:var(--fs-stem);letter-spacing:.1em}
+.s-turn .open{margin-block:auto}
+.open .how{font-size:calc(var(--fs-eyebrow)*var(--g));font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--eyebrow);margin:0 0 .4em}
+.open .oq{margin:0;color:var(--title);font-weight:600;font-size:calc(var(--fs-stem)*var(--g));max-width:60ch}
+.open .harvest{margin:.5em 0 0;color:var(--note)}
+
+/* footer */
+#foot{display:flex;align-items:center;gap:max(8px,1.4cqw);padding:max(6px,1.2cqh) var(--padx) max(8px,1.6cqh);border-top:1px solid var(--cardline);font-size:var(--fs-foot);color:var(--foot);min-width:0}
+#hint{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#dots{display:flex;gap:max(5px,.6cqw);align-items:center;flex-wrap:wrap;justify-content:center}
+#dots button{width:max(8px,.75cqw);height:max(8px,.75cqw);border-radius:50%;border:0;padding:0;background:var(--dot);cursor:pointer}
+#dots button.on{background:var(--doton)}
+#dots button:focus-visible{outline:2px solid var(--bl);outline-offset:2px}
+#counter{font-variant-numeric:tabular-nums;font-weight:600;color:var(--navtx);min-width:3.5em;text-align:right}
+.fbtn{font:inherit;font-size:var(--fs-foot);font-weight:600;color:var(--navtx);background:var(--navbg);border:1px solid var(--navline);border-radius:4px;padding:.35em .7em;cursor:pointer;line-height:1.1}
+.fbtn:hover{background:var(--navbghover)}
+.fbtn:focus-visible{outline:2px solid var(--bl);outline-offset:1px}
+#btns{display:flex;gap:.4em}
+@container (max-width: 700px){ #hint{display:none} #dots{flex:1} }
+
+/* overlays */
+#scratch{position:absolute;left:var(--padx);right:var(--padx);bottom:max(46px,7cqh);max-height:30cqh;background:var(--card);border:1px solid var(--cardline);border-radius:4px;
+  display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:max(10px,1.6cqw);padding:max(10px,1.6cqh) max(12px,1.6cqw);box-sizing:border-box;z-index:5}
+#scratch[hidden]{display:none!important}
+#scratch textarea{font:500 var(--fs-body)/1.4 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:var(--codetx);background:var(--code);border:1px solid var(--cardline);border-radius:3px;padding:.5em .6em;resize:none;min-height:5em;box-sizing:border-box;width:100%}
+#scratch textarea:focus-visible{outline:2px solid var(--bl);outline-offset:0}
+#scratch .side{display:flex;flex-direction:column;gap:.5em;min-width:0}
+#scratch .bar{display:flex;gap:.4em;align-items:center;font-size:var(--fs-small);color:var(--foot)}
+#scratch .bar span{flex:1}
+#scratch-out{overflow:auto;font-size:var(--fs-math);color:var(--mathink);min-height:3em}
+#scratch-out .katex-display{margin:.2em 0;text-align:left}
+#scratch-out .katex-display>.katex{text-align:left}
+@container (max-width: 600px){ #scratch{grid-template-columns:1fr;max-height:45cqh} }
+#help{position:absolute;inset:0;background:rgba(216,220,210,.72);display:grid;place-items:center;z-index:6}
+#help[hidden]{display:none!important}
+#help .box{background:var(--card);border:1px solid var(--cardline);border-radius:4px;padding:max(16px,3cqh) max(18px,3cqw);max-width:min(92cqw,52ch);font-size:var(--fs-body);color:var(--prose)}
+#help h3{margin:0 0 .6em;color:var(--title);font-size:var(--fs-stem)}
+#help dl{display:grid;grid-template-columns:auto 1fr;gap:.35em 1em;margin:0}
+#help dt{font-weight:700;color:var(--title);white-space:nowrap} #help dd{margin:0}
+/* reveal: a step fades in over 0.4 s (Manim FadeIn); nothing dims; hiding (going back) is instant */
+@media (prefers-reduced-motion: no-preference){
+  .st,[data-step]{transition:opacity .4s ease-out}
+  .st.hid,[data-step].hid{transition:none}
+  .fig .lab-svg g[clip-path] > *, .fig .lab-label{animation:fadein .4s ease-out}
+}
+@keyframes fadein{from{opacity:0}}
+
+/* v13 (teacher, 23/10/2026): step-by-step highlight. A <span class="hlstep"> in a working row turns the highlight
+   colour while its row is the last one revealed; the previous one returns to its normal colour; stepping back
+   restores it. Graph items take "hl": n (build_deck.py). */
+[data-step]:not(.hid):not(:has(~ [data-step]:not(.hid))) .hlstep,[data-step]:not(.hid):not(:has(~ [data-step]:not(.hid))) .hlstep .katex,
+[data-step]:not(.hid):not(:has(~ [data-step]:not(.hid))) .hlstep .katex *{color:var(--hl)!important}   /* beats a t2c colour */
+/* v13: a lab with a wide graph (window.aspect; sinusoidABCD layout 'wide') puts the graph full width on top and the
+   control groups side by side underneath, thin sliders (4 px track, 14 px thumb, 20 px hit area, focus ring);
+   on a portrait phone everything stacks */
+.s-lab .lab:has(.lab-graph.wide){grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto minmax(0,1fr);grid-template-areas:"head" "left" "ctl";row-gap:max(8px,1.4cqh)}
+.s-lab .lab-graph.wide{width:100%;height:auto;max-width:100%}
+.s-lab .lab:has(.lab-graph.wide) .lab-group{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:2px max(12px,2cqw);padding-top:4px;align-content:start}
+.s-lab .lab:has(.lab-graph.wide) .lab-group > .lab-group-title,.s-lab .lab:has(.lab-graph.wide) .lab-group:first-child > .lab-readout{grid-column:1/-1}
+.s-lab .lab:has(.lab-graph.wide) .lab-readout{padding-block:0;line-height:1.3}
+.s-lab .lab:has(.lab-graph.wide) .lab-slider input{-webkit-appearance:none;appearance:none;height:20px;margin:0;background:transparent;cursor:pointer}
+.s-lab .lab:has(.lab-graph.wide) .lab-slider input::-webkit-slider-runnable-track{height:4px;border-radius:2px;background:#555}
+.s-lab .lab:has(.lab-graph.wide) .lab-slider input::-moz-range-track{height:4px;border-radius:2px;background:#555}
+.s-lab .lab:has(.lab-graph.wide) .lab-slider input::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:14px;height:14px;margin-top:-5px;border-radius:50%;border:0;background:var(--bl)}
+.s-lab .lab:has(.lab-graph.wide) .lab-slider input::-moz-range-thumb{width:14px;height:14px;border-radius:50%;border:0;background:var(--bl)}
+.s-lab .lab:has(.lab-graph.wide) .lab-slider input:focus-visible{outline:2px solid var(--bl);outline-offset:3px;border-radius:4px}
+.s-lab .lab:has(.lab-graph.wide) .lab-left{height:auto;align-self:start}
+.s-lab .lab:has(.lab-graph.wide) .lab-controls{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:max(16px,4cqw);align-items:start}
+.s-lab .lab:has(.lab-graph.wide) .lab-group:first-child{grid-column:auto}
+.lab-graph.wide .lab-label{font-size:max(10px,1.6cqi)}
+@container (max-aspect-ratio: 3/4){ .s-lab .lab:has(.lab-graph.wide) .lab-controls{grid-template-columns:minmax(0,1fr)} .s-lab .lab-graph.wide{width:100%} }
+/* v16 (Y2 L21 review, 23/10/2026; a student with poor eyesight): meta.largeGraphs puts the class .lg on <html>.
+   Example graphs take the right half of the slide (>= 40 % of its width, wide windows via window.aspect) under a
+   full-width stem, and every in-graph label, tick and axis name is set at 90 % of the body size (was 3.6cqi of the
+   graph: 11-14 px at 1470x830). Opt-in: decks built without it are unchanged. */
+@container (min-aspect-ratio: 3/4){
+  .lg .ex{grid-template-columns:minmax(0,1fr) minmax(0,.92fr)}
+  .lg .ex .fig .lab-graph{width:100%;height:auto;max-height:none}
+  .lg .ex.wide .stem, .lg .ex .stem{max-width:none}
+}
+.lg .ex .lab-graph .lab-label,.lg .ex .lab-graph .lab-tick,
+.lg .s-lab .lab-graph .lab-label,.lg .s-lab .lab-graph .lab-tick{font-size:calc(var(--fs-stem)*.9)}
+/* v18 (teacher, Y2 L21 round 3): lab controls and readouts at 90 % of body size, spread over the panel height */
+.lg .s-lab .lab-controls,.lg .s-lab .lab-readout,.lg .s-lab .lab-slider{font-size:calc(var(--fs-stem)*.9*var(--g))}
+.lg .s-lab .lab:has(.lab-graph.wide) .lab-controls{align-items:stretch;align-self:stretch;min-height:0}
+.lg .s-lab .lab:has(.lab-graph.wide) .lab-group{align-content:space-evenly;row-gap:max(4px,1cqh)}
+.lg .s-lab .lab:has(.lab-graph.wide) .lab-readout{line-height:1.5}
+.lg .s-lab .lab:has(.lab-graph.wide) .lab-group > .lab-group-title{margin-bottom:max(6px,1.4cqh)}   /* v19: a little air under the group headings */
+.lab-eqbox{display:flex;justify-content:center;margin-bottom:max(4px,.8cqh)}
+.lab-eqbox .lab-readout,.lg .s-lab .lab-eqbox .lab-readout{font-size:calc(var(--fs-stem)*1.15*var(--g));overflow:visible;text-align:center;padding-block:0}
+/* v20 (teacher, Y2 L21 round 5): in the sinusoidStory lab nothing moves when a slider moves. The equation box and every
+   readout row have a fixed height (sized for the tallest form, content centred), so a fraction that changes shape
+   or a readout shrunk to fit its width never shifts the graph, the panels or the sliders. */
+.lab.story .lab-eqbox{--eqfs:calc(var(--fs-stem)*1.15*var(--g));height:calc(var(--eqfs)*2.4);align-items:center;overflow:visible;margin-bottom:0}
+.lab.story .lab-controls .lab-readout{--rofs:calc(var(--fs-small)*var(--g)*var(--ctl));height:calc(var(--rofs)*2.01);display:flex;align-items:center;padding-block:0}
+.lab.story .lab-controls .lab-readout.ro-line{height:calc(var(--rofs)*1.5)}   /* the time-above row: text, no fraction */
+.lg .lab.story .lab-controls .lab-readout{--rofs:calc(var(--fs-stem)*.9*var(--g))}
+
+/* ===== scene experiment (29/10/2026, MAI HL U5 L3): the openers' context stage in the deck ===== */
+:root{--sc-curve:#1C758A;--sc-red:#CF5044}
+html:root[data-skin="3b1b"]{--sc-curve:#58C4DD;--sc-red:#FC6255}
+html:root[data-skin="goldteal"]{--sc-curve:#5CD0B3;--sc-red:#FC6255}
+html:root[data-skin="bluebrown"]{--sc-curve:#58C4DD;--sc-red:#FC6255}
+html:root[data-skin="greengrey"]{--sc-curve:#58C4DD;--sc-red:#FC6255}
+.scene-row{display:flex;position:relative;--h:min(30cqw,45cqh);height:var(--h);width:calc(var(--h)*1.6);flex:none}
+.scene{position:relative;flex:0 0 37.5%;height:100%}
+.scene-svg{position:absolute;inset:0;width:100%;height:100%;display:block;overflow:visible}
+.scene-labels{position:absolute;inset:0;pointer-events:none}
+.scene-text{position:absolute;white-space:nowrap;font-size:calc(var(--fs-stem)*.9);line-height:1.15;color:var(--note)}
+.scene-text.sc-read{color:var(--title);font-weight:600}
+.scene-text.sc-T{color:var(--sc-red)}
+.scene-text.sc-S{color:var(--sc-curve)} .scene-text.sc-mk{color:var(--bl)} .scene-text.sc-food{color:var(--title);font-weight:600}
+.sc-mark{fill:var(--bl)}
+.scene-text.sc-unit{color:var(--title);font-weight:600}
+.scene-text .katex{color:inherit}
+.sc-steam{stroke:var(--note)} .sc-merc{fill:var(--sc-red)} .sc-tick{stroke:var(--note)}
+.scene-graph{flex:1 1 0;height:100%;min-width:0;display:flex}
+.scene-row .lab-graph{height:100%!important;width:auto!important;max-height:none!important;aspect-ratio:1/1}
+.scene-row .lab-label,.scene-row .lab-tick,.s-lab .lab-graph .lab-label,.s-lab .lab-graph .lab-tick{font-size:calc(var(--fs-stem)*.9)}
+.scene-head{margin:0;font-size:var(--fs-body);line-height:1.35;color:var(--framing)}
+/* example with a scene: working left, heading + scene + graph right */
+.ex.scn{grid-template-columns:minmax(0,1fr) auto}
+.ex.scn .panel.work{gap:.5em}
+.ex.scn .fig{min-width:0}
+@container (max-aspect-ratio: 3/4){ .scene-row{--h:min(52cqw,30cqh)} }
+.ex.scn .fig{width:max-content;max-width:100%}
+.ex.scn .scene-head{max-width:calc(min(30cqw,45cqh)*1.6)}
+@container (max-aspect-ratio: 3/4){ .ex.scn .scene-head{max-width:none} }
+/* walk-through working: a caption, the maths, a note — one reveal each (the openers' step card) */
+.walk{display:flex;flex-direction:column;gap:.1em}
+.walk .cap{margin:0;font-size:.8em;line-height:1.2;font-weight:600;color:var(--eyebrow);letter-spacing:.02em}
+.walk .cap .katex{color:inherit}
+.walk .katex-display{margin:0;text-align:left} .walk .katex-display>.katex{text-align:left}
+.walk .wnote{margin:0;font-size:.86em;line-height:1.4;color:var(--note);max-width:62ch}
+.walk .wnote .katex{color:var(--note)}
+.walk.ansblk .katex-display .katex{color:var(--bl)}
+/* prediction choices: listed in the stem, the right one turns the answer colour on its reveal */
+.picks{display:flex;flex-direction:column;gap:.25em;margin:0;padding:0;list-style:none;font-size:var(--fs-body)}
+.pick{color:var(--prose);transition:color .4s ease-out}
+.pick b{display:inline-block;min-width:1.6em;color:var(--eyebrow)}
+.pick.on,.pick.on b,.pick.on .katex{color:var(--bl)!important;font-weight:700}
+.pick.on::after{content:" \2713"}
+/* lab with a scene */
+@container (min-aspect-ratio: 3/4){ .s-lab .scenelab .scene-row{--h:min(36cqw,62cqh)} }
+@container (max-aspect-ratio: 3/4){ .s-lab .scenelab .scene-row{--h:min(52cqw,28cqh)} }
+.s-lab .scenelab .lab-left{align-self:stretch}
+
+/* catalogue lab: cases in a list, the chosen case's panes beside it; every case sits in one grid cell so the tallest sets the height */
+.catbox{display:flex;flex-direction:column;gap:max(8px,1.6cqh);min-height:0}
+.catbox .lab-head{order:-1;align-self:stretch}
+.cat-body{display:grid;grid-template-columns:minmax(0,.27fr) minmax(0,.73fr);gap:max(14px,2.4cqw);flex:1;min-height:0;align-items:start;font-size:var(--fs-stem)}
+.cat-list{display:flex;flex-direction:column;gap:.3em}
+.cat-group{font-size:.78em;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--eyebrow);margin-top:.5em}
+.cat-group:first-child{margin-top:0}
+.cat-btn{font:inherit;font-size:.76em;font-weight:600;text-align:left;line-height:1.2;padding:.32em .7em;border:1px solid var(--navline);border-radius:4px;background:var(--navbg);color:var(--navtx);cursor:pointer}
+.cat-btn[aria-pressed="true"]{border-color:var(--bl);color:var(--bl)}
+.cat-btn:focus-visible{outline:2px solid var(--bl);outline-offset:1px}
+.cat-stack{display:grid;min-width:0}
+.cat-item{grid-area:1/1;visibility:hidden;display:flex;flex-direction:column;gap:.5em;min-width:0}
+.cat-item.on{visibility:visible}
+.cat-title{margin:0;font-size:1.15em;font-weight:700;color:var(--title);line-height:1.2}
+.cat-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:max(12px,2cqw);align-items:start}
+.cat-main{display:flex;flex-direction:column;gap:.7em}
+.cat-q p,.cat-exp p{margin:.15em 0 0;line-height:1.38;color:var(--prose)}
+.cat-h{display:block;font-size:.8em;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--eyebrow)}
+.cat-exp{border:1px solid var(--framing);border-radius:6px;padding:.6em .8em}
+.cat-exp .cat-h{color:var(--title);text-transform:none;letter-spacing:.02em;font-size:.95em}
+@container (max-aspect-ratio: 3/4){
+  .cat-body{grid-template-columns:minmax(0,1fr)}
+  .cat-list{flex-direction:row;flex-wrap:wrap}
+  .cat-group{display:none}
+  .cat-row{grid-template-columns:minmax(0,1fr)}
+}
+/* Play / Pause and Loop */
+.lab-play{display:flex;gap:.5em;margin-top:.3em}
+.lab-btn{font:inherit;font-size:1em;font-weight:600;display:inline-flex;align-items:center;gap:.45em;min-width:6.2em;justify-content:center;
+  padding:.4em .8em;border:1px solid var(--navline);border-radius:4px;background:var(--navbg);color:var(--navtx);cursor:pointer;line-height:1.1}
+.lab-btn svg{width:1em;height:1em;fill:currentColor}
+.lab-btn .i-pause{display:none} .lab-btn.on .i-pause{display:inline} .lab-btn.on .i-play{display:none}
+.lab-btn.on,.lab-btn[aria-pressed="true"]{border-color:var(--bl);color:var(--bl)}
+.lab-btn:focus-visible{outline:2px solid var(--bl);outline-offset:1px}
+/* fixed-height rows: nothing moves when the slider moves */
+.scenelab .lab-readout,.famlab .lab-readout{height:2.1em;display:flex;align-items:center;padding-block:0}
+.famlab .lab-slider.spacer{height:1.6em}
+/* recap lab: graph | controls | cards, the title over the controls only */
+@container (min-aspect-ratio: 3/4){
+  .s-lab .lab.famlab{grid-template-columns:auto minmax(0,.92fr) minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);grid-template-areas:"left head cards" "left ctl cards";column-gap:max(14px,2.4cqw)}
+  .s-lab .lab.famlab .lab-graph{height:min(100%,30cqw)}
+  .s-lab .lab.famlab .lab-left,.s-lab .scenelab .lab-left{justify-content:center}
+  .famlab .fam-cards{grid-area:cards;align-self:stretch}
+}
+@container (min-aspect-ratio: 3/4) and (max-aspect-ratio: 7/5){ .s-lab .lab.famlab .lab-graph{height:min(100%,26cqw)} }
+@container (max-aspect-ratio: 3/4){ .s-lab .lab.famlab{grid-template-areas:"head" "left" "ctl"} .famlab .fam-cards{display:none} }   /* phone: never presented on; the cards need a screen */
+.lg .s-lab .famlab .lab-toggle button,.lg .s-lab .scenelab .lab-toggle button{font-size:calc(var(--fs-stem)*.9*var(--g))}
+.lab-eqline{font-size:calc(var(--fs-stem)*.9*var(--g));height:2.1em;display:flex;align-items:center}
+.famlab .fam-sliders{gap:.25em}
+.fam-cards{display:flex;flex-direction:column;gap:.5em;font-size:var(--fs-small);min-width:0}
+.fam-cards .fc-head{font-size:var(--fs-eyebrow);font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--eyebrow);margin-bottom:.1em}
+.fam-card{height:5.45em;overflow:hidden;border-left:3px solid var(--note);padding:.1em 0 0 .6em;box-sizing:border-box}
+.fam-card.empty{border-left-color:transparent}
+.fam-card .fc-t{font-weight:700;color:var(--title);line-height:1.25}
+.fam-card .fc-l{color:var(--prose);line-height:1.3;font-size:.92em}
+.fam-card .katex{color:inherit}
+.fam-card.t-curve{border-left-color:var(--sc-curve)} .fam-card.t-ans{border-left-color:var(--bl)} .fam-card.t-red{border-left-color:var(--sc-red)}
+.fam-card.t-ans .fc-t{color:var(--bl)}
+
+/* ===== timeline bar (the openers' walk model, Ben 28/10/2026): one segment per reveal, one colour per kind ===== */
+:root{--k-scene:#0E2233;--k-pose:#0F5E99;--k-step:#4A5A68;--k-answer:#A05300;--k-animate:#0B6E63;
+  --kt-scene:#0E22333D;--kt-pose:#1572B83D;--kt-step:#55697B3D;--kt-answer:#E8890C3D;--kt-animate:#0F8B8D3D;
+  --ks-scene:#0E2233;--ks-pose:#1572B8;--ks-step:#55697B;--ks-answer:#E8890C;--ks-animate:#0F8B8D;
+  --kx:#FFFFFF;--kx-answer:#1B1100;--kring:#0E2233}
+html:root[data-skin="3b1b"],html:root[data-skin="goldteal"],html:root[data-skin="bluebrown"],html:root[data-skin="greengrey"]{
+  --k-scene:#E8EEF2;--k-pose:#6CB4EE;--k-step:#A9B6C1;--k-answer:#F2A649;--k-animate:#45C8BA;
+  --kt-scene:#E8EEF22E;--kt-pose:#6CB4EE33;--kt-step:#A9B6C12E;--kt-answer:#F2A64933;--kt-animate:#45C8BA33;
+  --ks-scene:#E8EEF2;--ks-pose:#6CB4EE;--ks-step:#A9B6C1;--ks-answer:#F2A649;--ks-animate:#45C8BA;
+  --kx:#0B0E11;--kx-answer:#0B0E11;--kring:#FFFFFF}
+#dots{display:none!important}
+#tl{flex:1 1 auto;min-width:0;display:flex;align-items:center;gap:3px;padding:5px 4px;overflow-x:auto;overflow-y:hidden;scrollbar-width:thin;touch-action:pan-x}
+.tl-b{--k:var(--k-step);--kt:var(--kt-step);--ks:var(--ks-step);--kc:var(--kx);
+  flex:1 0 max(26px,2.3cqw);height:max(22px,3.5cqh);padding:0;border:0;border-radius:5px;cursor:pointer;display:grid;place-items:center;overflow:hidden;
+  font:700 max(11px,1.75cqh)/1 system-ui,-apple-system,'Segoe UI',sans-serif;letter-spacing:0;background:var(--kt);color:var(--k)}
+.tl-b.reached{background:var(--ks);color:var(--kc)}
+.tl-b:hover{filter:brightness(1.12)}
+.tl-b:focus-visible{outline:2px solid var(--kring);outline-offset:2px}
+.tl-b.k-scene{--k:var(--k-scene);--kt:var(--kt-scene);--ks:var(--ks-scene);height:max(28px,4.6cqh)}
+.tl-b.k-pose{--k:var(--k-pose);--kt:var(--kt-pose);--ks:var(--ks-pose)}
+.tl-b.k-answer{--k:var(--k-answer);--kt:var(--kt-answer);--ks:var(--ks-answer);--kc:var(--kx-answer)}
+.tl-b.k-animate{--k:var(--k-animate);--kt:var(--kt-animate);--ks:var(--ks-animate)}
+.tl-b.gap{margin-left:max(6px,.9cqw)}
+.tl-b.now{box-shadow:0 0 0 2px var(--ground),0 0 0 4px var(--kring);position:relative;z-index:1}
+#foot{padding-top:max(4px,.8cqh);padding-bottom:max(5px,1cqh)}
+#counter{min-width:4.6em}
+</style>
+<!--/PART-A-->
+</head>
+<body>
+<!--PART-B-->
+<div id="frame">
+  <main id="slides" aria-live="polite"></main>
+  <footer id="foot">
+    <div id="hint">→ / Space next step · ← back · S scratch pad · F fullscreen · ? help</div>
+    <div id="dots" aria-label="Slides"></div>
+    <nav id="tl" aria-label="Lesson timeline"></nav>
+    <div id="btns">
+      <button class="fbtn" id="b-prev" type="button" aria-label="Back">←</button>
+      <button class="fbtn" id="b-next" type="button" aria-label="Next">→</button>
+      <button class="fbtn" id="b-pad" type="button" title="Scratch pad (S)">S</button>
+      <button class="fbtn" id="b-help" type="button" title="Help (?)">?</button>
+    </div>
+    <div id="counter">1 / 1</div>
+  </footer>
+  <section id="scratch" hidden aria-label="Scratch pad">
+    <div class="side">
+      <textarea id="scratch-in" spellcheck="false" placeholder="Type LaTeX, one line per row — e.g. \frac{1}{2}"></textarea>
+      <div class="bar"><span>Esc closes</span><button class="fbtn" id="scratch-clear" type="button">Clear</button><button class="fbtn" id="scratch-close" type="button">Close</button></div>
+    </div>
+    <div id="scratch-out" aria-live="polite"></div>
+  </section>
+  <section id="help" hidden aria-label="Keys">
+    <div class="box">
+      <h3>Keys</h3>
+      <dl>
+        <dt>→ or Space</dt><dd>Next step, then next slide</dd>
+        <dt>←</dt><dd>Back one step or one slide</dd>
+        <dt>Tap</dt><dd>Right third of the screen: next · left third: back</dd>
+        <dt>S</dt><dd>Scratch pad: type LaTeX, it renders below</dd>
+        <dt>F</dt><dd>Fullscreen</dd>
+        <dt>?</dt><dd>This help · Esc closes</dd>
+      </dl>
+    </div>
+  </section>
+</div>
+<script type="application/json" id="content">{{CONTENT}}</script>
+{{KATEX_JS}}
+{{AUTOREN_JS}}
+<script>
+{{LABKIT}}
+</script>
+<script>
+(function(){
+'use strict';
+const C = JSON.parse(document.getElementById('content').textContent);
+if (C.meta && C.meta.largeGraphs) document.documentElement.classList.add('lg');   /* v16 */
+const KOPTS = {throwOnError:false, strict:false, trust:true,
+  macros:{"\\gr":"\\textcolor{##55636F}{#1}","\\bl":"\\textcolor{##4230A8}{#1}"}};
+const DELIMS = [{left:"$$",right:"$$",display:true},{left:"$",right:"$",display:false}];
+const esc = s => String(s).replace(/&(?!nbsp;)/g,'&amp;').replace(/</g,'&lt;');
+const root = document.getElementById('slides');
+const nb = t => String(t).replace(/(\$[^$]+\$[.,;:])/g, '<span style="white-space:nowrap">$1</span>');
+const tagHTML = t => `<span class="tag">[${t}]</span>`;
+const slides = []; let slides_title_d = null;
+
+function addSlide(cls, html){ const s=document.createElement('section'); s.className='slide '+cls; s.innerHTML=html; root.appendChild(s); slides.push({el:s, steps:[], shown:0}); return slides[slides.length-1]; }
+
+C.slides.forEach(d => {
+  if (d.type==='title'){
+    slides_title_d = d; addSlide('s-title', `<div class="eyebrow">${esc(d.eyebrow)}</div><h1>${esc(d.title)}</h1><p class="lede">${esc(d.lede)}</p><div class="rule"></div>
+      <p class="meta"><strong>${esc(d.code)}</strong><span>·</span>${tagHTML(d.regime)}<span>${esc(d.regimeText)}</span></p>
+      <p class="keys">→ / Space next step · ← back · tap right or left third on a phone · S scratch pad · F fullscreen · ? help</p>`);
+  } else if (d.type==='today'){
+    addSlide('s-today', `<div class="eyebrow">Lesson ${C.meta.lesson} · ${esc(C.meta.topicWords)}</div><h2>${esc(d.title)}</h2>
+      <ul class="can">${d.can.map(c=>`<li>${c}</li>`).join('')}</ul>
+      <div class="groups">${d.groups.map(g=>`<span class="c">${g.code}</span><span class="q">${g.q}</span><span class="l">${esc(g.label)}</span>`).join('')}</div>`);
+  } else if (d.type==='example'){
+    const sceneG = d.graph && d.graph.scene;
+    const picks = d.choices ? `<ol class="picks">${d.choices.map((c,i)=>`<li class="pick" data-on="${i===d.correct?d.pickStep:''}"><b>${'ABCD'[i]}.</b>${c}</li>`).join('')}</ol>` : '';
+    const s = addSlide('s-example', `<div class="eyebrow">${d.eyebrow ? esc(d.eyebrow) : `Worked Example ${d.n} · ${tagHTML(d.tag)}`}</div><h2>${esc(d.title)}</h2>
+      <div class="ex${sceneG?' scn':''}"><div class="stem"><p>${nb(d.stem)}</p>${d.prompt?`<p class="prompt">${nb(d.prompt)}</p>`:''}${picks}</div>
+      <div class="panel work"></div>${d.note?`<p class="note">${nb(d.note)}</p>`:''}<div class="fig">${sceneG&&d.graph.heading?`<p class="scene-head">${nb(d.graph.heading)}</p>`:''}</div></div>`);
+    const panel = s.el.querySelector('.panel.work'); let k = 0;
+    s.d = d; s.off = d.sceneStart ? 1 : 0;
+    if (d.sceneStart){ k = 1; s.el.querySelector('.ex .stem').dataset.step = 1; }
+    d.blocks.forEach(b => {
+      if (b.steps){
+        const wide = [], narrow = [];
+        b.steps.forEach(st => { k++; const i = st.tex.indexOf('&');
+          const lhs = st.tex.slice(0,i), rhs = st.tex.slice(i+1);
+          const w = x => `\\htmlClass{st st${k}}{${x}}`;
+          wide.push(`${w(lhs)} & ${w('{}'+rhs)}` + (st.expl?` && ${w('\\gr{'+st.expl+'}')}`:''));
+          narrow.push(`${w(lhs)} & ${w('{}'+rhs)}` + (st.expl?` \\\\[-0.15em] & ${w('\\quad\\small\\gr{'+st.expl+'}')}`:''));
+        });
+        const wrap = document.createElement('div'); wrap.className = 'work-block';
+        [['wide',wide],['narrow',narrow]].forEach(([cls,rows])=>{ const dv=document.createElement('div'); dv.className='v-'+cls;
+          katex.render('\\begin{aligned}'+rows.join(' \\\\[0.5em] ')+'\\end{aligned}', dv, Object.assign({displayMode:true}, KOPTS)); wrap.appendChild(dv); });
+        panel.appendChild(wrap);
+      } else if (b.walk){ k++; const w=b.walk, dv=document.createElement('div'); dv.className='walk'+(w.ans?' ansblk':''); dv.dataset.step=k;
+        if (w.cap){ const c=document.createElement('p'); c.className='cap'; c.innerHTML=nb(w.cap); dv.appendChild(c); }
+        if (w.tex && w.tex.length){ const m=document.createElement('div'); katex.render('\\begin{aligned}'+w.tex.join(' \\\\[0.12em] ')+'\\end{aligned}', m, Object.assign({displayMode:true}, KOPTS)); dv.appendChild(m); }
+        if (w.note){ const n=document.createElement('p'); n.className='wnote'; n.innerHTML=nb(w.note); dv.appendChild(n); }
+        panel.appendChild(dv);
+      } else { k++; const p=document.createElement('p'); p.dataset.step=k; p.innerHTML=nb(b.text); panel.appendChild(p); }
+    });
+    const note = s.el.querySelector('.note'); if (note){ k++; note.dataset.step=k; }
+    for (let i=1;i<=k;i++) s.steps.push([...s.el.querySelectorAll('.st'+i+', [data-step="'+i+'"]')]);
+    s.figSpec = d.graph;
+  } else if (d.type==='lab'){
+    const s = addSlide('s-lab', `<div class="labhost"></div>`); s.d = d;
+    s.lab_head = (d.eyebrow?`<div class="eyebrow">${esc(d.eyebrow)}</div>`:'') + `<h2>${esc(d.title)}</h2>`;
+    if (d.controlScale) s.el.style.setProperty('--ctl', d.controlScale);
+    const host = s.el.querySelector('.labhost'); host.style.cssText='display:flex;flex:1;min-height:0';
+    s.lab = {preset:d.preset, init:d.init, host};
+  } else if (d.type==='yourturn'){
+    addSlide('s-turn', `<div class="eyebrow">Lesson ${C.meta.lesson} · ${esc(C.meta.topicWords)}</div><h2>${esc(d.title)}</h2>
+      <div class="turn">${d.sections.map(sec=>`<div><h3${sec.heading==='At home'?' class="home"':''}>${esc(sec.heading)}</h3><div class="rows">${sec.rows.map(r=>`<span class="c">${r.code}</span><span class="q">${r.q}</span><span>${esc(r.label)}</span><span class="t">${r.time||''}</span>`).join('')}</div></div>`).join('')}</div>
+      ${d.open?`<div class="panel open"><p class="how">${d.open.q} · ${esc(d.open.how)}</p><p class="oq">${d.open.text}</p>${d.open.harvest?`<p class="harvest">${esc(d.open.harvest)}</p>`:''}</div>`:''}`);
+  }
+});
+renderMathInElement(root, Object.assign({delimiters:DELIMS}, KOPTS));
+/* labs are built after the prose render so their own KaTeX is not re-scanned */
+slides.forEach(s => { if (!s.figSpec) return;
+  const sp = s.figSpec, figEl = s.el.querySelector('.fig');
+  if (!sp.scene){ s.fig = Lab.figure(figEl, sp, () => s.shown - (s.off||0)); return; }
+  /* scene beside the graph: the figure draws into the row's graph host; the scene takes the state of the last reveal shown */
+  const host = document.createElement('div'); figEl.appendChild(host); host.style.cssText = 'display:contents';
+  const sr = Lab.sceneRow(host, sp.window, sp.scene.kind, {alt: sp.scene.alt});
+  const gh = sr.row.querySelector('.scene-graph'); gh.innerHTML = '';
+  const g = Lab.figure(gh, sp, () => s.shown - (s.off||0));
+  const stateAt = n => { let st = {}; (sp.scene.states || []).forEach(([k, v]) => { if (k <= n) st = v; }); return st; };
+  s.fig = { redraw(){ g.redraw(); sr.draw(stateAt(s.shown - (s.off||0))); } }; s.fig.redraw(); });
+slides.forEach(s => { if (s.lab){ const box=document.createElement('div'); box.style.cssText='flex:1;min-width:0';
+  s.lab.host.appendChild(box); s.lab.state = Lab.presets[s.lab.preset](box, s.lab.init);
+  const head = document.createElement('div'); head.className = 'lab-head'; head.innerHTML = s.lab_head;
+  box.insertBefore(head, box.querySelector('.lab-controls')); } });
+
+/* ---- navigation ---- */
+const dots = document.getElementById('dots'), counter = document.getElementById('counter');
+slides.forEach((s,i)=>{ const b=document.createElement('button'); b.type='button'; b.setAttribute('aria-label','Slide '+(i+1)); b.addEventListener('click',e=>{e.stopPropagation(); go(i,0);}); dots.appendChild(b); });
+let cur = 0;
+function paintSteps(s){ s.steps.forEach((els,i)=>els.forEach(e=>e.classList.toggle('hid', i>=s.shown))); if (s.fig) s.fig.redraw();
+  s.el.querySelectorAll('.pick[data-on]').forEach(p=>{ const n=+p.dataset.on; p.classList.toggle('on', n>0 && s.shown>=n+(s.off||0)); }); }
+function overSlide(s){
+  const r = s.el.getBoundingClientRect();
+  if ([...s.el.children].some(c => c.getBoundingClientRect().bottom > r.bottom - 2 || c.scrollWidth > c.clientWidth + 2 || c.scrollHeight > c.clientHeight + 2)) return true;
+  const ex = s.el.querySelector('.ex');
+  if (ex){ const er = ex.getBoundingClientRect();
+    if (ex.scrollHeight > ex.clientHeight + 2 || [...ex.children].some(c => !c.classList.contains('fig') && c.getBoundingClientRect().bottom > er.bottom - 2)) return true; }
+  const ctl = s.el.querySelector('.lab-controls');
+  if (ctl && (ctl.getBoundingClientRect().bottom > r.bottom - 2 || ctl.scrollWidth > ctl.clientWidth + 2)) return true;
+  return false;
+}
+/* one type size for the whole deck: the largest factor at which every slide fits */
+function fitAll(){
+  const frame = document.getElementById('frame');
+  slides.forEach(t => { t.el.classList.add('measure'); t.el.style.setProperty('--k', 1);
+    t.el.querySelectorAll('.lab-controls').forEach(e => e.style.gap = ''); t.el.querySelectorAll('.lab-head').forEach(e => e.style.marginBottom = ''); });
+  const prep = () => slides.forEach(t => { if (t.wideStem) t.wideStem(); if (t.fitWidth) t.fitWidth(); t.el.querySelectorAll('.lab-readout').forEach(Lab.fitReadout); });
+  const bad = G => { frame.style.setProperty('--G', G); prep(); return slides.some(overSlide); };
+  let lo = 0.6, hi = 1.8;
+  if (!bad(1)) lo = 1; else hi = 1;
+  for (let i=0; i<9; i++){ const m=(lo+hi)/2; if (bad(m)) hi=m; else lo=m; }
+  frame.style.setProperty('--G', lo > 1 ? Math.max(1, lo*0.97) : lo);
+  slides.forEach(t => t.el.classList.remove('measure'));
+}
+function fit(s){
+  if (window.Lab) Lab.placeAll(s.el);
+  s.el.style.setProperty('--k', 1);
+  const fitWidth = () => s.el.querySelectorAll('.work-block').forEach(w=>{
+    const panel = w.parentElement, col = s.el.querySelector('.stem') || panel;
+    const avail = col.clientWidth - 2*parseFloat(getComputedStyle(panel).paddingLeft) - 2;
+    w.querySelectorAll('.katex-display').forEach(d=>{ d.style.fontSize=''; });
+    if (avail <= 0) return;
+    w.classList.remove('narrow');
+    const needW = w.querySelector('.v-wide .katex').scrollWidth;
+    if (needW > avail*1.15) w.classList.add('narrow');
+    const d = w.querySelector(w.classList.contains('narrow') ? '.v-narrow .katex-display' : '.v-wide .katex-display');
+    const need = d.querySelector('.katex').scrollWidth;
+    if (need > avail) d.style.fontSize = (avail/need*0.98) + 'em';
+  });
+  s.fitWidth = fitWidth;
+  /* density budget: a stem over 3 lines in the text column takes the full width instead */
+  const wideStem = () => { const ex = s.el.querySelector('.ex'), p = ex && ex.querySelector('.stem > p'); if (!p || !s.el.clientHeight) return;
+    ex.classList.remove('wide'); const lh = parseFloat(getComputedStyle(p).lineHeight);
+    if (p.getBoundingClientRect().height > 3.05 * lh) ex.classList.add('wide'); };
+  s.wideStem = wideStem;
+  wideStem();
+  fitWidth();
+  /* shrink the example's type until the whole slide fits its height */
+  const ex = s.el.querySelector('.ex');
+  /* safety net only (phones): shrink the example if the deck-wide size still does not fit */
+  if (ex && s.el.classList.contains('active') && s.el.clientHeight){ let k = 1;
+    for (let i=0; i<12 && overSlide(s) && k>0.55; i++){ k *= 0.93; s.el.style.setProperty('--k', k); fitWidth(); } }
+  s.el.querySelectorAll('.lab-readout').forEach(Lab.fitReadout);
+  /* lab: spread the title and the control groups over the free height (never changes the type size) */
+  const ctl = s.el.querySelector('.s-lab .lab-controls'), head = s.el.querySelector('.s-lab .lab-head');
+  if (ctl && head && s.el.clientHeight){
+    ctl.style.gap = ''; head.style.marginBottom = '';
+    const n = ctl.children.length, free = s.el.getBoundingClientRect().bottom - 8 - ctl.getBoundingClientRect().bottom;
+    if (free > 0){ const cap = s.el.clientHeight * 0.05, add = Math.min(free / (n + 1), cap);
+      ctl.style.gap = (parseFloat(getComputedStyle(ctl).rowGap) + add) + 'px';
+      head.style.marginBottom = (parseFloat(getComputedStyle(head).marginBottom) + add) + 'px'; }
+  }
+  Lab.placeAll(s.el);
+}
+const refit = () => { slides.forEach(t => fit(t)); fitAll(); slides.forEach(t => fit(t)); fit(slides[cur]); };
+window.addEventListener('resize', refit);
+/* load every embedded face up front (KaTeX loads its delimiter faces lazily otherwise, which moves labels after placement) */
+if (document.fonts && document.fonts.load){
+  const faces = ['KaTeX_Main','KaTeX_Math','KaTeX_AMS','KaTeX_Size1','KaTeX_Size2','KaTeX_Size3','KaTeX_Size4','STIX Two Math','STIX Two Text'];
+  const specs = faces.map(f => '16px "'+f+'"').concat(['bold 16px "KaTeX_Main"','italic 16px "KaTeX_Main"','bold italic 16px "KaTeX_Main"','italic 16px "STIX Two Text"','600 16px "STIX Two Text"','bold 16px "STIX Two Text"']);
+  Promise.all(specs.map(sp => document.fonts.load(sp).catch(()=>{}))).then(refit);
+  document.fonts.addEventListener && document.fonts.addEventListener('loadingdone', refit);
+}
+const minShown = s => (s.d && s.d.cont && s.steps.length) ? 1 : 0;
+/* ---- timeline: one segment per reveal (scene, Q, W, S, A, R) ---- */
+const BEATS = [], tl = document.getElementById('tl'); let furthest = 0;
+slides.forEach((s, i) => { const d = s.d || {};
+  if (s.el.classList.contains('s-title')) BEATS.push({i, n:0, kind:'scene', label:'L'+C.meta.lesson, tip:'Title'});
+  else if (s.el.classList.contains('s-gdc')){ BEATS.push({i, n:0, kind:'pose', label:'G'+(d.skill||''), tip:'GDC skill '+(d.skill||'')+': '+(d.title||'')});
+    (d.steps||[]).forEach((st, q) => BEATS.push({i, n:q+1, kind:'step', label:'W', tip:'GDC step '+(q+1)})); }
+  else if (s.lab) BEATS.push(d.preset==='catalogue' ? {i, n:0, kind:'pose', label:d.beat||'IA', tip:d.title} : d.preset==='growthFamily' ? {i, n:0, kind:'scene', label:'R', tip:d.title, gap:true} : {i, n:0, kind:'animate', label:'A', tip:(d.eyebrow||'')+': '+d.title});
+  else { const sc = (d.eyebrow||'').split(' · ')[0];
+    if (d.sceneStart){ BEATS.push({i, n:0, kind:'scene', label:String(d.scene), tip:sc, gap:true}); BEATS.push({i, n:1, kind:'pose', label:'Q'+d.q, tip:sc+': question '+d.q}); }
+    else if (!d.cont) BEATS.push({i, n:0, kind:'pose', label:'Q'+d.q, tip:sc+': question '+d.q});
+    let k = s.off||0; (d.blocks||[]).forEach(b => { k++; const w = b.walk||{}; const plain = String(w.cap||'').replace(/[$\\{}]/g,'');
+      BEATS.push({i, n:k, kind: w.ans ? 'answer' : 'step', label: w.ans ? 'S' : 'W', tip: sc+': '+plain}); }); } });
+tl.innerHTML = BEATS.map((b, j) => `<button type="button" class="tl-b k-${b.kind}${b.gap?' gap':''}" data-b="${j}" title="${esc(b.tip).replace(/"/g,'&quot;')}" aria-label="${esc(b.tip).replace(/"/g,'&quot;')}">${b.label}</button>`).join('');
+tl.addEventListener('click', e => { const b = e.target.closest('.tl-b'); if (!b) return; e.stopPropagation(); const B = BEATS[+b.dataset.b]; go(B.i, B.n); });
+function paintBar(){ const s = slides[cur]; let j = -1;
+  BEATS.forEach((b, q) => { if (b.i === cur && b.n <= s.shown) j = q; if (j < 0 && b.i === cur) j = q; });
+  if (j < 0) j = 0; furthest = Math.max(furthest, j);
+  [...tl.children].forEach((e, q) => { e.classList.toggle('reached', q <= furthest); e.classList.toggle('now', q === j); e.setAttribute('aria-current', q === j); });
+  counter.textContent = (j+1)+' / '+BEATS.length;
+  const now = tl.children[j]; if (now){ const t = tl.getBoundingClientRect(), r = now.getBoundingClientRect();
+    if (r.left < t.left + 40) tl.scrollLeft += r.left - t.left - 40; else if (r.right > t.right - 40) tl.scrollLeft += r.right - t.right + 40; } }
+function go(i, shown, byNext){
+  const was = cur;
+  cur = Math.max(0, Math.min(slides.length-1, i));
+  if (slides[was] && slides[was].lab && slides[was].lab.state && slides[was].lab.state.leave) slides[was].lab.state.leave();
+  slides.forEach((s,j)=>s.el.classList.toggle('active', j===cur));
+  const s = slides[cur]; s.shown = shown==='all' ? s.steps.length : Math.max(minShown(s), shown||0); paintSteps(s); fit(s);
+  [...dots.children].forEach((d,j)=>d.classList.toggle('on', j===cur));
+  document.documentElement.dataset.slide = cur; document.documentElement.dataset.shown = s.shown;
+  paintBar();
+  if (s.lab && s.lab.state && s.lab.state.enter) s.lab.state.enter(!!byNext);   /* autoplay only on arrival by Next */
+}
+function next(){ const s=slides[cur]; if (s.shown < s.steps.length){ s.shown++; paintSteps(s); document.documentElement.dataset.shown=s.shown; paintBar(); } else if (cur < slides.length-1) go(cur+1,0,true); }
+function prev(){ const s=slides[cur]; if (s.shown > minShown(s)){ s.shown--; paintSteps(s); document.documentElement.dataset.shown=s.shown; paintBar(); } else if (cur > 0) go(cur-1,'all'); }
+window.Deck = {next, prev, go, count:()=>slides.length, state:()=>({slide:cur, shown:slides[cur].shown, steps:slides[cur].steps.length}), slides};
+
+const pad = document.getElementById('scratch'), padIn = document.getElementById('scratch-in'), padOut = document.getElementById('scratch-out'), help = document.getElementById('help');
+function renderPad(){ padOut.innerHTML=''; padIn.value.split('\n').forEach(line=>{ if(!line.trim()) return; const d=document.createElement('div'); katex.render(line, d, Object.assign({displayMode:true}, KOPTS)); padOut.appendChild(d); }); }
+function openPad(){ pad.hidden=false; padIn.focus(); }
+function closePad(){ pad.hidden=true; padIn.blur(); }
+padIn.addEventListener('input', renderPad);
+padIn.addEventListener('keydown', e=>{ if(e.key==='Escape'){ closePad(); e.preventDefault(); } e.stopPropagation(); });
+document.getElementById('scratch-clear').addEventListener('click', e=>{ e.stopPropagation(); padIn.value=''; renderPad(); padIn.focus(); });
+document.getElementById('scratch-close').addEventListener('click', e=>{ e.stopPropagation(); closePad(); });
+pad.addEventListener('click', e=>e.stopPropagation());
+const toggleHelp = ()=>{ help.hidden = !help.hidden; };
+help.addEventListener('click', e=>{ e.stopPropagation(); help.hidden=true; });
+function fullscreen(){ try{ if(document.fullscreenElement) document.exitFullscreen(); else { const p=document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen(); if(p&&p.catch) p.catch(()=>{}); } }catch(e){} }
+
+document.getElementById('b-prev').addEventListener('click', e=>{ e.stopPropagation(); prev(); });
+document.getElementById('b-next').addEventListener('click', e=>{ e.stopPropagation(); next(); });
+document.getElementById('b-pad').addEventListener('click', e=>{ e.stopPropagation(); pad.hidden?openPad():closePad(); });
+document.getElementById('b-help').addEventListener('click', e=>{ e.stopPropagation(); toggleHelp(); });
+
+document.addEventListener('keydown', e=>{
+  if (e.metaKey||e.ctrlKey||e.altKey) return;
+  const t = e.target; if (t && (t.tagName==='INPUT' || t.tagName==='TEXTAREA')) return;
+  const k = e.key;
+  if (k==='Escape'){ if(!help.hidden) help.hidden=true; else if(!pad.hidden) closePad(); return; }
+  if (k==='ArrowRight' || k===' ' || k==='PageDown'){ e.preventDefault(); next(); }
+  else if (k==='ArrowLeft' || k==='PageUp'){ e.preventDefault(); prev(); }
+  else if (k==='s' || k==='S'){ e.preventDefault(); pad.hidden?openPad():closePad(); }
+  else if (k==='f' || k==='F'){ fullscreen(); }
+  else if (k==='?' ){ toggleHelp(); }
+});
+/* tap zones: right third next, left third back — ignored on the lab and on any control */
+root.addEventListener('click', e=>{
+  if (e.target.closest('.lab, button, input, textarea, a, select, label')) return;
+  const r = root.getBoundingClientRect(), x = (e.clientX - r.left) / r.width;
+  if (x > 2/3) next(); else if (x < 1/3) prev();
+});
+go(0,0); refit();
+
+})();
+</script>
+<!--/PART-B-->
+</body>
+</html>

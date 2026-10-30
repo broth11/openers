@@ -1,0 +1,1824 @@
+{
+ "meta": {
+  "cohort": "Y2",
+  "cohortLabel": "Year 2",
+  "lesson": 15,
+  "topic": "BearingsAndApplications",
+  "topicWords": "Bearings, Elevation and Depression",
+  "file": "AASL_Y2_L15_Lesson_BearingsAndApplications.html",
+  "artifactTitle": "Y2 L15 Bearings And Applications · Green-Grey",
+  "theme": "greengrey",
+  "source": "AASL_Y2_L15_Worksheet_BearingsAndApplications.tex (AASL/Year 2/Worksheets & Notes/TeX, device mount; Drive folder 1XhBLqO6ydgQg990AwZwkXCYH992Q4Nee)"
+ },
+ "slides": [
+  {
+   "type": "title",
+   "eyebrow": "IB Mathematics AA SL · Year 2 · Lesson 15",
+   "title": "Bearings, Elevation and Depression",
+   "lede": "Online lesson — worked examples and lab",
+   "code": "SL 3.3",
+   "regime": "C",
+   "regimeText": "GDC in degree mode; Example 1 needs none"
+  },
+  {
+   "type": "lab",
+   "preset": "elevation",
+   "title": "Elevation and depression",
+   "controlScale": 1.3,
+   "init": {
+    "window": {
+     "xmin": -1,
+     "xmax": 15,
+     "ymin": -3,
+     "ymax": 13,
+     "plain": true
+    },
+    "F": 13,
+    "scale": 4,
+    "h": 32,
+    "hmin": 8,
+    "hmax": 40,
+    "hstep": 2,
+    "A": 3
+   }
+  },
+  {
+   "type": "example",
+   "n": 2,
+   "tag": "C",
+   "title": "One right-angled triangle",
+   "stem": "From the top $T$ of a control tower $32$ m high, the angle of depression of an aircraft $A$ standing on the runway is $9^{\\circ}$. Find the distance of the aircraft from the foot of the tower.",
+   "blocks": [
+    {
+     "text": "The depression at the top equals the elevation at the aircraft, and carried down there it becomes an angle of the right-angled triangle."
+    },
+    {
+     "steps": [
+      {
+       "tex": "\\tan 9^{\\circ} &= \\frac{32}{d}"
+      },
+      {
+       "tex": "d &= \\frac{32}{\\tan 9^{\\circ}}"
+      },
+      {
+       "tex": "d &= \\bl{202 \\text{ m}}"
+      }
+     ]
+    },
+    {
+     "text": "GDC (Deg): $32 \\div \\tan 9$ → $202.04\\ldots$; write $d = 202$ m."
+    }
+   ],
+   "graph": {
+    "window": {
+     "xmin": -2,
+     "xmax": 12,
+     "ymin": -5.5,
+     "ymax": 8.5,
+     "plain": true
+    },
+    "items": [
+     {
+      "kind": "segment",
+      "from": [
+       -1.2,
+       0
+      ],
+      "to": [
+       11.2,
+       0
+      ],
+      "dashed": true
+     },
+     {
+      "kind": "segment",
+      "from": [
+       0,
+       0
+      ],
+      "to": [
+       0,
+       3.5
+      ]
+     },
+     {
+      "kind": "segment",
+      "from": [
+       0,
+       3.5
+      ],
+      "to": [
+       10,
+       0
+      ]
+     },
+     {
+      "kind": "segment",
+      "from": [
+       0,
+       3.5
+      ],
+      "to": [
+       10,
+       3.5
+      ],
+      "dashed": true
+     },
+     {
+      "kind": "angle",
+      "O": [
+       0,
+       3.5
+      ],
+      "P": [
+       10,
+       3.5
+      ],
+      "Q": [
+       10,
+       0
+      ]
+     },
+     {
+      "kind": "label",
+      "at": [
+       3.9435,
+       2.8298
+      ],
+      "tex": "9^{\\circ}",
+      "anchor": "c"
+     },
+     {
+      "kind": "angle",
+      "O": [
+       0,
+       0
+      ],
+      "P": [
+       10,
+       0
+      ],
+      "Q": [
+       0,
+       3.5
+      ]
+     },
+     {
+      "kind": "label",
+      "at": [
+       0.0,
+       1.75
+      ],
+      "tex": "32\\text{ m}",
+      "anchor": "w"
+     },
+     {
+      "kind": "label",
+      "at": [
+       5.0,
+       0.0
+      ],
+      "tex": "d",
+      "anchor": "s"
+     },
+     {
+      "kind": "point",
+      "at": [
+       0,
+       3.5
+      ],
+      "label": "T",
+      "anchor": "nw"
+     },
+     {
+      "kind": "point",
+      "at": [
+       0,
+       0
+      ],
+      "label": "F",
+      "anchor": "sw"
+     },
+     {
+      "kind": "point",
+      "at": [
+       10,
+       0
+      ],
+      "label": "A",
+      "anchor": "se"
+     },
+     {
+      "kind": "angle",
+      "O": [
+       10,
+       0
+      ],
+      "P": [
+       0,
+       0
+      ],
+      "Q": [
+       0,
+       3.5
+      ],
+      "step": 1
+     },
+     {
+      "kind": "label",
+      "at": [
+       6.0565,
+       0.6702
+      ],
+      "tex": "9^{\\circ}",
+      "anchor": "c",
+      "step": 1
+     }
+    ]
+   }
+  },
+  {
+   "type": "example",
+   "n": 4,
+   "tag": "C",
+   "title": "Two elevations of the same point",
+   "stem": "From a point $A$ on level ground the angle of elevation of the top $T$ of a chimney is $18^{\\circ}$. From a point $B$, which is $55$ m nearer the chimney on the same straight line, the angle of elevation is $29^{\\circ}$. Find the height of the chimney.",
+   "blocks": [
+    {
+     "text": "The $55$ m is not a side of any right-angled triangle here, so the right triangle $TFB$ cannot be started. Work in triangle $ABT$ instead, where the $55$ m is a side. Its angle at $B$ is the supplement of $29^{\\circ}$, because that angle is on the other side of $B$."
+    },
+    {
+     "steps": [
+      {
+       "tex": "A\\hat{B}T &= 180^{\\circ} - 29^{\\circ} = 151^{\\circ}"
+      },
+      {
+       "tex": "A\\hat{T}B &= 180^{\\circ} - 18^{\\circ} - 151^{\\circ} = 11^{\\circ}"
+      }
+     ]
+    }
+   ],
+   "graph": {
+    "window": {
+     "xmin": -1.2,
+     "xmax": 9.8,
+     "ymin": -1.9,
+     "ymax": 4.1,
+     "plain": true
+    },
+    "items": [
+     {
+      "kind": "segment",
+      "from": [
+       -0.9,
+       0
+      ],
+      "to": [
+       9.5,
+       0
+      ],
+      "dashed": true
+     },
+     {
+      "kind": "segment",
+      "from": [
+       8.3,
+       0
+      ],
+      "to": [
+       8.3,
+       2.7
+      ]
+     },
+     {
+      "kind": "segment",
+      "from": [
+       0,
+       0
+      ],
+      "to": [
+       8.3,
+       2.7
+      ]
+     },
+     {
+      "kind": "segment",
+      "from": [
+       3.4,
+       0
+      ],
+      "to": [
+       8.3,
+       2.7
+      ]
+     },
+     {
+      "kind": "angle",
+      "O": [
+       0,
+       0
+      ],
+      "P": [
+       8.3,
+       0
+      ],
+      "Q": [
+       8.3,
+       2.7
+      ]
+     },
+     {
+      "kind": "label",
+      "at": [
+       1.6389,
+       0.2463
+      ],
+      "tex": "18^{\\circ}",
+      "anchor": "c"
+     },
+     {
+      "kind": "angle",
+      "O": [
+       3.4,
+       0
+      ],
+      "P": [
+       8.3,
+       0
+      ],
+      "Q": [
+       8.3,
+       2.7
+      ]
+     },
+     {
+      "kind": "label",
+      "at": [
+       5.0612,
+       0.378
+      ],
+      "tex": "29^{\\circ}",
+      "anchor": "c"
+     },
+     {
+      "kind": "angle",
+      "O": [
+       8.3,
+       0
+      ],
+      "P": [
+       3.4,
+       0
+      ],
+      "Q": [
+       8.3,
+       2.7
+      ]
+     },
+     {
+      "kind": "label",
+      "at": [
+       1.7,
+       0.0
+      ],
+      "tex": "55\\text{ m}",
+      "anchor": "s"
+     },
+     {
+      "kind": "label",
+      "at": [
+       8.3,
+       1.35
+      ],
+      "tex": "h",
+      "anchor": "e"
+     },
+     {
+      "kind": "point",
+      "at": [
+       0,
+       0
+      ],
+      "label": "A",
+      "anchor": "sw"
+     },
+     {
+      "kind": "point",
+      "at": [
+       3.4,
+       0
+      ],
+      "label": "B",
+      "anchor": "s"
+     },
+     {
+      "kind": "point",
+      "at": [
+       8.3,
+       0
+      ],
+      "label": "F",
+      "anchor": "se"
+     },
+     {
+      "kind": "point",
+      "at": [
+       8.3,
+       2.7
+      ],
+      "label": "T",
+      "anchor": "ne"
+     },
+     {
+      "kind": "angle",
+      "O": [
+       3.4,
+       0
+      ],
+      "P": [
+       0,
+       0
+      ],
+      "Q": [
+       8.3,
+       2.7
+      ],
+      "step": 2
+     },
+     {
+      "kind": "label",
+      "at": [
+       2.8802,
+       0.6796
+      ],
+      "tex": "151^{\\circ}",
+      "anchor": "c",
+      "step": 2
+     },
+     {
+      "kind": "angle",
+      "O": [
+       8.3,
+       2.7
+      ],
+      "P": [
+       0,
+       0
+      ],
+      "Q": [
+       3.4,
+       0
+      ],
+      "step": 3
+     },
+     {
+      "kind": "label",
+      "at": [
+       4.9927,
+       1.288
+      ],
+      "tex": "11^{\\circ}",
+      "anchor": "c",
+      "step": 3
+     }
+    ]
+   }
+  },
+  {
+   "type": "example",
+   "n": 4,
+   "tag": "C",
+   "title": "…and the height",
+   "stem": "From a point $A$ on level ground the angle of elevation of the top $T$ of a chimney is $18^{\\circ}$. From a point $B$, which is $55$ m nearer the chimney on the same straight line, the angle of elevation is $29^{\\circ}$. Find the height of the chimney.",
+   "blocks": [
+    {
+     "steps": [
+      {
+       "tex": "\\frac{BT}{\\sin 18^{\\circ}} &= \\frac{55}{\\sin 11^{\\circ}}"
+      },
+      {
+       "tex": "BT &= 89.073\\ldots \\text{ m}"
+      }
+     ]
+    },
+    {
+     "text": "Now $BT$ is the hypotenuse of the right-angled triangle $TFB$:"
+    },
+    {
+     "steps": [
+      {
+       "tex": "h &= BT \\sin 29^{\\circ}"
+      },
+      {
+       "tex": "h &= \\bl{43.2 \\text{ m}}"
+      }
+     ]
+    },
+    {
+     "text": "GDC (Deg): $55 \\sin 18 \\div \\sin 11$ → $89.073\\ldots$, then $\\text{Ans} \\times \\sin 29$ → $43.18\\ldots$; write $h = 43.2$ m."
+    }
+   ],
+   "graph": {
+    "window": {
+     "xmin": -1.2,
+     "xmax": 9.8,
+     "ymin": -1.9,
+     "ymax": 4.1,
+     "plain": true
+    },
+    "items": [
+     {
+      "kind": "segment",
+      "from": [
+       -0.9,
+       0
+      ],
+      "to": [
+       9.5,
+       0
+      ],
+      "dashed": true
+     },
+     {
+      "kind": "segment",
+      "from": [
+       8.3,
+       0
+      ],
+      "to": [
+       8.3,
+       2.7
+      ]
+     },
+     {
+      "kind": "segment",
+      "from": [
+       0,
+       0
+      ],
+      "to": [
+       8.3,
+       2.7
+      ]
+     },
+     {
+      "kind": "segment",
+      "from": [
+       3.4,
+       0
+      ],
+      "to": [
+       8.3,
+       2.7
+      ]
+     },
+     {
+      "kind": "angle",
+      "O": [
+       0,
+       0
+      ],
+      "P": [
+       8.3,
+       0
+      ],
+      "Q": [
+       8.3,
+       2.7
+      ]
+     },
+     {
+      "kind": "label",
+      "at": [
+       1.6389,
+       0.2463
+      ],
+      "tex": "18^{\\circ}",
+      "anchor": "c"
+     },
+     {
+      "kind": "angle",
+      "O": [
+       3.4,
+       0
+      ],
+      "P": [
+       8.3,
+       0
+      ],
+      "Q": [
+       8.3,
+       2.7
+      ]
+     },
+     {
+      "kind": "label",
+      "at": [
+       5.0612,
+       0.378
+      ],
+      "tex": "29^{\\circ}",
+      "anchor": "c"
+     },
+     {
+      "kind": "angle",
+      "O": [
+       8.3,
+       0
+      ],
+      "P": [
+       3.4,
+       0
+      ],
+      "Q": [
+       8.3,
+       2.7
+      ]
+     },
+     {
+      "kind": "label",
+      "at": [
+       1.7,
+       0.0
+      ],
+      "tex": "55\\text{ m}",
+      "anchor": "s"
+     },
+     {
+      "kind": "point",
+      "at": [
+       0,
+       0
+      ],
+      "label": "A",
+      "anchor": "sw"
+     },
+     {
+      "kind": "point",
+      "at": [
+       3.4,
+       0
+      ],
+      "label": "B",
+      "anchor": "s"
+     },
+     {
+      "kind": "point",
+      "at": [
+       8.3,
+       0
+      ],
+      "label": "F",
+      "anchor": "se"
+     },
+     {
+      "kind": "point",
+      "at": [
+       8.3,
+       2.7
+      ],
+      "label": "T",
+      "anchor": "ne"
+     },
+     {
+      "kind": "angle",
+      "O": [
+       3.4,
+       0
+      ],
+      "P": [
+       0,
+       0
+      ],
+      "Q": [
+       8.3,
+       2.7
+      ]
+     },
+     {
+      "kind": "label",
+      "at": [
+       2.8802,
+       0.6796
+      ],
+      "tex": "151^{\\circ}",
+      "anchor": "c"
+     },
+     {
+      "kind": "angle",
+      "O": [
+       8.3,
+       2.7
+      ],
+      "P": [
+       0,
+       0
+      ],
+      "Q": [
+       3.4,
+       0
+      ]
+     },
+     {
+      "kind": "label",
+      "at": [
+       4.9927,
+       1.288
+      ],
+      "tex": "11^{\\circ}",
+      "anchor": "c"
+     },
+     {
+      "kind": "label",
+      "at": [
+       5.85,
+       1.35
+      ],
+      "tex": "89.07\\text{ m}",
+      "anchor": "se",
+      "step": 2
+     },
+     {
+      "kind": "label",
+      "at": [
+       8.3,
+       1.35
+      ],
+      "tex": "\\bl{h = 43.2\\text{ m}}",
+      "anchor": "e",
+      "step": 5
+     }
+    ]
+   }
+  },
+  {
+   "type": "lab",
+   "preset": "bearing",
+   "title": "Bearings and back bearings",
+   "controlScale": 1.3,
+   "init": {
+    "window": {
+     "xmin": -8,
+     "xmax": 8,
+     "ymin": -8,
+     "ymax": 8,
+     "plain": true
+    },
+    "A": {
+     "x": -2,
+     "y": -2
+    },
+    "one": {
+     "b1": 118,
+     "r1": 6
+    },
+    "course": {
+     "b1": 340,
+     "r1": 5.5,
+     "b2": 85,
+     "r2": 6.5
+    },
+    "mode": "one bearing"
+   }
+  },
+  {
+   "type": "example",
+   "n": 1,
+   "tag": "NC",
+   "title": "A bearing and its back bearing",
+   "stem": "The bearing of a buoy $B$ from a jetty $A$ is $118^{\\circ}$. Write down the bearing of $A$ from $B$.",
+   "blocks": [
+    {
+     "steps": [
+      {
+       "tex": "\\text{bearing of } A \\text{ from } B &= 180^{\\circ} + \\textcolor{#B189C6}{118^{\\circ}}"
+      },
+      {
+       "tex": "&= \\bl{298^{\\circ}}"
+      }
+     ]
+    }
+   ],
+   "graph": {
+    "window": {
+     "xmin": -2.6,
+     "xmax": 9.4,
+     "ymin": -7.0,
+     "ymax": 5.0,
+     "plain": true
+    },
+    "items": [
+     {
+      "kind": "north",
+      "at": [
+       0,
+       0
+      ],
+      "len": 2.8
+     },
+     {
+      "kind": "north",
+      "at": [
+       5.2977,
+       -2.8168
+      ],
+      "len": 2.8
+     },
+     {
+      "kind": "segment",
+      "from": [
+       0,
+       0
+      ],
+      "to": [
+       5.2977,
+       -2.8168
+      ]
+     },
+     {
+      "kind": "bearing",
+      "at": [
+       0,
+       0
+      ],
+      "deg": 118,
+      "r": 1.1,
+      "color": "#B189C6"
+     },
+     {
+      "kind": "label",
+      "at": [
+       1.6286,
+       0.9786
+      ],
+      "tex": "\\textcolor{#B189C6}{118^{\\circ}}",
+      "anchor": "c"
+     },
+     {
+      "kind": "point",
+      "at": [
+       0,
+       0
+      ],
+      "label": "A",
+      "anchor": "w"
+     },
+     {
+      "kind": "point",
+      "at": [
+       5.2977,
+       -2.8168
+      ]
+     },
+     {
+      "kind": "label",
+      "at": [
+       4.8727,
+       -2.0807
+      ],
+      "tex": "B",
+      "anchor": "c"
+     },
+     {
+      "kind": "segment",
+      "from": [
+       5.2977,
+       -2.8168
+      ],
+      "to": [
+       5.2977,
+       -5.5168
+      ],
+      "dashed": true,
+      "step": 1
+     },
+     {
+      "kind": "label",
+      "at": [
+       5.2977,
+       -5.7668
+      ],
+      "tex": "\\mathrm{S}",
+      "anchor": "s",
+      "step": 1
+     },
+     {
+      "kind": "bearing",
+      "at": [
+       5.2977,
+       -2.8168
+      ],
+      "deg": 180,
+      "r": 1.1,
+      "muted": true,
+      "step": 1
+     },
+     {
+      "kind": "label",
+      "at": [
+       7.1977,
+       -2.8168
+      ],
+      "tex": "180^{\\circ}",
+      "anchor": "c",
+      "step": 1
+     },
+     {
+      "kind": "bearing",
+      "at": [
+       5.2977,
+       -2.8168
+      ],
+      "from": 180,
+      "deg": 118,
+      "r": 1.1,
+      "color": "#B189C6",
+      "step": 1
+     },
+     {
+      "kind": "label",
+      "at": [
+       3.6262,
+       -3.8211
+      ],
+      "tex": "\\textcolor{#B189C6}{118^{\\circ}}",
+      "anchor": "c",
+      "step": 1
+     },
+     {
+      "kind": "bearing",
+      "at": [
+       5.2977,
+       -2.8168
+      ],
+      "deg": 298,
+      "r": 2.65,
+      "color": "green",
+      "step": 2
+     },
+     {
+      "kind": "label",
+      "at": [
+       7.914,
+       -5.4331
+      ],
+      "tex": "\\bl{298^{\\circ}}",
+      "anchor": "c",
+      "step": 2
+     }
+    ]
+   }
+  },
+  {
+   "type": "example",
+   "n": 3,
+   "tag": "C",
+   "title": "A change of course",
+   "stem": "A helicopter flies $15$ km from its base $B$ on a bearing of $340^{\\circ}$ to a checkpoint $C$. It then flies $22$ km on a bearing of $085^{\\circ}$ to a landing site $D$. Find $BD$, and the bearing of $D$ from $B$.",
+   "blocks": [
+    {
+     "steps": [
+      {
+       "tex": "N\\hat{B}C &= 360^{\\circ} - 340^{\\circ} = 20^{\\circ}"
+      },
+      {
+       "tex": "B\\hat{C}S &= N\\hat{B}C = 20^{\\circ}"
+      },
+      {
+       "tex": "B\\hat{C}D &= 180^{\\circ} - 85^{\\circ} - 20^{\\circ} = \\textcolor{#B189C6}{75^{\\circ}}"
+      }
+     ]
+    }
+   ],
+   "graph": {
+    "window": {
+     "xmin": -3.0,
+     "xmax": 6.4,
+     "ymin": -1.6,
+     "ymax": 7.8,
+     "plain": true
+    },
+    "items": [
+     {
+      "kind": "north",
+      "at": [
+       0,
+       0
+      ],
+      "len": 2.3
+     },
+     {
+      "kind": "north",
+      "at": [
+       -1.5391,
+       4.2286
+      ],
+      "len": 2.4
+     },
+     {
+      "kind": "segment",
+      "from": [
+       0,
+       0
+      ],
+      "to": [
+       -1.5391,
+       4.2286
+      ]
+     },
+     {
+      "kind": "segment",
+      "from": [
+       -1.5391,
+       4.2286
+      ],
+      "to": [
+       5.0358,
+       4.8038
+      ]
+     },
+     {
+      "kind": "segment",
+      "from": [
+       0,
+       0
+      ],
+      "to": [
+       5.0358,
+       4.8038
+      ],
+      "dashed": true
+     },
+     {
+      "kind": "point",
+      "at": [
+       0,
+       0
+      ]
+     },
+     {
+      "kind": "label",
+      "at": [
+       0.942,
+       -0.6596
+      ],
+      "tex": "B",
+      "anchor": "c"
+     },
+     {
+      "kind": "point",
+      "at": [
+       -1.5391,
+       4.2286
+      ],
+      "label": "C",
+      "anchor": "w"
+     },
+     {
+      "kind": "point",
+      "at": [
+       5.0358,
+       4.8038
+      ],
+      "label": "D",
+      "anchor": "e"
+     },
+     {
+      "kind": "bearing",
+      "at": [
+       0,
+       0
+      ],
+      "deg": 340,
+      "r": 0.6,
+      "muted": true
+     },
+     {
+      "kind": "label",
+      "at": [
+       -0.717,
+       -1.0239
+      ],
+      "tex": "340^{\\circ}",
+      "anchor": "c"
+     },
+     {
+      "kind": "bearing",
+      "at": [
+       -1.5391,
+       4.2286
+      ],
+      "deg": 85,
+      "r": 0.9
+     },
+     {
+      "kind": "label",
+      "at": [
+       -0.435,
+       5.4548
+      ],
+      "tex": "85^{\\circ}",
+      "anchor": "c"
+     },
+     {
+      "kind": "bearing",
+      "at": [
+       0,
+       0
+      ],
+      "from": 340,
+      "deg": 20,
+      "r": 1.9,
+      "color": "red",
+      "step": 1
+     },
+     {
+      "kind": "label",
+      "at": [
+       0.5201,
+       2.0861
+      ],
+      "tex": "20^{\\circ}",
+      "anchor": "c",
+      "color": "red",
+      "step": 1
+     },
+     {
+      "kind": "segment",
+      "from": [
+       -1.5391,
+       4.2286
+      ],
+      "to": [
+       -1.5391,
+       0.9286
+      ],
+      "dashed": true,
+      "step": 2
+     },
+     {
+      "kind": "label",
+      "at": [
+       -1.5391,
+       0.7285999999999999
+      ],
+      "tex": "\\mathrm{S}",
+      "anchor": "s",
+      "step": 2
+     },
+     {
+      "kind": "bearing",
+      "at": [
+       -1.5391,
+       4.2286
+      ],
+      "from": 160,
+      "deg": 20,
+      "r": 1.9,
+      "color": "red",
+      "step": 2
+     },
+     {
+      "kind": "label",
+      "at": [
+       -2.034,
+       2.085
+      ],
+      "tex": "20^{\\circ}",
+      "anchor": "c",
+      "color": "red",
+      "step": 2
+     },
+     {
+      "kind": "angle",
+      "O": [
+       -1.5391,
+       4.2286
+      ],
+      "P": [
+       0,
+       0
+      ],
+      "Q": [
+       5.0358,
+       4.8038
+      ],
+      "color": "#B189C6",
+      "step": 3
+     },
+     {
+      "kind": "label",
+      "at": [
+       -0.4849,
+       3.557
+      ],
+      "tex": "\\textcolor{#B189C6}{75^{\\circ}}",
+      "anchor": "c",
+      "step": 3
+     }
+    ]
+   }
+  },
+  {
+   "type": "example",
+   "n": 3,
+   "tag": "C",
+   "title": "…the distance $BD$",
+   "stem": "A helicopter flies $15$ km from its base $B$ on a bearing of $340^{\\circ}$ to a checkpoint $C$. It then flies $22$ km on a bearing of $085^{\\circ}$ to a landing site $D$. Find $BD$, and the bearing of $D$ from $B$.",
+   "blocks": [
+    {
+     "steps": [
+      {
+       "tex": "x^2 &= 15^2 + 22^2 - 2(15)(22)\\cos \\textcolor{#B189C6}{75^{\\circ}}"
+      },
+      {
+       "tex": "x &= \\bl{23.2 \\text{ km}}"
+      }
+     ]
+    },
+    {
+     "text": "GDC (Deg): $\\sqrt{15^2 + 22^2 - 2(15)(22)\\cos 75}$ → $23.198\\ldots$; keep it as Ans, write $x = 23.2$ km."
+    }
+   ],
+   "graph": {
+    "window": {
+     "xmin": -3.0,
+     "xmax": 6.4,
+     "ymin": -1.6,
+     "ymax": 7.8,
+     "plain": true
+    },
+    "items": [
+     {
+      "kind": "segment",
+      "from": [
+       0,
+       0
+      ],
+      "to": [
+       -1.5391,
+       4.2286
+      ]
+     },
+     {
+      "kind": "segment",
+      "from": [
+       -1.5391,
+       4.2286
+      ],
+      "to": [
+       5.0358,
+       4.8038
+      ]
+     },
+     {
+      "kind": "segment",
+      "from": [
+       0,
+       0
+      ],
+      "to": [
+       5.0358,
+       4.8038
+      ],
+      "dashed": true
+     },
+     {
+      "kind": "point",
+      "at": [
+       0,
+       0
+      ]
+     },
+     {
+      "kind": "label",
+      "at": [
+       0.942,
+       -0.6596
+      ],
+      "tex": "B",
+      "anchor": "c"
+     },
+     {
+      "kind": "point",
+      "at": [
+       -1.5391,
+       4.2286
+      ],
+      "label": "C",
+      "anchor": "w"
+     },
+     {
+      "kind": "point",
+      "at": [
+       5.0358,
+       4.8038
+      ],
+      "label": "D",
+      "anchor": "e"
+     },
+     {
+      "kind": "label",
+      "at": [
+       -0.7695,
+       2.1143
+      ],
+      "tex": "15\\text{ km}",
+      "anchor": "e"
+     },
+     {
+      "kind": "label",
+      "at": [
+       1.7484,
+       4.5162
+      ],
+      "tex": "22\\text{ km}",
+      "anchor": "n"
+     },
+     {
+      "kind": "label",
+      "at": [
+       2.5179,
+       2.4019
+      ],
+      "tex": "x\\text{ km}",
+      "anchor": "se"
+     },
+     {
+      "kind": "angle",
+      "O": [
+       -1.5391,
+       4.2286
+      ],
+      "P": [
+       0,
+       0
+      ],
+      "Q": [
+       5.0358,
+       4.8038
+      ],
+      "color": "#B189C6"
+     },
+     {
+      "kind": "label",
+      "at": [
+       -0.4849,
+       3.557
+      ],
+      "tex": "\\textcolor{#B189C6}{75^{\\circ}}",
+      "anchor": "c"
+     },
+     {
+      "kind": "label",
+      "at": [
+       3.4179,
+       1.9019
+      ],
+      "tex": "\\bl{23.2\\text{ km}}",
+      "anchor": "c",
+      "step": 2
+     }
+    ]
+   }
+  },
+  {
+   "type": "example",
+   "n": 3,
+   "tag": "C",
+   "title": "…the angle at $B$",
+   "stem": "A helicopter flies $15$ km from its base $B$ on a bearing of $340^{\\circ}$ to a checkpoint $C$. It then flies $22$ km on a bearing of $085^{\\circ}$ to a landing site $D$. Find $BD$, and the bearing of $D$ from $B$.",
+   "blocks": [
+    {
+     "steps": [
+      {
+       "tex": "\\frac{\\sin(C\\hat{B}D)}{22} &= \\frac{\\sin \\textcolor{#B189C6}{75^{\\circ}}}{23.198\\ldots}"
+      },
+      {
+       "tex": "\\sin(C\\hat{B}D) &= 0.91601\\ldots"
+      },
+      {
+       "tex": "C\\hat{B}D &= 66.4^{\\circ}"
+      }
+     ]
+    }
+   ],
+   "graph": {
+    "window": {
+     "xmin": -3.0,
+     "xmax": 6.4,
+     "ymin": -1.6,
+     "ymax": 7.8,
+     "plain": true
+    },
+    "items": [
+     {
+      "kind": "segment",
+      "from": [
+       0,
+       0
+      ],
+      "to": [
+       -1.5391,
+       4.2286
+      ]
+     },
+     {
+      "kind": "segment",
+      "from": [
+       -1.5391,
+       4.2286
+      ],
+      "to": [
+       5.0358,
+       4.8038
+      ]
+     },
+     {
+      "kind": "segment",
+      "from": [
+       0,
+       0
+      ],
+      "to": [
+       5.0358,
+       4.8038
+      ],
+      "dashed": true
+     },
+     {
+      "kind": "point",
+      "at": [
+       0,
+       0
+      ]
+     },
+     {
+      "kind": "label",
+      "at": [
+       0.942,
+       -0.6596
+      ],
+      "tex": "B",
+      "anchor": "c"
+     },
+     {
+      "kind": "point",
+      "at": [
+       -1.5391,
+       4.2286
+      ],
+      "label": "C",
+      "anchor": "w"
+     },
+     {
+      "kind": "point",
+      "at": [
+       5.0358,
+       4.8038
+      ],
+      "label": "D",
+      "anchor": "e"
+     },
+     {
+      "kind": "label",
+      "at": [
+       -1.8195,
+       2.1143
+      ],
+      "tex": "15\\text{ km}",
+      "anchor": "c"
+     },
+     {
+      "kind": "label",
+      "at": [
+       1.7484,
+       4.5162
+      ],
+      "tex": "22\\text{ km}",
+      "anchor": "n"
+     },
+     {
+      "kind": "label",
+      "at": [
+       3.5179,
+       1.7019
+      ],
+      "tex": "23.198\\ldots",
+      "anchor": "c"
+     },
+     {
+      "kind": "angle",
+      "O": [
+       -1.5391,
+       4.2286
+      ],
+      "P": [
+       0,
+       0
+      ],
+      "Q": [
+       5.0358,
+       4.8038
+      ],
+      "color": "#B189C6"
+     },
+     {
+      "kind": "label",
+      "at": [
+       -0.4849,
+       3.557
+      ],
+      "tex": "\\textcolor{#B189C6}{75^{\\circ}}",
+      "anchor": "c"
+     },
+     {
+      "kind": "angle",
+      "O": [
+       0,
+       0
+      ],
+      "P": [
+       -1.5391,
+       4.2286
+      ],
+      "Q": [
+       5.0358,
+       4.8038
+      ],
+      "step": 3
+     },
+     {
+      "kind": "label",
+      "at": [
+       0.3039,
+       1.7234
+      ],
+      "tex": "66.4^{\\circ}",
+      "anchor": "c",
+      "step": 3
+     }
+    ]
+   }
+  },
+  {
+   "type": "example",
+   "n": 3,
+   "tag": "C",
+   "title": "…and the answer as a bearing",
+   "stem": "A helicopter flies $15$ km from its base $B$ on a bearing of $340^{\\circ}$ to a checkpoint $C$. It then flies $22$ km on a bearing of $085^{\\circ}$ to a landing site $D$. Find $BD$, and the bearing of $D$ from $B$.",
+   "blocks": [
+    {
+     "steps": [
+      {
+       "tex": "\\text{bearing of } D \\text{ from } B &= C\\hat{B}D - N\\hat{B}C"
+      },
+      {
+       "tex": "&= 66.4^{\\circ} - 20^{\\circ} = 46.4^{\\circ}"
+      },
+      {
+       "tex": "&= \\bl{046^{\\circ}}"
+      }
+     ]
+    },
+    {
+     "text": "GDC (Deg): $\\sin^{-1}(22 \\sin 75 \\div \\text{Ans})$ → $66.35\\ldots$; write $C\\hat{B}D = 66.4^{\\circ}$, then the bearing."
+    }
+   ],
+   "graph": {
+    "window": {
+     "xmin": -3.0,
+     "xmax": 6.4,
+     "ymin": -1.6,
+     "ymax": 7.8,
+     "plain": true
+    },
+    "items": [
+     {
+      "kind": "north",
+      "at": [
+       0,
+       0
+      ],
+      "len": 4.0
+     },
+     {
+      "kind": "segment",
+      "from": [
+       0,
+       0
+      ],
+      "to": [
+       -1.5391,
+       4.2286
+      ]
+     },
+     {
+      "kind": "segment",
+      "from": [
+       -1.5391,
+       4.2286
+      ],
+      "to": [
+       5.0358,
+       4.8038
+      ]
+     },
+     {
+      "kind": "segment",
+      "from": [
+       0,
+       0
+      ],
+      "to": [
+       5.0358,
+       4.8038
+      ],
+      "dashed": true
+     },
+     {
+      "kind": "point",
+      "at": [
+       0,
+       0
+      ]
+     },
+     {
+      "kind": "label",
+      "at": [
+       0.942,
+       -0.6596
+      ],
+      "tex": "B",
+      "anchor": "c"
+     },
+     {
+      "kind": "point",
+      "at": [
+       -1.5391,
+       4.2286
+      ],
+      "label": "C",
+      "anchor": "w"
+     },
+     {
+      "kind": "point",
+      "at": [
+       5.0358,
+       4.8038
+      ],
+      "label": "D",
+      "anchor": "e"
+     },
+     {
+      "kind": "angle",
+      "O": [
+       -1.5391,
+       4.2286
+      ],
+      "P": [
+       0,
+       0
+      ],
+      "Q": [
+       5.0358,
+       4.8038
+      ],
+      "color": "#B189C6"
+     },
+     {
+      "kind": "label",
+      "at": [
+       -0.4849,
+       3.557
+      ],
+      "tex": "\\textcolor{#B189C6}{75^{\\circ}}",
+      "anchor": "c"
+     },
+     {
+      "kind": "bearing",
+      "at": [
+       0,
+       0
+      ],
+      "from": 340,
+      "deg": 66.35,
+      "r": 2.9,
+      "muted": true
+     },
+     {
+      "kind": "label",
+      "at": [
+       1.8,
+       3.1177
+      ],
+      "tex": "66.4^{\\circ}",
+      "anchor": "c"
+     },
+     {
+      "kind": "bearing",
+      "at": [
+       0,
+       0
+      ],
+      "from": 340,
+      "deg": 20,
+      "r": 1.9,
+      "color": "red",
+      "step": 1
+     },
+     {
+      "kind": "label",
+      "at": [
+       -1.2188,
+       1.9505
+      ],
+      "tex": "20^{\\circ}",
+      "anchor": "c",
+      "color": "red",
+      "step": 1
+     },
+     {
+      "kind": "bearing",
+      "at": [
+       0,
+       0
+      ],
+      "deg": 46.35,
+      "r": 1.3,
+      "color": "green",
+      "step": 2
+     },
+     {
+      "kind": "label",
+      "at": [
+       0.7815,
+       1.841
+      ],
+      "tex": "\\bl{046^{\\circ}}",
+      "anchor": "c",
+      "step": 3
+     }
+    ]
+   }
+  },
+  {
+   "type": "yourturn",
+   "title": "Your turn",
+   "sections": [
+    {
+     "heading": "Now, in class",
+     "rows": [
+      {
+       "code": "A",
+       "q": "Q1–6",
+       "label": "Reading and writing bearings",
+       "time": "5 min"
+      },
+      {
+       "code": "B",
+       "q": "Q7–11",
+       "label": "From a sentence to a figure",
+       "time": "12 min"
+      },
+      {
+       "code": "D",
+       "q": "Q18–19",
+       "label": "Triangles with no right angle",
+       "time": "8 min"
+      }
+     ]
+    },
+    {
+     "heading": "At home",
+     "rows": [
+      {
+       "code": "C",
+       "q": "Q12–17",
+       "label": "One right-angled triangle",
+       "time": "15 min"
+      },
+      {
+       "code": "D",
+       "q": "Q20–23",
+       "label": "Triangles with no right angle",
+       "time": "20 min"
+      },
+      {
+       "code": "E",
+       "q": "Q24–27",
+       "label": "Putting it together",
+       "time": "25 min"
+      }
+     ]
+    }
+   ],
+   "open": {
+    "q": "Q28",
+    "text": "Walk towards a tower, stopping each time the angle of elevation of its top has grown by another $15^{\\circ}$: $15^{\\circ}, 30^{\\circ}, 45^{\\circ}, 60^{\\circ}, 75^{\\circ}$. Are your stops evenly spaced? Then sketch the angle against your distance from the foot: what does it do right at the tower, and very far away?",
+    "how": "Open question — answer it with a drawing.",
+    "harvest": "Harvest: Y2-3, graph of tan x"
+   }
+  }
+ ]
+}

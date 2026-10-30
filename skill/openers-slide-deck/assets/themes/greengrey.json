@@ -1,0 +1,39 @@
+{
+  "note": "TRIAL (29/09/2026). 3b1b layout and strokes on a dark-grey ground #1C1C1C: white text, curves BLUE_C, answers/handles GREEN_C #83C167, white titles over a GREY_C rule, YELLOW tag. Not an official palette.",
+  "stix": false,
+  "gr": "#A0A0A0",
+  "bl": "#83C167",
+  "lab": {
+    "ink": "#FFFFFF",
+    "curve": "#58C4DD",
+    "muted": "#A0A0A0",
+    "handle": "#83C167",
+    "grid": "#3A3A3A",
+    "axis": "#FFFFFF",
+    "point": "#FFFFFF",
+    "pointR": 5.5,
+    "frame": false,
+    "stroke": {
+      "grid": 1,
+      "axis": 2,
+      "curve": 3,
+      "dashed": 2
+    },
+    "fill": "#58C4DD",
+    "fillOpacity": 0.16,
+    "gr": "#A0A0A0",
+    "bl": "#83C167"
+  },
+  "t2c": {
+    "blue": "#58C4DD",
+    "red": "#FC6255",
+    "teal": "#5CD0B3",
+    "pink": "#D147BD",
+    "green": "#83C167",
+    "grey": "#BBBBBB",
+    "orange": "#FF862F",
+    "brown": "#CD853F",
+    "indigo": "#5C7CFA"
+  },
+  "hl": "#FFFF00"
+}

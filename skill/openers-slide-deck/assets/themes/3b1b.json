@@ -1,0 +1,39 @@
+{
+  "note": "Calibrated on 3Blue1Brown (Manim): black ground, no panels, Computer Modern everywhere (KaTeX's own fonts), Manim colour constants, graph furniture that recedes. Not an official palette.",
+  "stix": false,
+  "gr": "#A0A0A0",
+  "bl": "#FFFF00",
+  "lab": {
+    "ink": "#FFFFFF",
+    "curve": "#58C4DD",
+    "muted": "#A0A0A0",
+    "handle": "#FFFF00",
+    "grid": "#333333",
+    "axis": "#FFFFFF",
+    "point": "#FFFFFF",
+    "pointR": 5.5,
+    "frame": false,
+    "stroke": {
+      "grid": 1,
+      "axis": 2,
+      "curve": 3,
+      "dashed": 2
+    },
+    "fill": "#58C4DD",
+    "fillOpacity": 0.16,
+    "gr": "#A0A0A0",
+    "bl": "#FFFF00"
+  },
+  "t2c": {
+    "blue": "#58C4DD",
+    "red": "#FC6255",
+    "teal": "#5CD0B3",
+    "pink": "#D147BD",
+    "green": "#83C167",
+    "grey": "#BBBBBB",
+    "orange": "#FF862F",
+    "brown": "#CD853F",
+    "indigo": "#5C7CFA"
+  },
+  "hl": "#FFFF00"
+}

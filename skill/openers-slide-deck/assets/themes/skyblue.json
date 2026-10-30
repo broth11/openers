@@ -1,0 +1,18 @@
+{
+  "note": "The first validated look (Y1 L15, 28/09/2026): very light sky-blue ground, STIX Two, indigo answers, teal tag. Lives in deck_template.html itself; this file only selects it. t2c roles use Manim's darker _E shades, readable on a light ground.",
+  "stix": true,
+  "css": false,
+  "t2c": {
+    "blue": "#1C758A",
+    "red": "#CF5044",
+    "teal": "#49A88F",
+    "pink": "#94424F",
+    "green": "#699C52",
+    "grey": "#55636F",
+    "orange": "#FF862F",
+    "brown": "#8B5A2B",
+    "indigo": "#3B5BDB"
+  },
+  "hl": "#8A5A00",
+  "ground": "#F4FAFE"
+}

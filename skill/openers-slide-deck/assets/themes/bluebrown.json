@@ -1,0 +1,39 @@
+{
+  "note": "TRIAL (29/09/2026). 3b1b layout and strokes with the channel-logo palette: brown-black ground #14110F, warm-white text, curves BLUE_C, answers/handles LIGHT_BROWN #CD853F, white titles over a GREY_BROWN rule, TEAL_C tag. Not an official palette.",
+  "stix": false,
+  "gr": "#A89F94",
+  "bl": "#CD853F",
+  "lab": {
+    "ink": "#F2EDE6",
+    "curve": "#58C4DD",
+    "muted": "#A89F94",
+    "handle": "#CD853F",
+    "grid": "#3A332D",
+    "axis": "#F2EDE6",
+    "point": "#F2EDE6",
+    "pointR": 5.5,
+    "frame": false,
+    "stroke": {
+      "grid": 1,
+      "axis": 2,
+      "curve": 3,
+      "dashed": 2
+    },
+    "fill": "#58C4DD",
+    "fillOpacity": 0.16,
+    "gr": "#A89F94",
+    "bl": "#CD853F"
+  },
+  "t2c": {
+    "blue": "#58C4DD",
+    "red": "#FC6255",
+    "teal": "#5CD0B3",
+    "pink": "#D147BD",
+    "green": "#83C167",
+    "grey": "#BBBBBB",
+    "orange": "#FF862F",
+    "brown": "#CD853F",
+    "indigo": "#5C7CFA"
+  },
+  "hl": "#FFFF00"
+}

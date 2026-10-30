@@ -1,0 +1,700 @@
+{
+ "meta": {
+  "cohort": "Y1",
+  "cohortLabel": "Year 1",
+  "lesson": 15,
+  "topic": "StraightLines",
+  "topicWords": "Straight Lines",
+  "file": "AASL_Y1_L15_Lesson_StraightLines.html",
+  "artifactTitle": "Y1 L15 Straight Lines",
+  "t2c": {
+   "m": "blue",
+   "c": "red"
+  },
+  "source": "AASL_Y1_L15_Worksheet_StraightLines.tex (Drive 1al9zdCM1wwGUZJWrFWM1CYwo2XyrK6YZ)"
+ },
+ "slides": [
+  {
+   "type": "title",
+   "eyebrow": "IB Mathematics AA SL · Year 1 · Lesson 15",
+   "title": "Straight Lines",
+   "lede": "Online lesson — worked examples and lab",
+   "code": "SL 2.1",
+   "regime": "NC",
+   "regimeText": "no calculator anywhere in this lesson"
+  },
+  {
+   "type": "lab",
+   "preset": "line2pts",
+   "title": "The gradient triangle",
+   "init": {
+    "window": {
+     "xmin": -8,
+     "xmax": 8,
+     "ymin": -8,
+     "ymax": 8,
+     "grid": 1
+    },
+    "A": {
+     "x": -1,
+     "y": 7
+    },
+    "B": {
+     "x": 3,
+     "y": -5
+    },
+    "snap": 1
+   }
+  },
+  {
+   "type": "example",
+   "n": 1,
+   "tag": "NC",
+   "title": "Gradient from two points",
+   "stem": "Find the gradient of the line through $(-1,7)$ and $(3,-5)$.",
+   "blocks": [
+    {
+     "steps": [
+      {
+       "tex": "m &= \\frac{-5-7}{3-(-1)}"
+      },
+      {
+       "tex": "&= \\frac{-12}{4}"
+      },
+      {
+       "tex": "&= \\bl{-3}"
+      }
+     ]
+    }
+   ],
+   "graph": {
+    "window": {
+     "xmin": -8,
+     "xmax": 8,
+     "ymin": -8,
+     "ymax": 8,
+     "grid": 1
+    },
+    "items": [
+     {
+      "kind": "line",
+      "through": [
+       [
+        -1,
+        7
+       ],
+       [
+        3,
+        -5
+       ]
+      ],
+      "colorOf": "m"
+     },
+     {
+      "kind": "point",
+      "at": [
+       -1,
+       7
+      ],
+      "label": "(-1,\\,7)",
+      "anchor": "ne"
+     },
+     {
+      "kind": "point",
+      "at": [
+       3,
+       -5
+      ],
+      "label": "(3,\\,-5)",
+      "anchor": "ne"
+     },
+     {
+      "kind": "polygon",
+      "pts": [
+       [
+        -1,
+        7
+       ],
+       [
+        3,
+        7
+       ],
+       [
+        3,
+        -5
+       ]
+      ],
+      "step": 1
+     },
+     {
+      "kind": "segment",
+      "from": [
+       -1,
+       7
+      ],
+      "to": [
+       3,
+       7
+      ],
+      "dashed": true,
+      "step": 1
+     },
+     {
+      "kind": "segment",
+      "from": [
+       3,
+       7
+      ],
+      "to": [
+       3,
+       -5
+      ],
+      "dashed": true,
+      "step": 1
+     },
+     {
+      "kind": "label",
+      "at": [
+       1,
+       7
+      ],
+      "tex": "\\text{run} = 4",
+      "anchor": "s",
+      "step": 1
+     },
+     {
+      "kind": "label",
+      "at": [
+       3,
+       1
+      ],
+      "tex": "\\text{rise} = -12",
+      "anchor": "e",
+      "step": 1
+     }
+    ]
+   }
+  },
+  {
+   "type": "example",
+   "n": 2,
+   "tag": "NC",
+   "title": "Reading a line given in general form",
+   "stem": "Find the gradient and the $y$-intercept of the line $4x + 6y - 9 = 0$.",
+   "blocks": [
+    {
+     "steps": [
+      {
+       "tex": "6y &= -4x + 9"
+      },
+      {
+       "tex": "\\therefore\\quad y &= -\\frac{2}{3}x + \\frac{3}{2}"
+      }
+     ]
+    },
+    {
+     "text": "The gradient is <span class=\"ans\">$-\\tfrac{2}{3}$</span> and the $y$-intercept is <span class=\"ans\">$\\tfrac{3}{2}$</span>."
+    }
+   ],
+   "graph": {
+    "window": {
+     "xmin": -5,
+     "xmax": 5,
+     "ymin": -5,
+     "ymax": 5,
+     "grid": 1
+    },
+    "items": [
+     {
+      "kind": "line",
+      "through": [
+       [
+        0,
+        1.5
+       ],
+       [
+        3,
+        -0.5
+       ]
+      ],
+      "colorOf": "m"
+     },
+     {
+      "kind": "label",
+      "at": [
+       -2.6,
+       -3.2
+      ],
+      "tex": "4x + 6y - 9 = 0",
+      "anchor": "c"
+     },
+     {
+      "kind": "polygon",
+      "pts": [
+       [
+        0,
+        1.5
+       ],
+       [
+        3,
+        1.5
+       ],
+       [
+        3,
+        -0.5
+       ]
+      ],
+      "step": 3
+     },
+     {
+      "kind": "segment",
+      "from": [
+       0,
+       1.5
+      ],
+      "to": [
+       3,
+       1.5
+      ],
+      "dashed": true,
+      "step": 3
+     },
+     {
+      "kind": "segment",
+      "from": [
+       3,
+       1.5
+      ],
+      "to": [
+       3,
+       -0.5
+      ],
+      "dashed": true,
+      "step": 3
+     },
+     {
+      "kind": "label",
+      "at": [
+       1.5,
+       1.5
+      ],
+      "tex": "3",
+      "anchor": "n",
+      "step": 3
+     },
+     {
+      "kind": "label",
+      "at": [
+       3,
+       0.5
+      ],
+      "tex": "-2",
+      "anchor": "e",
+      "step": 3
+     },
+     {
+      "kind": "point",
+      "at": [
+       0,
+       1.5
+      ],
+      "label": "\\left(0,\\,\\tfrac{3}{2}\\right)",
+      "anchor": "w",
+      "step": 3
+     }
+    ]
+   }
+  },
+  {
+   "type": "lab",
+   "preset": "lineMC",
+   "title": "Parallel and perpendicular",
+   "init": {
+    "window": {
+     "xmin": -8,
+     "xmax": 8,
+     "ymin": -8,
+     "ymax": 8,
+     "grid": 1
+    },
+    "m": 0.4,
+    "c": 0.2,
+    "mode": "perpendicular",
+    "P": {
+     "x": 4,
+     "y": -3
+    },
+    "Pname": "B",
+    "snap": 1
+   }
+  },
+  {
+   "type": "example",
+   "n": 3,
+   "tag": "NC",
+   "title": "Perpendicular line through a point",
+   "stem": "Find the equation of the line through $B(4,-3)$ perpendicular to $2x - 5y + 1 = 0$. Give your answer in the form $ax + by + d = 0$, where $a, b, d \\in \\mathbb{Z}$.",
+   "blocks": [
+    {
+     "steps": [
+      {
+       "tex": "-bx + ay &= -b\\,x_B + a\\,y_B"
+      },
+      {
+       "tex": "5x + 2y &= 5(4) + 2(-3)"
+      },
+      {
+       "tex": "5x + 2y &= 14"
+      },
+      {
+       "tex": "\\bl{\\therefore\\quad 5x + 2y - 14} &= \\bl{0}"
+      }
+     ]
+    }
+   ],
+   "graph": {
+    "window": {
+     "xmin": -6,
+     "xmax": 6,
+     "ymin": -6,
+     "ymax": 6,
+     "grid": 1
+    },
+    "items": [
+     {
+      "kind": "line",
+      "through": [
+       [
+        -3,
+        -1
+       ],
+       [
+        2,
+        1
+       ]
+      ],
+      "colorOf": "m"
+     },
+     {
+      "kind": "label",
+      "at": [
+       -3.3,
+       -2.4
+      ],
+      "tex": "2x - 5y + 1 = 0",
+      "anchor": "c"
+     },
+     {
+      "kind": "point",
+      "at": [
+       4,
+       -3
+      ],
+      "label": "B(4,\\,-3)",
+      "anchor": "ne"
+     },
+     {
+      "kind": "line",
+      "through": [
+       [
+        4,
+        -3
+       ],
+       [
+        2,
+        2
+       ]
+      ],
+      "answer": true,
+      "step": 4
+     },
+     {
+      "kind": "angle",
+      "O": [
+       2.3448275862068964,
+       1.1379310344827587
+      ],
+      "P": [
+       3.3448275862068964,
+       1.5379310344827588
+      ],
+      "Q": [
+       1.9448275862068964,
+       2.137931034482759
+      ],
+      "step": 4
+     },
+     {
+      "kind": "label",
+      "at": [
+       1.2,
+       4.6
+      ],
+      "tex": "\\bl{5x + 2y - 14 = 0}",
+      "anchor": "e",
+      "step": 4
+     }
+    ]
+   }
+  },
+  {
+   "type": "example",
+   "n": 4,
+   "tag": "NC",
+   "title": "Gradient as a rate of change",
+   "stem": "An oven heats at a constant rate. Its temperature is $20\\,{}^{\\circ}\\mathrm{C}$ when it is switched on and $110\\,{}^{\\circ}\\mathrm{C}$ six minutes later. Let $T$ be the temperature after $t$ minutes.",
+   "prompt": "(a) Find the gradient of the line, and interpret it.<br>(b) Write down $T$ in terms of $t$.",
+   "blocks": [
+    {
+     "steps": [
+      {
+       "tex": "m &= \\frac{110 - 20}{6 - 0}"
+      },
+      {
+       "tex": "&= 15"
+      }
+     ]
+    },
+    {
+     "text": "(a) <span class=\"ans\">The temperature rises by $15\\,{}^{\\circ}\\mathrm{C}$ per minute.</span>"
+    },
+    {
+     "text": "(b) <span class=\"ans\">$T = 15t + 20$</span>, since the intercept is the starting temperature."
+    }
+   ],
+   "graph": {
+    "window": {
+     "xmin": -3.5,
+     "xmax": 14,
+     "ymin": -20,
+     "ymax": 225,
+     "gridx": 1,
+     "gridy": 15,
+     "xtick": 2,
+     "ytick": 30,
+     "xname": "t",
+     "yname": "T",
+     "xtickFrom": 0,
+     "ytickFrom": 0
+    },
+    "items": [
+     {
+      "kind": "point",
+      "at": [
+       0,
+       20
+      ],
+      "label": "(0,\\,20)",
+      "anchor": "w"
+     },
+     {
+      "kind": "point",
+      "at": [
+       6,
+       110
+      ],
+      "label": "(6,\\,110)",
+      "anchor": "se"
+     },
+     {
+      "kind": "segment",
+      "from": [
+       0,
+       20
+      ],
+      "to": [
+       14,
+       230
+      ],
+      "step": 4,
+      "colorOf": "m"
+     }
+    ]
+   }
+  },
+  {
+   "type": "example",
+   "n": 4,
+   "tag": "NC",
+   "title": "Gradient as a rate of change",
+   "stem": "An oven heats at a constant rate. Its temperature is $20\\,{}^{\\circ}\\mathrm{C}$ when it is switched on and $110\\,{}^{\\circ}\\mathrm{C}$ six minutes later. Let $T$ be the temperature after $t$ minutes.",
+   "prompt": "(c) Find when the oven reaches $200\\,{}^{\\circ}\\mathrm{C}$, given that $T = 15t + 20$.",
+   "blocks": [
+    {
+     "steps": [
+      {
+       "tex": "15t + 20 &= 200"
+      },
+      {
+       "tex": "\\therefore\\quad 15t &= 180"
+      },
+      {
+       "tex": "\\therefore\\quad t &= 12"
+      }
+     ]
+    },
+    {
+     "text": "(c) <span class=\"ans\">After $12$ minutes.</span>"
+    }
+   ],
+   "graph": {
+    "window": {
+     "xmin": -3.5,
+     "xmax": 14,
+     "ymin": -20,
+     "ymax": 225,
+     "gridx": 1,
+     "gridy": 15,
+     "xtick": 2,
+     "ytick": 30,
+     "xname": "t",
+     "yname": "T",
+     "xtickFrom": 0,
+     "ytickFrom": 0
+    },
+    "items": [
+     {
+      "kind": "point",
+      "at": [
+       0,
+       20
+      ],
+      "label": "(0,\\,20)",
+      "anchor": "w"
+     },
+     {
+      "kind": "point",
+      "at": [
+       6,
+       110
+      ],
+      "label": "(6,\\,110)",
+      "anchor": "se"
+     },
+     {
+      "kind": "segment",
+      "from": [
+       0,
+       20
+      ],
+      "to": [
+       14,
+       230
+      ],
+      "colorOf": "m"
+     },
+     {
+      "kind": "segment",
+      "from": [
+       -3.5,
+       200
+      ],
+      "to": [
+       12,
+       200
+      ],
+      "dashed": true,
+      "step": 1
+     },
+     {
+      "kind": "label",
+      "at": [
+       3.5,
+       200
+      ],
+      "tex": "T = 200",
+      "anchor": "n",
+      "step": 1
+     },
+     {
+      "kind": "segment",
+      "from": [
+       12,
+       200
+      ],
+      "to": [
+       12,
+       -20
+      ],
+      "dashed": true,
+      "step": 3
+     },
+     {
+      "kind": "point",
+      "at": [
+       12,
+       200
+      ],
+      "label": "(12,\\,200)",
+      "anchor": "sw",
+      "step": 3
+     }
+    ]
+   }
+  },
+  {
+   "type": "yourturn",
+   "title": "Your turn",
+   "sections": [
+    {
+     "heading": "Now, in class",
+     "rows": [
+      {
+       "code": "A",
+       "q": "Q1–8",
+       "label": "Gradient",
+       "time": "7 min"
+      },
+      {
+       "code": "B",
+       "q": "Q9–14",
+       "label": "Equations and forms",
+       "time": "9 min"
+      },
+      {
+       "code": "C",
+       "q": "Q15–21",
+       "label": "Parallel and perpendicular",
+       "time": "9 min"
+      },
+      {
+       "code": "G",
+       "q": "Q29–40",
+       "label": "Activity — factorising, last 15 minutes",
+       "time": "15 min"
+      }
+     ]
+    },
+    {
+     "heading": "At home",
+     "rows": [
+      {
+       "code": "D",
+       "q": "Q22–23",
+       "label": "Gradient as a rate of change",
+       "time": "10 min"
+      },
+      {
+       "code": "E",
+       "q": "Q24–26",
+       "label": "Putting it together",
+       "time": "15 min"
+      },
+      {
+       "code": "F",
+       "q": "Q27",
+       "label": "Challenge",
+       "time": "10 min"
+      }
+     ]
+    }
+   ],
+   "open": {
+    "q": "Q28",
+    "text": "The rule $m_1 m_2 = -1$ misses one pair of perpendicular lines. Which pair — and is the rule wrong, or just silent?",
+    "how": "Open question — answer it with a drawing.",
+    "harvest": "Harvest: not yet scheduled"
+   }
+  }
+ ]
+}

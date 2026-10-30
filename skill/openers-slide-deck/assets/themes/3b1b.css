@@ -1,0 +1,51 @@
+/* ===== Theme override: calibrated on 3Blue1Brown (Manim colours, Computer Modern, black ground, no panels) ===== */
+:root, :root:not([data-theme="light"]), :root[data-theme="dark"]{
+  --pagebg:#000000; --stagebg:#000000; --ground:#000000;
+  --card:transparent; --cardline:transparent; --cardshadow:none;
+  --title:#FFFFFF; --titledim:#A0A0A0; --eyebrow:#A6A6A6;
+  --tagtx:#5CD0B3; --tagline:#5CD0B3; --tagbg:transparent; --tagbgC:rgba(92,208,179,.12);
+  --framing:#D0D0D0; --framingem:#FFFFFF;
+  --mathink:#FFFFFF; --prose:#E4E4E4; --note:#A0A0A0; --noteem:#FFFFFF;
+  --code:#000000; --codetx:#FFFFFF;
+  --foot:#9A9A9A; --navtx:#E4E4E4; --navline:#3A3A40; --navbg:rgba(255,255,255,.05);
+  --navbghover:rgba(255,255,255,.12); --dot:#3A3A40; --doton:#FFFF00; --hint:#9A9A9A;
+  --gr:#A0A0A0; --bl:#FFFF00; --hl:#FFFF00;
+  color-scheme: dark;
+}
+body{--textfont:'KaTeX_Main','Latin Modern Roman','CMU Serif',Georgia,serif}
+/* Computer Modern for the maths too: undo the STIX mapping, KaTeX's own fonts are CM.
+   1em: maths sits on the same Manim size as the prose around it (30 in the working) */
+.katex{font-family:"KaTeX_Main",serif;font-size:1em}
+.katex .mathnormal{font-family:'KaTeX_Math',serif;font-style:italic}
+.katex .mathit{font-family:'KaTeX_Main',serif;font-style:italic}
+.katex .boldsymbol{font-family:'KaTeX_Math',serif;font-weight:700;font-style:italic}
+.katex .mathrm,.katex .textrm,.katex .text,.katex .mord.text{font-family:'KaTeX_Main',serif;font-style:normal}
+h1,h2{font-weight:700;letter-spacing:0;line-height:1.25}
+h2 .dim{font-weight:700}
+.eyebrow,.turn h3,.open .how,.lab-group-title{letter-spacing:.14em}
+.tag{border-radius:2px}
+.ans,.ans .katex{font-weight:700}
+/* no panels: 3b1b never draws a card; black fills only mask what lies behind text */
+.panel{padding:.3em .15em;border:0;background:transparent} /* no card; the invisible padding only holds KaTeX's glyph boxes */
+.s-lab,.s-turn{background:#000000}
+.s-title h1{color:#FFFF00}
+.s-title .rule{background:#58C4DD;height:2px}
+/* Manim's Title: a GREY_C rule under every slide title, SMALL_BUFF below the text, the width of the text column */
+h2::after{content:"";display:block;height:2px;background:#888888;margin-top:var(--b1)}
+#help{background:rgba(0,0,0,.72)}
+#help .box,#scratch{background:#000000;border:1px solid #333333}
+#foot{border-top:1px solid #1A1A1A}
+.lab-toggle button[aria-checked="true"]{background:#58C4DD;color:#000}
+.lab-slider input{accent-color:#FFFF00}
+/* Computer Modern sets wider and taller than STIX: give the portrait lab a little more room */
+@container (max-aspect-ratio: 3/4){ .s-lab .lab-graph{width:min(88cqw,39cqh)} }
+
+/* slide titles yellow; Your turn headings coloured (teacher, 28/09/2026) */
+h1,h2{color:#FFFF00}
+.s-turn h2{font-size:var(--fs-title)}
+.s-turn h2,.s-turn .turn>div:first-child h3,.s-turn .open .how{color:#FFFF00}
+.s-turn .turn>div:nth-child(2) h3{color:#58C4DD}
+
+/* G9X: an 'At home' heading takes the curve colour even as the only section (29/09/2026) */
+.s-turn .turn>div:first-child h3.home,.s-turn .turn>div h3.home{color:#58C4DD}
+.s-turn .turn .c{color:#FFFF00} /* G9X: letters A–D in the answer colour */

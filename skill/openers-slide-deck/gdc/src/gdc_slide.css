@@ -1,0 +1,82 @@
+/* ===== gdc slide: one calculator step per reveal (fx-CG50 screens after the Skill Finder) ===== */
+.s-gdc .stem{font-size:calc(var(--fs-stem)*var(--k,1));color:var(--prose);margin:0;line-height:1.35}
+/* two columns from the top: text on the left (eyebrow, title, stem, steps), the calculator full height on the right */
+.slide.s-gdc.active,.slide.s-gdc.measure:not(.active){display:grid}
+.s-gdc{grid-template-columns:minmax(0,1fr) auto;grid-template-rows:minmax(0,1fr);column-gap:var(--b3);align-items:start}
+.s-gdc .gl{display:flex;flex-direction:column;gap:var(--b2);min-width:0;min-height:0}
+.gsteps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.55em;font-size:calc(var(--fs-stem)*var(--k,1));line-height:1.4;color:var(--note)}
+.gsteps li{display:grid;grid-template-columns:1.6em 1fr;align-items:baseline}
+.gsteps li .n{font-size:var(--fs-small);color:var(--note);font-variant-numeric:tabular-nums}
+.gsteps li.now{color:var(--title)}
+.gsteps li.now .n{color:var(--title)}
+.gsteps li.hid{visibility:hidden;opacity:0}
+.gsteps .kc{display:inline-block;padding:0 .4em;margin:0 .06em;border:1.5px solid #888;border-radius:.3em;background:#1E1E1E;color:#FFFFFF;
+  font-size:.82em;line-height:1.35;font-weight:600;letter-spacing:.02em;white-space:nowrap}
+.gsteps li:not(.now) .kc{color:#A0A0A0;border-color:#555}
+.gsteps .entry{font-weight:700;white-space:nowrap}
+.gsteps li:not(.now) .ans{color:var(--note)!important}
+/* calculator: the fx-CG Manager PLUS body capture (629x1333 px, 23/10/2026), the LCD and the key boxes placed on it in % of that image; K hides the keypad for a larger screen */
+.calc{height:100%;width:auto;max-width:44cqw;aspect-ratio:629/1333;container-type:inline-size;box-sizing:border-box;position:relative}
+.calc .body{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none;user-select:none;filter:drop-shadow(0 .6cqw 1.8cqw rgba(0,0,0,.22))}
+.calc .bezel{position:absolute;left:7.949%;top:11.403%;width:83.943%;height:22.506%}
+.calc .bezel .lcd{width:100%;height:100%;aspect-ratio:auto;border-radius:0}
+.calc .keys{position:absolute;left:5.405%;top:36.009%;width:89.030%;height:58.215%}
+.kimg{position:relative;width:100%;height:100%}
+/* K: screen only, larger, in a plain bezel */
+#frame.nokeys .calc{height:auto;width:min(47cqw,96cqh);aspect-ratio:auto;align-self:center}
+#frame.nokeys .calc .body,#frame.nokeys .calc .keys{display:none}
+#frame.nokeys .calc .bezel{position:static;width:auto;height:auto;background:#2A2D33;border-radius:2.4cqw;padding:2.4cqw}
+#frame.nokeys .calc .bezel .lcd{height:auto;aspect-ratio:384/216;border-radius:3px}
+.hk{position:absolute;transform:translate(-50%,-50%);border-radius:1.6cqw;box-sizing:border-box}
+.hk.lit{outline:.9cqw solid #FFFFFF;box-shadow:0 0 0 1.6cqw rgba(0,0,0,.35);outline-offset:.3cqw;z-index:1}
+.k .badge,.hk .badge{position:absolute;top:-3.4cqw;right:-2.6cqw;background:#FFFFFF;color:#111111;font-size:3cqw;font-weight:700;border-radius:999px;
+  min-width:4.6cqw;height:4.6cqw;padding:0 .9cqw;box-sizing:border-box;display:grid;place-items:center}
+.lcd{--lcd:#fcfcf9;--lcd-ink:#0f1115;--lcd-sb:#dde5f2;--lcd-fk:#2e3649;--lcd-sel:#1b3c92;--plot1:#1f5fd6;--plot2:#d4262f;
+  --f-mono:Menlo,Consolas,'DejaVu Sans Mono',monospace;
+  aspect-ratio:384/216;width:100%;background:var(--lcd);color:var(--lcd-ink);border-radius:3px;container-type:inline-size;
+  display:flex;flex-direction:column;overflow:hidden;font-family:var(--f-mono)}
+.lcd .sb{height:8.4cqw;flex:none;background:var(--lcd-sb);display:flex;align-items:center;gap:2.2cqw;padding:0 2cqw;font-size:3.2cqw;color:#2b3450;font-weight:600}
+.lcd .sb .bat{width:5cqw;height:2.6cqw;border:.4cqw solid #2b3450;border-radius:.5cqw;position:relative}
+.lcd .sb .bat::after{content:"";position:absolute;inset:.35cqw 1.4cqw .35cqw .35cqw;background:#2b3450}
+.lcd .scr{flex:1;min-height:0;padding:1.2cqw 2.2cqw;font-size:4.5cqw;line-height:6.2cqw;position:relative;overflow:hidden}
+.lcd .fk{height:8cqw;flex:none;display:grid;grid-template-columns:repeat(6,1fr);gap:.8cqw;padding:.8cqw;background:var(--lcd-fk)}
+.lcd .fk span{background:#fff;color:#111;border-radius:.6cqw;font-size:2.9cqw;font-weight:600;display:grid;place-items:center;overflow:hidden;white-space:nowrap;letter-spacing:-.02em}
+.lcd .fk span:empty{background:transparent}
+.lcd .row{display:grid;grid-template-columns:44% 1fr;white-space:nowrap}
+.lcd .row .v{overflow:hidden;text-overflow:ellipsis}
+.lcd .sel{background:var(--lcd-sel);color:#fff}
+.lcd .ttl{font-weight:600}
+.lcd .cur{display:inline-block;width:.55cqw;height:4.6cqw;background:currentColor;vertical-align:-.8cqw;margin-left:.3cqw;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.lcd .hist{display:flex;flex-direction:column}
+.lcd .menu{display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(3,1fr);gap:1.2cqw;height:100%;padding:.4cqw 0}
+.lcd .ic{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.4cqw;border-radius:1.2cqw;font-size:2.5cqw;line-height:1.1;text-align:center;padding:.6cqw}
+.lcd .ic .g{width:10cqw;height:6.8cqw;border-radius:1.2cqw;display:grid;place-items:center;color:#fff;font-size:3.4cqw;font-weight:600;position:relative}
+.lcd .ic .g small{position:absolute;top:-.6cqw;right:-.8cqw;background:#fff;color:#111;border:.3cqw solid #111;border-radius:.6cqw;font-size:2.2cqw;padding:0 .5cqw;line-height:1.2}
+.lcd .ic.sel{background:#ffe58a;color:#000;outline:.5cqw solid #c79a00}
+.lcd .shot{position:relative;width:100%;height:100%}
+.lcd .shot img{display:block;width:100%;height:100%;object-fit:fill}
+.lcd .shot .lbl{position:absolute;display:grid;place-items:center;background:#FFFFFF;color:#333333;font-family:'DejaVu Sans',Arial,Helvetica,sans-serif;font-size:3.7cqw;line-height:1;white-space:nowrap;letter-spacing:-.03em;overflow:hidden}
+.lcd .shot .lbl.t{font-size:4.8cqw;letter-spacing:.06em;color:#444444}
+.lcd .shot .hl{position:absolute;box-sizing:border-box;border:.9cqw solid var(--bl);border-radius:1.2cqw}
+.lcd svg{display:block;width:100%;height:100%}
+.lcd .gtext{position:absolute;left:2.2cqw;font-size:3.6cqw;line-height:1.25;background:rgba(255,255,255,.9);padding:0 .6cqw}
+.lcd .yeq .row{grid-template-columns:11cqw 1fr}
+.lcd .yeq .sw{display:inline-block;width:1.8cqw;height:3.6cqw;margin-right:1cqw;vertical-align:-.5cqw}
+.lcd .yeq .eq{padding:0 .3cqw}
+.lcd .yeq .eq.on{background:#111;color:#fff}
+.lcd .yeq .row.sel .eq.on{background:#fff;color:var(--lcd-sel)}
+.lcd .msg{position:absolute;left:22%;right:22%;top:28%;bottom:28%;background:#fff;border:.5cqw solid var(--lcd-sel);border-radius:1cqw;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1cqw;font-size:4.5cqw;font-weight:600}
+.lcd .msg small{font-size:3cqw;font-weight:400}
+/* phones and narrow windows: calculator under the steps */
+@container (max-aspect-ratio: 1/1){
+  .slide.s-gdc.active{display:flex;flex-direction:column;gap:var(--b2)}
+  .s-gdc .gl{flex:none;min-height:auto}
+  .calc,#frame.nokeys .calc{height:auto;width:100%;max-width:none;aspect-ratio:auto;order:-1}
+  .calc .body,.calc .keys{display:none}
+  .calc .bezel{position:static;width:auto;height:auto;background:#2A2D33;border-radius:2.4cqw;padding:2.4cqw}
+  .calc .bezel .lcd{height:auto;aspect-ratio:384/216;border-radius:3px}
+}
+
+@media (prefers-reduced-motion: reduce){ .lcd .cur{animation:none} }

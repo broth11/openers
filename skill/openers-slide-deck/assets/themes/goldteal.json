@@ -1,0 +1,39 @@
+{
+  "note": "Gold-teal, opt-in (teacher, 29/09/2026): the 3b1b layout and type with Manim's GOLD_C answers/titles/handles, TEAL_C curves, BLUE_C tag, on a dark slate ground #0E1116. Not an official palette.",
+  "stix": false,
+  "gr": "#A0A0A0",
+  "bl": "#F0AC5F",
+  "lab": {
+    "ink": "#FFFFFF",
+    "curve": "#5CD0B3",
+    "muted": "#A0A0A0",
+    "handle": "#F0AC5F",
+    "grid": "#30343A",
+    "axis": "#FFFFFF",
+    "point": "#FFFFFF",
+    "pointR": 5.5,
+    "frame": false,
+    "stroke": {
+      "grid": 1,
+      "axis": 2,
+      "curve": 3,
+      "dashed": 2
+    },
+    "fill": "#5CD0B3",
+    "fillOpacity": 0.16,
+    "gr": "#A0A0A0",
+    "bl": "#F0AC5F"
+  },
+  "t2c": {
+    "blue": "#58C4DD",
+    "red": "#FC6255",
+    "teal": "#5CD0B3",
+    "pink": "#D147BD",
+    "green": "#83C167",
+    "grey": "#BBBBBB",
+    "orange": "#FF862F",
+    "brown": "#CD853F",
+    "indigo": "#5C7CFA"
+  },
+  "hl": "#FFFF00"
+}
