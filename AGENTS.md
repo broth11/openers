@@ -14,6 +14,7 @@ Working rules:
 
 - **New openers are walk lessons** (`walk: true`). Do not author new lessons in the old three-pane or `beats` style. Lessons built before the walk model (U5 L1, U5 L2, U11 L9, L10, L11) keep their original shell until Ben asks for them to be remade; remaking one means replacing it in place and moving the old file to `src/lessons/<course>/_archive/`.
 - A walk lesson is not finished until every Solution step restates its answer in the coloured box, the bar letters read Q1, W, S, A, and `node qa/check.mjs <key>` passes at all four sizes.
+- **Deck lessons.** A lesson may instead be a finished slide deck: a module with `deck: '<path under public/>'` and no scenes, the HTML built with Ben's `openers-slide-deck` skill and placed in `public/<course>/`. U5 L3 is the first (30 October 2026). Do not edit the deck HTML by hand; rebuild it from its generator.
 - Work on a branch, never on `main`. Ben approves every merge; merging puts an opener live.
 - Build reusable drawing code as a component in `src/components/<name>/` with a `README.md`, and add it to `docs/CATALOG.md` in the same commit.
 - Run `npm run lint`, `npm run build`, and `node qa/check.mjs <lesson-key>` (with `npm run serve` running) before every commit. Fix failures; do not loosen the check.

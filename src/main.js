@@ -3,6 +3,8 @@
 // and runs one lesson: scenes (or one open screen), the questions column with reveals,
 // controls, the graph stage, and the working / keypress panel that slides in from the right.
 // To add a lesson, drop a new module in lessons/<course>/. Nothing here changes.
+// A deck lesson (`deck: '<path under public/>'`, no scenes) is a finished slide deck built with the
+// openers-slide-deck skill: the shell shows it in a full-stage frame under the usual header and menu.
 
 import 'mathlive/fonts.css'
 import 'mathlive/static.css'
@@ -34,7 +36,7 @@ const modules = import.meta.glob('./lessons/*/*.js', { eager: true })
 const ONLY = import.meta.env.VITE_LESSON || ''
 const LESSONS = Object.values(modules)
   .map((m) => m.default)
-  .filter((L) => L && L.course && L.scenes?.length)
+  .filter((L) => L && L.course && (L.scenes?.length || L.deck))
   .filter((L) => !ONLY || baseKey(L) === ONLY)
   .sort((a, b) => a.course.localeCompare(b.course) || a.unit - b.unit || a.lesson - b.lesson || (a.tag ? 1 : 0) - (b.tag ? 1 : 0) || (a.variant ? 1 : 0) - (b.variant ? 1 : 0))
 const byKey = new Map(LESSONS.map((L) => [keyOf(L), L]))
@@ -733,6 +735,7 @@ function renderGraph() {
 // Batch updates into one frame. A full render requested earlier in the frame is never dropped.
 let pendingFull = false
 function update({ full = false } = {}) {
+  if (!S) return // a deck lesson keeps no shell state
   pendingFull = pendingFull || full
   cancelAnimationFrame(raf)
   raf = requestAnimationFrame(() => {
@@ -759,6 +762,8 @@ function openLesson(k, { push = true } = {}) {
   if (!next) return
   cancelAnimationFrame(playRaf)
   L = next
+  if (L.deck) { openDeck(push); return }
+  closeDeck()
   TL = L.walk ? buildTimeline(L) : null
   S = freshState(L)
   if (graph) graph.clear()
@@ -770,6 +775,43 @@ function openLesson(k, { push = true } = {}) {
   setOpen(false)
   update({ full: true })
 }
+
+// ---------- deck lessons: the deck runs in its own frame; the shell keeps the header, menu, Reset and full screen
+const deckFrame = () => $('deckFrame')
+const deckApi = () => { try { return deckFrame().contentWindow?.Deck || null } catch { return null } }
+function openDeck(push) {
+  cancelAnimationFrame(playRaf)
+  cancelAnimationFrame(raf)
+  TL = null
+  S = null
+  if (graph) graph.clear()
+  if (push) history.replaceState(null, '', `#${keyOf(L)}`)
+  try { localStorage.setItem('openers:last', keyOf(L)) } catch { // storage blocked: nothing to remember
+  }
+  const c = courseOf(L.course)
+  document.documentElement.style.setProperty('--acc', c.accent)
+  $('navDot').style.background = c.accent
+  $('eyebrow').textContent = `${c.name} · Unit ${L.unit} · Lesson ${L.lesson}`
+  $('lessonTitle').textContent = L.title
+  document.title = `U${L.unit} L${L.lesson} ${L.title} · Lesson Openers`
+  for (const id of ['engineSeg', 'stepper', 'workBtn', 'pauseBtn', 'timeline']) $(id).hidden = true
+  $('page').classList.remove('walk', 'paused', 'panel-open')
+  $('page').classList.add('deck')
+  $('pnav').open = false
+  const f = deckFrame()
+  f.hidden = false
+  if (f.getAttribute('src') !== L.deck) f.setAttribute('src', L.deck)
+  else f.contentWindow?.focus()
+  renderMenu()
+}
+function closeDeck() {
+  const f = deckFrame()
+  if (!$('page').classList.contains('deck')) return
+  $('page').classList.remove('deck')
+  f.hidden = true
+  f.removeAttribute('src')
+}
+deckFrame().addEventListener('load', () => { if (L && L.deck) { try { deckFrame().contentWindow.focus() } catch { /* not ready */ } } })
 
 // ---------- play: a slider with play: { seconds } runs from its current value to its maximum
 let playRaf = 0
@@ -938,7 +980,7 @@ document.addEventListener('click', (e) => {
   if (t.id === 'pauseBtn') { togglePause(); return }
   if (t.id === 'pclose') { setOpen(false); return }
   if (t.id === 'workBtn') { setOpen(!S.open); return }
-  if (t.id === 'resetBtn') { openLesson(keyOf(L), { push: false }); return }
+  if (t.id === 'resetBtn') { if (L.deck) { deckApi()?.go(0, 0); deckFrame().contentWindow?.focus() } else openLesson(keyOf(L), { push: false }); return }
   if (t.id === 'fsBtn') { toggleFs(); return }
 })
 
@@ -965,6 +1007,16 @@ document.addEventListener('fullscreenchange', () => $('fsBtn').setAttribute('ari
 
 document.addEventListener('keydown', (e) => {
   if (e.metaKey || e.ctrlKey || e.altKey) return
+  if (L && L.deck) {
+    // Deck lessons: keys pressed in the shell (focus on the header) still step the deck.
+    if (e.key === 'Escape') { $('pnav').open = false; return }
+    if (e.key.toLowerCase() === 'f') { toggleFs(); return }
+    const D = deckApi()
+    if (!D) return
+    if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); D.next() }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); D.prev() }
+    return
+  }
   const tag = (e.target.tagName || '').toLowerCase()
   const inRange = tag === 'input' && e.target.type === 'range'
   if (tag === 'input' && !inRange) return

@@ -81,6 +81,10 @@ h1 { margin: 0; font-size: clamp(17px, 2.8vh, 26px); font-weight: 600; line-heig
 @media (max-width: 1500px) { .stepper button:not([aria-pressed='true']) .st { display: none; } }
 
 /* ---------- main row */
+/* deck lessons (`deck` in the module): the deck fills the main row; questions, stage, panel and timeline give way */
+.page.deck .qa, .page.deck .stage, .page.deck .side { display: none; }
+.deck-frame { flex: 1 1 auto; min-width: 0; width: 100%; border: 0; border-radius: 18px; box-shadow: var(--shadow); background: #000; display: block; }
+@media (max-width: 860px) { .page.deck { height: 100dvh; } .page.deck .main { flex: 1 1 0; } }
 .main { flex: 1 1 0; min-height: 0; display: flex; gap: 0; }
 
 /* questions column: its own container, always visible */

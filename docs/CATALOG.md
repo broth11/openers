@@ -19,6 +19,7 @@ Everything the kit can already do. Read this before building a new opener, and a
 | Maths helpers | MathLive rendering (`tex`, `md`), exact fractions (`Frac`), number formatting (`fmt`, `num`) | `src/kit/math.js` |
 | Shell | Menu, scenes, questions and reveals, recap cards (a scene with `cards` and no prompts), controls with optional Play, readout, working and Casio panel (calculator steps grouped under goal headings via `sections`), keys, deep links | `src/main.js`, `src/shell.css`, `index.html` |
 | Walk timeline | A walk lesson (`walk: true`) as one flat list of beats: built from the prompts, folded to the state at any beat, drawn as a coloured bottom bar with pause, scrub, and snap-back | `src/kit/timeline.js`, `src/main.js`, `docs/OPENERS-WALK.md` |
+| Deck lessons | A module with `deck: '<path under public/>'` and no scenes: the shell shows a finished slide deck (built with the `openers-slide-deck` skill) in a full-stage frame under the header and menu; arrows, Page keys and Space in the shell step the deck, Reset returns it to slide 1 | `src/main.js` (`openDeck`), `src/shell.css`, `index.html`, `public/<course>/` |
 | Layout check | Every scene, reveal, slider, and size; stability sweep. Walk lessons also get the timeline, split, determinism, pause, and animation checks | `qa/check.mjs`, `qa/walk-check.mjs` |
 
 ## Components
@@ -42,7 +43,7 @@ Everything the kit can already do. Read this before building a new opener, and a
 | MAI HL U5 L1 | Three flights, three forms | SVG | Information board, Projectile height graph |
 | MAI HL U11 L10 | Discs and stretches | three.js + SVG | Solid of revolution, Strips |
 | MAI HL U11 L11 | A hemisphere bowl | three.js + SVG | Solid of revolution, Strips |
-| MAI HL U5 L3 | Exponential and logarithmic models, log scales (walk-through) | SVG | Context stage, Growth family |
+| MAI HL U5 L3 | Exponential and logarithmic models, log scales (deck lesson since 30 October 2026: `public/mai-hl/u05-l03-exponential-and-logarithmic-models.html`; the walk-through version is in `_archive/`) | Deck | Scenes ported from Context stage and Growth family |
 | MAI HL U5 L2 | Cubic fitting, direct and inverse variation (legacy stepped) | SVG | Context stage, Polynomial explorer, Power family |
 
 ## Wanted next (from the syllabus survey, 2026-10-25)

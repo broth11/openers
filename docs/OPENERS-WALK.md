@@ -2,7 +2,7 @@
 
 **This is the model for every new opener.** Ben locked it in on 28 October 2026.
 
-The walk-through model plays an opener as one curated sequence of beats, like advancing slides: a question is posed, its working appears a step at a time, a graph appears, a slider animates, the next question is posed. A timeline along the bottom shows every beat, so Ben can pause, go back to an earlier point, and return. U5 L3 is the pilot and the live example (`src/lessons/mai-hl/u05-l03-exponential-and-logarithmic-models.js`); its stepped predecessor is kept in `src/lessons/mai-hl/_archive/`. A lesson opts in with `walk: true`. Every other lesson, stepped or not, runs its original shell unchanged, and `docs/OPENERS.md` and `docs/OPENERS-STEPPED.md` still describe them exactly.
+The walk-through model plays an opener as one curated sequence of beats, like advancing slides: a question is posed, its working appears a step at a time, a graph appears, a slider animates, the next question is posed. A timeline along the bottom shows every beat, so Ben can pause, go back to an earlier point, and return. U5 L3 was the pilot, and its walk module is the reference example: `src/lessons/mai-hl/_archive/u05-l03-exponential-and-logarithmic-models-walk.js.orig` (on 30 October 2026 the live U5 L3 became a deck lesson, see `docs/CATALOG.md`); its stepped predecessor is kept beside it. A lesson opts in with `walk: true`. Every other lesson, stepped or not, runs its original shell unchanged, and `docs/OPENERS.md` and `docs/OPENERS-STEPPED.md` still describe them exactly.
 
 ## The decisions (Ben, 28 October 2026)
 
@@ -77,7 +77,7 @@ export default {
 
 ## Building a new opener, step by step
 
-1. Branch from `main`. Copy `u05-l03-exponential-and-logarithmic-models.js` as the starting shape; set `course`, `unit`, `lesson`, `title`, `walk: true`.
+1. Branch from `main`. Copy `_archive/u05-l03-exponential-and-logarithmic-models-walk.js.orig` into `src/lessons/<course>/` as a `.js` file as the starting shape (fix its relative imports if the folder depth differs); set `course`, `unit`, `lesson`, `title`, `walk: true`.
 2. Take the scenes and prompts from the lesson outline Ben approved. Each scene is a story (a context, a model, a limit); each prompt is one question with its working steps.
 3. Write each prompt: `q`, optional `choices` and `correct` for a prediction, then `steps`. Pose never shows the answer. Gate every graph answer with `reveals`.
 4. Make the last step of each prompt `answer: true` with `latex`: the answer restated in the coloured box. On a predict question the box ends with the conclusion.
