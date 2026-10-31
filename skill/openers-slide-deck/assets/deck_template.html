@@ -424,6 +424,7 @@ html:root[data-skin="greengrey"]{--sc-curve:#58C4DD;--sc-red:#FC6255}
 .lab-btn:focus-visible{outline:2px solid var(--bl);outline-offset:1px}
 /* fixed-height rows: nothing moves when the slider moves */
 .scenelab .lab-readout,.famlab .lab-readout{height:2.1em;display:flex;align-items:center;padding-block:0}
+.scenelab .lab-readout.ro-frac{height:3.4em}   /* logistic lab: P(t) = L / (1 + A e^(-kt)), numerator and exponent both clear */
 .famlab .lab-slider.spacer{height:1.6em}
 /* recap lab: graph | controls | cards, the title over the controls only */
 @container (min-aspect-ratio: 3/4){

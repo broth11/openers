@@ -461,6 +461,7 @@
     Lab.slider(gp, { min: 0, max: tmax, step: 0.1, value: st.t, label: 't', format: x => fx(x, 1), onChange: x => { st.t = x; refresh(); } });
     const gr = grp('Readings');
     const r0 = Lab.readout(gr, () => `P(t)=\\dfrac{${num(st.M, 0)}}{1+${num(Aof(st), 2)}e^{-${num(st.k, 2)}t}}`);
+    r0.el.classList.add('ro-frac');   /* a stacked fraction with an exponent needs a taller fixed row than the other readouts */
     const r1 = Lab.readout(gr, () => `P(${fx(st.t, 1)})=${fx(Lf(st.t, st), 1)}\\%`);
     const r2 = Lab.readout(gr, () => Aof(st) > 1 ? `\\text{steepest: }t=${fx(Math.log(Aof(st)) / st.k, 1)}` : '\\text{steepest: before }t=0');
     const readouts = [r0, r1, r2];
