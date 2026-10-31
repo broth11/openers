@@ -1,0 +1,1909 @@
+{
+ "meta": {
+  "cohort": "MAI",
+  "cohortLabel": "MAI HL",
+  "lesson": 3,
+  "topic": "ExpLogModelsScene",
+  "topicWords": "Exponential and logarithmic models",
+  "file": "MAI_HL_U5_L3_Lesson_ExpLogModels.html",
+  "artifactTitle": "MAI HL U5 L3 Exp and Log Models",
+  "source": "openers u05-l03-exponential-and-logarithmic-models.js (github broth11/openers)",
+  "largeGraphs": true
+ },
+ "slides": [
+  {
+   "type": "title",
+   "eyebrow": "IB Mathematics: Applications and Interpretations HL · Unit 5 · Lesson 3",
+   "title": "Exponential and logarithmic models, log scales",
+   "lede": "Online lesson: three scenes, then the family",
+   "code": "MAI HL U5 L3",
+   "regime": "C",
+   "regimeText": "calculator allowed"
+  },
+  {
+   "type": "example",
+   "eyebrow": "Cooling coffee · Question 1 · Predict",
+   "title": "Where does it settle? (1 of 2)",
+   "stem": "Predict: after a very long time, what temperature does the coffee approach?",
+   "choices": [
+    "$0\\,{}^{\\circ}\\mathrm{C}$",
+    "the temperature of the room",
+    "$78.7\\,{}^{\\circ}\\mathrm{C}$"
+   ],
+   "correct": 1,
+   "pickStep": 0,
+   "blocks": [
+    {
+     "walk": {
+      "cap": "Heat flows from hot to cool",
+      "note": "The coffee loses heat to the air in the room, quickly at first."
+     }
+    }
+   ],
+   "graph": {
+    "window": {
+     "xmin": -2.6,
+     "xmax": 31,
+     "ymin": -10,
+     "ymax": 105,
+     "gridx": 5,
+     "gridy": 10,
+     "xtick": 5,
+     "ytick": 20,
+     "xname": "t",
+     "yname": "T",
+     "xtickFrom": 0,
+     "ytickFrom": 0
+    },
+    "heading": "A cup of coffee is left on a table in a room. Readings: $92\\,{}^{\\circ}\\mathrm{C}$ at $t=0$ and $78.7\\,{}^{\\circ}\\mathrm{C}$ two minutes later.",
+    "scene": {
+     "kind": "coffee",
+     "alt": "A cup of coffee on a table and a thermometer beside the graph",
+     "states": [
+      [
+       0,
+       {
+        "T": 92,
+        "t": 0
+       }
+      ]
+     ]
+    },
+    "items": [
+     {
+      "kind": "point",
+      "at": [
+       0,
+       92
+      ],
+      "label": "(0,\\,92)",
+      "anchor": "ne"
+     },
+     {
+      "kind": "point",
+      "at": [
+       2,
+       78.7
+      ],
+      "label": "(2,\\,78.7)",
+      "anchor": "ne"
+     }
+    ]
+   },
+   "sceneStart": true,
+   "scene": 1,
+   "q": 1
+  },
+  {
+   "type": "example",
+   "eyebrow": "Cooling coffee · Question 1 · Predict",
+   "title": "Where does it settle? (2 of 2)",
+   "stem": "Predict: after a very long time, what temperature does the coffee approach?",
+   "choices": [
+    "$0\\,{}^{\\circ}\\mathrm{C}$",
+    "the temperature of the room",
+    "$78.7\\,{}^{\\circ}\\mathrm{C}$"
+   ],
+   "correct": 1,
+   "pickStep": 1,
+   "blocks": [
+    {
+     "walk": {
+      "cap": "It levels off",
+      "tex": [
+       "&\\text{It approaches the}",
+       "&\\text{temperature of the room}"
+      ],
+      "note": "Once it is as warm as the room there is nothing left to lose, so the temperature stops falling. It does not go to $0\\,{}^{\\circ}\\mathrm{C}$.",
+      "ans": true
+     }
+    }
+   ],
+   "graph": {
+    "window": {
+     "xmin": -2.6,
+     "xmax": 31,
+     "ymin": -10,
+     "ymax": 105,
+     "gridx": 5,
+     "gridy": 10,
+     "xtick": 5,
+     "ytick": 20,
+     "xname": "t",
+     "yname": "T",
+     "xtickFrom": 0,
+     "ytickFrom": 0
+    },
+    "heading": "A cup of coffee is left on a table in a room. Readings: $92\\,{}^{\\circ}\\mathrm{C}$ at $t=0$ and $78.7\\,{}^{\\circ}\\mathrm{C}$ two minutes later.",
+    "scene": {
+     "kind": "coffee",
+     "alt": "A cup of coffee on a table and a thermometer beside the graph",
+     "states": [
+      [
+       0,
+       {
+        "T": 92,
+        "t": 0
+       }
+      ]
+     ]
+    },
+    "items": [
+     {
+      "kind": "point",
+      "at": [
+       0,
+       92
+      ],
+      "label": "(0,\\,92)",
+      "anchor": "ne"
+     },
+     {
+      "kind": "point",
+      "at": [
+       2,
+       78.7
+      ],
+      "label": "(2,\\,78.7)",
+      "anchor": "ne"
+     }
+    ]
+   },
+   "scene": 1,
+   "q": 1,
+   "cont": true
+  },
+  {
+   "type": "example",
+   "eyebrow": "Cooling coffee · Question 2",
+   "title": "Fit the model (1 of 3)",
+   "stem": "The model is $T=k(0.9)^t+c$, with $t$ in minutes. Use the two readings to find $k$ and $c$.",
+   "blocks": [
+    {
+     "walk": {
+      "cap": "The model",
+      "tex": [
+       "T&=k(0.9)^t+c"
+      ]
+     }
+    },
+    {
+     "walk": {
+      "cap": "Substitute $(0,\\,92)$",
+      "tex": [
+       "92&=k(0.9)^0+c",
+       "92&=k+c"
+      ]
+     }
+    },
+    {
+     "walk": {
+      "cap": "Substitute $(2,\\,78.7)$",
+      "tex": [
+       "78.7&=k(0.9)^2+c",
+       "78.7&=0.81k+c"
+      ]
+     }
+    }
+   ],
+   "graph": {
+    "window": {
+     "xmin": -2.6,
+     "xmax": 31,
+     "ymin": -10,
+     "ymax": 105,
+     "gridx": 5,
+     "gridy": 10,
+     "xtick": 5,
+     "ytick": 20,
+     "xname": "t",
+     "yname": "T",
+     "xtickFrom": 0,
+     "ytickFrom": 0
+    },
+    "heading": "A cup of coffee is left on a table in a room. Readings: $92\\,{}^{\\circ}\\mathrm{C}$ at $t=0$ and $78.7\\,{}^{\\circ}\\mathrm{C}$ two minutes later.",
+    "scene": {
+     "kind": "coffee",
+     "alt": "A cup of coffee on a table and a thermometer beside the graph",
+     "states": [
+      [
+       0,
+       {
+        "T": 92,
+        "t": 0
+       }
+      ]
+     ]
+    },
+    "items": [
+     {
+      "kind": "point",
+      "at": [
+       0,
+       92
+      ],
+      "label": "(0,\\,92)",
+      "anchor": "ne"
+     },
+     {
+      "kind": "point",
+      "at": [
+       2,
+       78.7
+      ],
+      "label": "(2,\\,78.7)",
+      "anchor": "ne"
+     }
+    ]
+   },
+   "scene": 1,
+   "q": 2
+  },
+  {
+   "type": "example",
+   "eyebrow": "Cooling coffee · Question 2",
+   "title": "Fit the model (2 of 3)",
+   "stem": "The model is $T=k(0.9)^t+c$, with $t$ in minutes. Use the two readings to find $k$ and $c$.",
+   "blocks": [
+    {
+     "walk": {
+      "cap": "Subtract the second equation from the first",
+      "tex": [
+       "92-78.7&=k-0.81k",
+       "13.3&=0.19k",
+       "k&=70"
+      ]
+     }
+    },
+    {
+     "walk": {
+      "cap": "Find $c$",
+      "tex": [
+       "c&=92-70",
+       "&=22"
+      ],
+      "note": "$c$ is the horizontal asymptote: the temperature of the room, $22\\,{}^{\\circ}\\mathrm{C}$."
+     }
+    }
+   ],
+   "graph": {
+    "window": {
+     "xmin": -2.6,
+     "xmax": 31,
+     "ymin": -10,
+     "ymax": 105,
+     "gridx": 5,
+     "gridy": 10,
+     "xtick": 5,
+     "ytick": 20,
+     "xname": "t",
+     "yname": "T",
+     "xtickFrom": 0,
+     "ytickFrom": 0
+    },
+    "heading": "A cup of coffee is left on a table in a room. Readings: $92\\,{}^{\\circ}\\mathrm{C}$ at $t=0$ and $78.7\\,{}^{\\circ}\\mathrm{C}$ two minutes later.",
+    "scene": {
+     "kind": "coffee",
+     "alt": "A cup of coffee on a table and a thermometer beside the graph",
+     "states": [
+      [
+       0,
+       {
+        "T": 92,
+        "t": 0
+       }
+      ]
+     ]
+    },
+    "items": [
+     {
+      "kind": "segment",
+      "from": [
+       -2.6,
+       22
+      ],
+      "to": [
+       31,
+       22
+      ],
+      "dashed": true,
+      "step": 2
+     },
+     {
+      "kind": "label",
+      "at": [
+       24,
+       22
+      ],
+      "tex": "y=22",
+      "anchor": "s",
+      "step": 2
+     },
+     {
+      "kind": "point",
+      "at": [
+       0,
+       92
+      ],
+      "label": "(0,\\,92)",
+      "anchor": "ne"
+     },
+     {
+      "kind": "point",
+      "at": [
+       2,
+       78.7
+      ],
+      "label": "(2,\\,78.7)",
+      "anchor": "ne"
+     }
+    ]
+   },
+   "scene": 1,
+   "q": 2,
+   "cont": true
+  },
+  {
+   "type": "example",
+   "eyebrow": "Cooling coffee · Question 2",
+   "title": "Fit the model (3 of 3)",
+   "stem": "The model is $T=k(0.9)^t+c$, with $t$ in minutes. Use the two readings to find $k$ and $c$.",
+   "blocks": [
+    {
+     "walk": {
+      "cap": "Model",
+      "tex": [
+       "T&=70(0.9)^t+22"
+      ],
+      "note": "Two readings fix the two unknowns $k$ and $c$.",
+      "ans": true
+     }
+    }
+   ],
+   "graph": {
+    "window": {
+     "xmin": -2.6,
+     "xmax": 31,
+     "ymin": -10,
+     "ymax": 105,
+     "gridx": 5,
+     "gridy": 10,
+     "xtick": 5,
+     "ytick": 20,
+     "xname": "t",
+     "yname": "T",
+     "xtickFrom": 0,
+     "ytickFrom": 0
+    },
+    "heading": "A cup of coffee is left on a table in a room. Readings: $92\\,{}^{\\circ}\\mathrm{C}$ at $t=0$ and $78.7\\,{}^{\\circ}\\mathrm{C}$ two minutes later.",
+    "scene": {
+     "kind": "coffee",
+     "alt": "A cup of coffee on a table and a thermometer beside the graph",
+     "states": [
+      [
+       0,
+       {
+        "T": 92,
+        "t": 0
+       }
+      ]
+     ]
+    },
+    "items": [
+     {
+      "kind": "segment",
+      "from": [
+       -2.6,
+       22
+      ],
+      "to": [
+       31,
+       22
+      ],
+      "dashed": true,
+      "step": 0
+     },
+     {
+      "kind": "label",
+      "at": [
+       24,
+       22
+      ],
+      "tex": "y=22",
+      "anchor": "s",
+      "step": 0
+     },
+     {
+      "kind": "fn",
+      "expr": "70*0.9**x + 22",
+      "domain": [
+       0,
+       31
+      ],
+      "color": "blue",
+      "step": 1
+     },
+     {
+      "kind": "point",
+      "at": [
+       0,
+       92
+      ],
+      "label": "(0,\\,92)",
+      "anchor": "ne"
+     },
+     {
+      "kind": "point",
+      "at": [
+       2,
+       78.7
+      ],
+      "label": "(2,\\,78.7)",
+      "anchor": "ne"
+     }
+    ]
+   },
+   "scene": 1,
+   "q": 2,
+   "cont": true
+  },
+  {
+   "type": "lab",
+   "preset": "coffeeScene",
+   "eyebrow": "Cooling coffee · Trace the model",
+   "title": "Watch it cool",
+   "init": {
+    "window": {
+     "xmin": -2.6,
+     "xmax": 31,
+     "ymin": -10,
+     "ymax": 105,
+     "gridx": 5,
+     "gridy": 10,
+     "xtick": 5,
+     "ytick": 20,
+     "xname": "t",
+     "yname": "T",
+     "xtickFrom": 0,
+     "ytickFrom": 0
+    },
+    "t": 0,
+    "seconds": 12
+   }
+  },
+  {
+   "type": "example",
+   "eyebrow": "Cooling coffee · Question 3",
+   "title": "When can it be drunk? (1 of 2)",
+   "stem": "It can be drunk at $50\\,{}^{\\circ}\\mathrm{C}$ or below. After how many whole minutes is that first true?",
+   "blocks": [
+    {
+     "walk": {
+      "cap": "Set $T=50$",
+      "tex": [
+       "70(0.9)^t+22&=50"
+      ]
+     }
+    },
+    {
+     "walk": {
+      "cap": "Isolate the power",
+      "tex": [
+       "70(0.9)^t&=28",
+       "(0.9)^t&=0.4"
+      ]
+     }
+    }
+   ],
+   "graph": {
+    "window": {
+     "xmin": -2.6,
+     "xmax": 31,
+     "ymin": -10,
+     "ymax": 105,
+     "gridx": 5,
+     "gridy": 10,
+     "xtick": 5,
+     "ytick": 20,
+     "xname": "t",
+     "yname": "T",
+     "xtickFrom": 0,
+     "ytickFrom": 0
+    },
+    "heading": "A cup of coffee is left on a table in a room. Readings: $92\\,{}^{\\circ}\\mathrm{C}$ at $t=0$ and $78.7\\,{}^{\\circ}\\mathrm{C}$ two minutes later.",
+    "scene": {
+     "kind": "coffee",
+     "alt": "A cup of coffee on a table and a thermometer beside the graph",
+     "states": [
+      [
+       0,
+       {
+        "T": 92,
+        "t": 0
+       }
+      ]
+     ]
+    },
+    "items": [
+     {
+      "kind": "segment",
+      "from": [
+       -2.6,
+       22
+      ],
+      "to": [
+       31,
+       22
+      ],
+      "dashed": true,
+      "step": 0
+     },
+     {
+      "kind": "label",
+      "at": [
+       24,
+       22
+      ],
+      "tex": "y=22",
+      "anchor": "s",
+      "step": 0
+     },
+     {
+      "kind": "fn",
+      "expr": "70*0.9**x + 22",
+      "domain": [
+       0,
+       31
+      ],
+      "color": "blue",
+      "step": 0
+     },
+     {
+      "kind": "point",
+      "at": [
+       0,
+       92
+      ],
+      "label": "(0,\\,92)",
+      "anchor": "ne"
+     },
+     {
+      "kind": "point",
+      "at": [
+       2,
+       78.7
+      ],
+      "label": "(2,\\,78.7)",
+      "anchor": "ne"
+     },
+     {
+      "kind": "segment",
+      "from": [
+       -2.6,
+       50
+      ],
+      "to": [
+       31,
+       50
+      ],
+      "dotted": true,
+      "step": 1
+     }
+    ]
+   },
+   "scene": 1,
+   "q": 3
+  },
+  {
+   "type": "example",
+   "eyebrow": "Cooling coffee · Question 3",
+   "title": "When can it be drunk? (2 of 2)",
+   "stem": "It can be drunk at $50\\,{}^{\\circ}\\mathrm{C}$ or below. After how many whole minutes is that first true?",
+   "blocks": [
+    {
+     "walk": {
+      "cap": "Take logs of both sides",
+      "tex": [
+       "t\\ln 0.9&=\\ln 0.4",
+       "t&=\\frac{\\ln 0.4}{\\ln 0.9}=8.70"
+      ]
+     }
+    },
+    {
+     "walk": {
+      "cap": "Round up to whole minutes",
+      "tex": [
+       "t&=9"
+      ],
+      "note": "After $8$ minutes it is still $52.1\\,{}^{\\circ}\\mathrm{C}$. After $9$ it is $49.1\\,{}^{\\circ}\\mathrm{C}$. Round up, not to the nearest whole number.",
+      "ans": true
+     }
+    }
+   ],
+   "graph": {
+    "window": {
+     "xmin": -2.6,
+     "xmax": 31,
+     "ymin": -10,
+     "ymax": 105,
+     "gridx": 5,
+     "gridy": 10,
+     "xtick": 5,
+     "ytick": 20,
+     "xname": "t",
+     "yname": "T",
+     "xtickFrom": 0,
+     "ytickFrom": 0
+    },
+    "heading": "A cup of coffee is left on a table in a room. Readings: $92\\,{}^{\\circ}\\mathrm{C}$ at $t=0$ and $78.7\\,{}^{\\circ}\\mathrm{C}$ two minutes later.",
+    "scene": {
+     "kind": "coffee",
+     "alt": "A cup of coffee on a table and a thermometer beside the graph",
+     "states": [
+      [
+       0,
+       {
+        "T": 92,
+        "t": 0
+       }
+      ],
+      [
+       1,
+       {
+        "T": 50,
+        "t": 8.6967
+       }
+      ]
+     ]
+    },
+    "items": [
+     {
+      "kind": "segment",
+      "from": [
+       -2.6,
+       22
+      ],
+      "to": [
+       31,
+       22
+      ],
+      "dashed": true,
+      "step": 0
+     },
+     {
+      "kind": "label",
+      "at": [
+       24,
+       22
+      ],
+      "tex": "y=22",
+      "anchor": "s",
+      "step": 0
+     },
+     {
+      "kind": "fn",
+      "expr": "70*0.9**x + 22",
+      "domain": [
+       0,
+       31
+      ],
+      "color": "blue",
+      "step": 0
+     },
+     {
+      "kind": "point",
+      "at": [
+       0,
+       92
+      ],
+      "label": "(0,\\,92)",
+      "anchor": "ne"
+     },
+     {
+      "kind": "point",
+      "at": [
+       2,
+       78.7
+      ],
+      "label": "(2,\\,78.7)",
+      "anchor": "ne"
+     },
+     {
+      "kind": "segment",
+      "from": [
+       -2.6,
+       50
+      ],
+      "to": [
+       8.6967,
+       50
+      ],
+      "dotted": true
+     },
+     {
+      "kind": "segment",
+      "from": [
+       8.6967,
+       -10
+      ],
+      "to": [
+       8.6967,
+       50
+      ],
+      "dotted": true,
+      "step": 1
+     },
+     {
+      "kind": "point",
+      "at": [
+       8.6967,
+       50
+      ],
+      "answer": true,
+      "label": "(8.70,\\,50)",
+      "anchor": "ne",
+      "step": 1
+     }
+    ]
+   },
+   "scene": 1,
+   "q": 3,
+   "cont": true
+  },
+  {
+   "type": "example",
+   "eyebrow": "Typing speed · Question 1 · Predict",
+   "title": "Speed after 100 hours (1 of 2)",
+   "stem": "Predict: how fast does she type after $100$ hours?",
+   "choices": [
+    "$43$ wpm, no more gains",
+    "about $66$ wpm",
+    "about $270$ wpm"
+   ],
+   "correct": 1,
+   "pickStep": 0,
+   "blocks": [
+    {
+     "walk": {
+      "cap": "From $1$ hour to $10$ hours",
+      "tex": [
+       "43.03-20&=23.03"
+      ],
+      "note": "Ten times the practice added $23.03$ words per minute."
+     }
+    }
+   ],
+   "graph": {
+    "window": {
+     "xmin": -10,
+     "xmax": 112,
+     "ymin": -14,
+     "ymax": 76,
+     "gridx": 10,
+     "gridy": 10,
+     "xtick": 20,
+     "ytick": 20,
+     "xname": "h",
+     "yname": "S",
+     "xtickFrom": 0,
+     "ytickFrom": 0
+    },
+    "heading": "A student practises typing. After $1$ hour she types $20$ words per minute. After $10$ hours, $43.03$.",
+    "scene": {
+     "kind": "typing",
+     "alt": "A laptop and a words-per-minute gauge beside the graph",
+     "states": [
+      [
+       0,
+       {
+        "S": 20,
+        "h": 1
+       }
+      ]
+     ]
+    },
+    "items": [
+     {
+      "kind": "point",
+      "at": [
+       1,
+       20
+      ],
+      "label": "(1,\\,20)",
+      "anchor": "se"
+     },
+     {
+      "kind": "point",
+      "at": [
+       10,
+       43.03
+      ],
+      "label": "(10,\\,43.03)",
+      "anchor": "nw"
+     }
+    ]
+   },
+   "sceneStart": true,
+   "scene": 2,
+   "q": 1
+  },
+  {
+   "type": "example",
+   "eyebrow": "Typing speed · Question 1 · Predict",
+   "title": "Speed after 100 hours (2 of 2)",
+   "stem": "Predict: how fast does she type after $100$ hours?",
+   "choices": [
+    "$43$ wpm, no more gains",
+    "about $66$ wpm",
+    "about $270$ wpm"
+   ],
+   "correct": 1,
+   "pickStep": 1,
+   "blocks": [
+    {
+     "walk": {
+      "cap": "From $10$ hours to $100$ hours",
+      "tex": [
+       "43.03+23.03&=66.06",
+       "&\\approx 66\\text{ wpm}"
+      ],
+      "note": "Another tenfold increase adds about the same again. Steady gains would give about $270$, so the gains are slowing.",
+      "ans": true
+     }
+    }
+   ],
+   "graph": {
+    "window": {
+     "xmin": -10,
+     "xmax": 112,
+     "ymin": -14,
+     "ymax": 76,
+     "gridx": 10,
+     "gridy": 10,
+     "xtick": 20,
+     "ytick": 20,
+     "xname": "h",
+     "yname": "S",
+     "xtickFrom": 0,
+     "ytickFrom": 0
+    },
+    "heading": "A student practises typing. After $1$ hour she types $20$ words per minute. After $10$ hours, $43.03$.",
+    "scene": {
+     "kind": "typing",
+     "alt": "A laptop and a words-per-minute gauge beside the graph",
+     "states": [
+      [
+       0,
+       {
+        "S": 20,
+        "h": 1
+       }
+      ]
+     ]
+    },
+    "items": [
+     {
+      "kind": "point",
+      "at": [
+       1,
+       20
+      ],
+      "label": "(1,\\,20)",
+      "anchor": "se"
+     },
+     {
+      "kind": "point",
+      "at": [
+       10,
+       43.03
+      ],
+      "label": "(10,\\,43.03)",
+      "anchor": "nw"
+     },
+     {
+      "kind": "point",
+      "at": [
+       100,
+       66.06
+      ],
+      "answer": true,
+      "label": "(100,\\,66.1)",
+      "anchor": "nw",
+      "step": 1
+     }
+    ]
+   },
+   "scene": 2,
+   "q": 1,
+   "cont": true
+  },
+  {
+   "type": "example",
+   "eyebrow": "Typing speed · Question 2",
+   "title": "Fit the model (1 of 2)",
+   "stem": "Fit $S=a+b\\ln h$ through $(1,\\,20)$ and $(10,\\,43.03)$.",
+   "blocks": [
+    {
+     "walk": {
+      "cap": "Substitute $(1,\\,20)$",
+      "tex": [
+       "20&=a+b\\ln 1",
+       "20&=a"
+      ],
+      "note": "$\\ln 1=0$, so $a$ is the speed at $h=1$."
+     }
+    },
+    {
+     "walk": {
+      "cap": "Substitute $(10,\\,43.03)$",
+      "tex": [
+       "43.03&=20+b\\ln 10",
+       "23.03&=b\\ln 10"
+      ]
+     }
+    }
+   ],
+   "graph": {
+    "window": {
+     "xmin": -10,
+     "xmax": 112,
+     "ymin": -14,
+     "ymax": 76,
+     "gridx": 10,
+     "gridy": 10,
+     "xtick": 20,
+     "ytick": 20,
+     "xname": "h",
+     "yname": "S",
+     "xtickFrom": 0,
+     "ytickFrom": 0
+    },
+    "heading": "A student practises typing. After $1$ hour she types $20$ words per minute. After $10$ hours, $43.03$.",
+    "scene": {
+     "kind": "typing",
+     "alt": "A laptop and a words-per-minute gauge beside the graph",
+     "states": [
+      [
+       0,
+       {
+        "S": 20,
+        "h": 1
+       }
+      ]
+     ]
+    },
+    "items": [
+     {
+      "kind": "point",
+      "at": [
+       1,
+       20
+      ],
+      "label": "(1,\\,20)",
+      "anchor": "se"
+     },
+     {
+      "kind": "point",
+      "at": [
+       10,
+       43.03
+      ],
+      "label": "(10,\\,43.03)",
+      "anchor": "nw"
+     }
+    ]
+   },
+   "scene": 2,
+   "q": 2
+  },
+  {
+   "type": "example",
+   "eyebrow": "Typing speed · Question 2",
+   "title": "Fit the model (2 of 2)",
+   "stem": "Fit $S=a+b\\ln h$ through $(1,\\,20)$ and $(10,\\,43.03)$.",
+   "blocks": [
+    {
+     "walk": {
+      "cap": "Solve for $b$",
+      "tex": [
+       "b&=\\frac{23.03}{\\ln 10}",
+       "&=10.0"
+      ]
+     }
+    },
+    {
+     "walk": {
+      "cap": "Model",
+      "tex": [
+       "S&=20+10\\ln h"
+      ],
+      "note": "Two readings fix two unknowns, as with the coffee.",
+      "ans": true
+     }
+    }
+   ],
+   "graph": {
+    "window": {
+     "xmin": -10,
+     "xmax": 112,
+     "ymin": -14,
+     "ymax": 76,
+     "gridx": 10,
+     "gridy": 10,
+     "xtick": 20,
+     "ytick": 20,
+     "xname": "h",
+     "yname": "S",
+     "xtickFrom": 0,
+     "ytickFrom": 0
+    },
+    "heading": "A student practises typing. After $1$ hour she types $20$ words per minute. After $10$ hours, $43.03$.",
+    "scene": {
+     "kind": "typing",
+     "alt": "A laptop and a words-per-minute gauge beside the graph",
+     "states": [
+      [
+       0,
+       {
+        "S": 20,
+        "h": 1
+       }
+      ]
+     ]
+    },
+    "items": [
+     {
+      "kind": "fn",
+      "expr": "20 + 10*log(x)",
+      "domain": [
+       0.03,
+       112
+      ],
+      "color": "blue",
+      "step": 2
+     },
+     {
+      "kind": "point",
+      "at": [
+       1,
+       20
+      ],
+      "label": "(1,\\,20)",
+      "anchor": "se"
+     },
+     {
+      "kind": "point",
+      "at": [
+       10,
+       43.03
+      ],
+      "label": "(10,\\,43.03)",
+      "anchor": "nw"
+     }
+    ]
+   },
+   "scene": 2,
+   "q": 2,
+   "cont": true
+  },
+  {
+   "type": "lab",
+   "preset": "sceneLab",
+   "eyebrow": "Typing speed · Trace the model",
+   "title": "Watch the gains slow",
+   "init": {
+    "kind": "typing",
+    "window": {
+     "xmin": -10,
+     "xmax": 112,
+     "ymin": -14,
+     "ymax": 76,
+     "gridx": 10,
+     "gridy": 10,
+     "xtick": 20,
+     "ytick": 20,
+     "xname": "h",
+     "yname": "S",
+     "xtickFrom": 0,
+     "ytickFrom": 0
+    },
+    "start": 1,
+    "seconds": 12
+   }
+  },
+  {
+   "type": "example",
+   "eyebrow": "Typing speed · Question 3",
+   "title": "Where the model breaks (1 of 2)",
+   "stem": "What does the model give at $0.1$ hours and at $5000$ hours? Name one specific limitation.",
+   "blocks": [
+    {
+     "walk": {
+      "cap": "At $0.1$ hours",
+      "tex": [
+       "S(0.1)&=20+10\\ln 0.1",
+       "&=-3.03"
+      ],
+      "note": "A negative typing speed is impossible."
+     }
+    },
+    {
+     "walk": {
+      "cap": "At $5000$ hours",
+      "tex": [
+       "S(5000)&=20+10\\ln 5000",
+       "&=105"
+      ],
+      "note": "Still rising after 5000 hours, with no ceiling."
+     }
+    }
+   ],
+   "graph": {
+    "window": {
+     "xmin": -10,
+     "xmax": 112,
+     "ymin": -14,
+     "ymax": 76,
+     "gridx": 10,
+     "gridy": 10,
+     "xtick": 20,
+     "ytick": 20,
+     "xname": "h",
+     "yname": "S",
+     "xtickFrom": 0,
+     "ytickFrom": 0
+    },
+    "heading": "A student practises typing. After $1$ hour she types $20$ words per minute. After $10$ hours, $43.03$.",
+    "scene": {
+     "kind": "typing",
+     "alt": "A laptop and a words-per-minute gauge beside the graph",
+     "states": [
+      [
+       0,
+       {
+        "S": 20,
+        "h": 1
+       }
+      ],
+      [
+       1,
+       {
+        "S": -3.0259,
+        "h": 0.1
+       }
+      ],
+      [
+       2,
+       {
+        "S": 105.17,
+        "h": 5000
+       }
+      ]
+     ]
+    },
+    "items": [
+     {
+      "kind": "fn",
+      "expr": "20 + 10*log(x)",
+      "domain": [
+       0.03,
+       112
+      ],
+      "color": "blue",
+      "step": 0
+     },
+     {
+      "kind": "point",
+      "at": [
+       1,
+       20
+      ],
+      "label": "(1,\\,20)",
+      "anchor": "se"
+     },
+     {
+      "kind": "point",
+      "at": [
+       10,
+       43.03
+      ],
+      "label": "(10,\\,43.03)",
+      "anchor": "nw"
+     },
+     {
+      "kind": "point",
+      "at": [
+       0.1,
+       -3.0259
+      ],
+      "color": "red",
+      "label": "(0.1,\\,-3.03)",
+      "anchor": "e",
+      "step": 1
+     }
+    ]
+   },
+   "scene": 2,
+   "q": 3
+  },
+  {
+   "type": "example",
+   "eyebrow": "Typing speed · Question 3",
+   "title": "Where the model breaks (2 of 2)",
+   "stem": "What does the model give at $0.1$ hours and at $5000$ hours? Name one specific limitation.",
+   "blocks": [
+    {
+     "walk": {
+      "cap": "Limitation",
+      "tex": [
+       "&\\text{Negative for }h<0.135",
+       "&\\text{No ceiling at large }h"
+      ],
+      "note": "The model gives a negative speed for $h<0.135$, so it fails for very little practice. It also never levels off, so it cannot hold for very long practice. Say which, and say why.",
+      "ans": true
+     }
+    }
+   ],
+   "graph": {
+    "window": {
+     "xmin": -10,
+     "xmax": 112,
+     "ymin": -14,
+     "ymax": 76,
+     "gridx": 10,
+     "gridy": 10,
+     "xtick": 20,
+     "ytick": 20,
+     "xname": "h",
+     "yname": "S",
+     "xtickFrom": 0,
+     "ytickFrom": 0
+    },
+    "heading": "A student practises typing. After $1$ hour she types $20$ words per minute. After $10$ hours, $43.03$.",
+    "scene": {
+     "kind": "typing",
+     "alt": "A laptop and a words-per-minute gauge beside the graph",
+     "states": [
+      [
+       0,
+       {
+        "S": -3.0259,
+        "h": 0.1
+       }
+      ]
+     ]
+    },
+    "items": [
+     {
+      "kind": "fn",
+      "expr": "20 + 10*log(x)",
+      "domain": [
+       0.03,
+       112
+      ],
+      "color": "blue",
+      "step": 0
+     },
+     {
+      "kind": "point",
+      "at": [
+       1,
+       20
+      ],
+      "label": "(1,\\,20)",
+      "anchor": "se"
+     },
+     {
+      "kind": "point",
+      "at": [
+       10,
+       43.03
+      ],
+      "label": "(10,\\,43.03)",
+      "anchor": "nw"
+     },
+     {
+      "kind": "point",
+      "at": [
+       0.1,
+       -3.0259
+      ],
+      "color": "red",
+      "label": "(0.1,\\,-3.03)",
+      "anchor": "e"
+     }
+    ]
+   },
+   "scene": 2,
+   "q": 3,
+   "cont": true
+  },
+  {
+   "type": "example",
+   "eyebrow": "pH scale · Question 1 · Predict",
+   "title": "How much stronger? (1 of 2)",
+   "stem": "Predict: how many times stronger (more $[\\mathrm{H}^+]$) is the lemon juice than the tomato?",
+   "choices": [
+    "about $2$ times",
+    "about $24$ times",
+    "about $250$ times"
+   ],
+   "correct": 2,
+   "pickStep": 0,
+   "blocks": [
+    {
+     "walk": {
+      "cap": "Each pH step is a factor of $10$",
+      "note": "Lowering the pH by $1$ multiplies $[\\mathrm{H}^+]$ by $10$."
+     }
+    }
+   ],
+   "graph": {
+    "window": {
+     "xmin": -1.4,
+     "xmax": 12.5,
+     "ymin": -1.2,
+     "ymax": 8.9,
+     "gridx": 1,
+     "gridy": 1,
+     "xtick": 2,
+     "ytick": 1,
+     "xname": "[H⁺]",
+     "yname": "pH",
+     "xtickFrom": 0,
+     "ytickFrom": 0
+    },
+    "heading": "The pH scale measures acidity. Lemon juice has pH $2.0$ and a tomato has pH $4.4$. Here, $\\mathrm{pH}=-\\log_{10}[\\mathrm{H}^+]$.",
+    "scene": {
+     "kind": "ph",
+     "alt": "A pH strip with lemon juice, tomato and pure water beside the graph",
+     "states": [
+      [
+       0,
+       {}
+      ]
+     ]
+    },
+    "items": [
+     {
+      "kind": "label",
+      "at": [
+       10.6,
+       0.55
+      ],
+      "tex": "\\text{mmol/L}",
+      "anchor": "c"
+     }
+    ]
+   },
+   "sceneStart": true,
+   "scene": 3,
+   "q": 1
+  },
+  {
+   "type": "example",
+   "eyebrow": "pH scale · Question 1 · Predict",
+   "title": "How much stronger? (2 of 2)",
+   "stem": "Predict: how many times stronger (more $[\\mathrm{H}^+]$) is the lemon juice than the tomato?",
+   "choices": [
+    "about $2$ times",
+    "about $24$ times",
+    "about $250$ times"
+   ],
+   "correct": 2,
+   "pickStep": 1,
+   "blocks": [
+    {
+     "walk": {
+      "cap": "The lemon is $2.4$ steps below the tomato",
+      "tex": [
+       "10^2&=100",
+       "10^3&=1000",
+       "&\\Rightarrow\\text{about }250\\text{ times stronger}"
+      ],
+      "note": "$2.4$ steps lies between $2$ and $3$, so the answer is between $100$ and $1000$: about $250$. Question 3 finds it exactly.",
+      "ans": true
+     }
+    }
+   ],
+   "graph": {
+    "window": {
+     "xmin": -1.4,
+     "xmax": 12.5,
+     "ymin": -1.2,
+     "ymax": 8.9,
+     "gridx": 1,
+     "gridy": 1,
+     "xtick": 2,
+     "ytick": 1,
+     "xname": "[H⁺]",
+     "yname": "pH",
+     "xtickFrom": 0,
+     "ytickFrom": 0
+    },
+    "heading": "The pH scale measures acidity. Lemon juice has pH $2.0$ and a tomato has pH $4.4$. Here, $\\mathrm{pH}=-\\log_{10}[\\mathrm{H}^+]$.",
+    "scene": {
+     "kind": "ph",
+     "alt": "A pH strip with lemon juice, tomato and pure water beside the graph",
+     "states": [
+      [
+       0,
+       {}
+      ]
+     ]
+    },
+    "items": [
+     {
+      "kind": "label",
+      "at": [
+       10.6,
+       0.55
+      ],
+      "tex": "\\text{mmol/L}",
+      "anchor": "c"
+     }
+    ]
+   },
+   "scene": 3,
+   "q": 1,
+   "cont": true
+  },
+  {
+   "type": "example",
+   "eyebrow": "pH scale · Question 2",
+   "title": "Both directions (1 of 2)",
+   "stem": "Find the pH when $[\\mathrm{H}^+]=0.0003$. Find $[\\mathrm{H}^+]$ when the pH is $6.6$. Give the second answer in standard form.",
+   "blocks": [
+    {
+     "walk": {
+      "cap": "Evaluate the pH",
+      "tex": [
+       "\\mathrm{pH}&=-\\log_{10}(0.0003)",
+       "&=3.52"
+      ]
+     }
+    },
+    {
+     "walk": {
+      "cap": "Invert: set $\\mathrm{pH}=6.6$",
+      "tex": [
+       "6.6&=-\\log_{10}[\\mathrm{H}^+]",
+       "\\log_{10}[\\mathrm{H}^+]&=-6.6"
+      ]
+     }
+    }
+   ],
+   "graph": {
+    "window": {
+     "xmin": -1.4,
+     "xmax": 12.5,
+     "ymin": -1.2,
+     "ymax": 8.9,
+     "gridx": 1,
+     "gridy": 1,
+     "xtick": 2,
+     "ytick": 1,
+     "xname": "[H⁺]",
+     "yname": "pH",
+     "xtickFrom": 0,
+     "ytickFrom": 0
+    },
+    "heading": "The pH scale measures acidity. Lemon juice has pH $2.0$ and a tomato has pH $4.4$. Here, $\\mathrm{pH}=-\\log_{10}[\\mathrm{H}^+]$.",
+    "scene": {
+     "kind": "ph",
+     "alt": "A pH strip with lemon juice, tomato and pure water beside the graph",
+     "states": [
+      [
+       0,
+       {}
+      ],
+      [
+       1,
+       {
+        "marker": 3.5229
+       }
+      ],
+      [
+       2,
+       {
+        "marker": 6.6
+       }
+      ]
+     ]
+    },
+    "items": [
+     {
+      "kind": "label",
+      "at": [
+       10.6,
+       0.55
+      ],
+      "tex": "\\text{mmol/L}",
+      "anchor": "c"
+     },
+     {
+      "kind": "fn",
+      "expr": "3 - log(x)/log(10)",
+      "domain": [
+       0.0013,
+       12.5
+      ],
+      "color": "blue",
+      "step": 1
+     },
+     {
+      "kind": "point",
+      "at": [
+       0.3,
+       3.5229
+      ],
+      "answer": true,
+      "label": "\\mathrm{pH}=3.52",
+      "anchor": "ne",
+      "step": 1
+     }
+    ]
+   },
+   "scene": 3,
+   "q": 2
+  },
+  {
+   "type": "example",
+   "eyebrow": "pH scale · Question 2",
+   "title": "Both directions (2 of 2)",
+   "stem": "Find the pH when $[\\mathrm{H}^+]=0.0003$. Find $[\\mathrm{H}^+]$ when the pH is $6.6$. Give the second answer in standard form.",
+   "blocks": [
+    {
+     "walk": {
+      "cap": "Undo the log with a power of $10$",
+      "tex": [
+       "[\\mathrm{H}^+]&=10^{-6.6}",
+       "&=2.51\\times 10^{-7}"
+      ],
+      "note": "Undoing $\\log_{10}$ means raising $10$ to the power.",
+      "ans": true
+     }
+    }
+   ],
+   "graph": {
+    "window": {
+     "xmin": -1.4,
+     "xmax": 12.5,
+     "ymin": -1.2,
+     "ymax": 8.9,
+     "gridx": 1,
+     "gridy": 1,
+     "xtick": 2,
+     "ytick": 1,
+     "xname": "[H⁺]",
+     "yname": "pH",
+     "xtickFrom": 0,
+     "ytickFrom": 0
+    },
+    "heading": "The pH scale measures acidity. Lemon juice has pH $2.0$ and a tomato has pH $4.4$. Here, $\\mathrm{pH}=-\\log_{10}[\\mathrm{H}^+]$.",
+    "scene": {
+     "kind": "ph",
+     "alt": "A pH strip with lemon juice, tomato and pure water beside the graph",
+     "states": [
+      [
+       0,
+       {
+        "marker": 6.6
+       }
+      ]
+     ]
+    },
+    "items": [
+     {
+      "kind": "label",
+      "at": [
+       10.6,
+       0.55
+      ],
+      "tex": "\\text{mmol/L}",
+      "anchor": "c"
+     },
+     {
+      "kind": "fn",
+      "expr": "3 - log(x)/log(10)",
+      "domain": [
+       0.0013,
+       12.5
+      ],
+      "color": "blue",
+      "step": 0
+     },
+     {
+      "kind": "point",
+      "at": [
+       0.3,
+       3.5229
+      ],
+      "label": "\\mathrm{pH}=3.52",
+      "anchor": "ne"
+     }
+    ]
+   },
+   "scene": 3,
+   "q": 2,
+   "cont": true
+  },
+  {
+   "type": "lab",
+   "preset": "sceneLab",
+   "eyebrow": "pH scale · Explore",
+   "title": "Move along the scale",
+   "init": {
+    "kind": "ph",
+    "window": {
+     "xmin": -1.4,
+     "xmax": 12.5,
+     "ymin": -1.2,
+     "ymax": 8.9,
+     "gridx": 1,
+     "gridy": 1,
+     "xtick": 2,
+     "ytick": 1,
+     "xname": "[H⁺]",
+     "yname": "pH",
+     "xtickFrom": 0,
+     "ytickFrom": 0
+    },
+    "start": 2
+   }
+  },
+  {
+   "type": "example",
+   "eyebrow": "pH scale · Question 3",
+   "title": "Exactly how much stronger? (1 of 2)",
+   "stem": "Find exactly how many times stronger the lemon juice is than the tomato.",
+   "blocks": [
+    {
+     "walk": {
+      "cap": "Lemon",
+      "tex": [
+       "[\\mathrm{H}^+]&=10^{-2.0}",
+       "&=0.01"
+      ]
+     }
+    },
+    {
+     "walk": {
+      "cap": "Tomato",
+      "tex": [
+       "[\\mathrm{H}^+]&=10^{-4.4}",
+       "&=3.98\\times 10^{-5}"
+      ]
+     }
+    },
+    {
+     "walk": {
+      "cap": "Divide the concentrations",
+      "tex": [
+       "\\frac{0.01}{3.98\\times 10^{-5}}&=251"
+      ]
+     }
+    }
+   ],
+   "graph": {
+    "window": {
+     "xmin": -1.4,
+     "xmax": 12.5,
+     "ymin": -1.2,
+     "ymax": 8.9,
+     "gridx": 1,
+     "gridy": 1,
+     "xtick": 2,
+     "ytick": 1,
+     "xname": "[H⁺]",
+     "yname": "pH",
+     "xtickFrom": 0,
+     "ytickFrom": 0
+    },
+    "heading": "The pH scale measures acidity. Lemon juice has pH $2.0$ and a tomato has pH $4.4$. Here, $\\mathrm{pH}=-\\log_{10}[\\mathrm{H}^+]$.",
+    "scene": {
+     "kind": "ph",
+     "alt": "A pH strip with lemon juice, tomato and pure water beside the graph",
+     "states": [
+      [
+       0,
+       {}
+      ],
+      [
+       1,
+       {
+        "marker": 2.0
+       }
+      ],
+      [
+       2,
+       {
+        "marker": 4.4
+       }
+      ]
+     ]
+    },
+    "items": [
+     {
+      "kind": "label",
+      "at": [
+       10.6,
+       0.55
+      ],
+      "tex": "\\text{mmol/L}",
+      "anchor": "c"
+     },
+     {
+      "kind": "fn",
+      "expr": "3 - log(x)/log(10)",
+      "domain": [
+       0.0013,
+       12.5
+      ],
+      "color": "blue",
+      "step": 0
+     },
+     {
+      "kind": "point",
+      "at": [
+       10,
+       2
+      ],
+      "label": "\\text{lemon}",
+      "anchor": "ne",
+      "step": 1
+     },
+     {
+      "kind": "point",
+      "at": [
+       0.0398,
+       4.4
+      ],
+      "label": "\\text{tomato}",
+      "anchor": "ne",
+      "step": 2
+     }
+    ]
+   },
+   "scene": 3,
+   "q": 3
+  },
+  {
+   "type": "example",
+   "eyebrow": "pH scale · Question 3",
+   "title": "Exactly how much stronger? (2 of 2)",
+   "stem": "Find exactly how many times stronger the lemon juice is than the tomato.",
+   "blocks": [
+    {
+     "walk": {
+      "cap": "The shortcut: subtract the pH values, then raise $10$ to the difference",
+      "tex": [
+       "4.4-2.0&=2.4",
+       "10^{2.4}&=251"
+      ],
+      "note": "Compare by subtracting, never by dividing: $4.4\\div 2.0=2.2$ is wrong. The lemon is about $251$ times stronger.",
+      "ans": true
+     }
+    }
+   ],
+   "graph": {
+    "window": {
+     "xmin": -1.4,
+     "xmax": 12.5,
+     "ymin": -1.2,
+     "ymax": 8.9,
+     "gridx": 1,
+     "gridy": 1,
+     "xtick": 2,
+     "ytick": 1,
+     "xname": "[H⁺]",
+     "yname": "pH",
+     "xtickFrom": 0,
+     "ytickFrom": 0
+    },
+    "heading": "The pH scale measures acidity. Lemon juice has pH $2.0$ and a tomato has pH $4.4$. Here, $\\mathrm{pH}=-\\log_{10}[\\mathrm{H}^+]$.",
+    "scene": {
+     "kind": "ph",
+     "alt": "A pH strip with lemon juice, tomato and pure water beside the graph",
+     "states": [
+      [
+       0,
+       {}
+      ]
+     ]
+    },
+    "items": [
+     {
+      "kind": "label",
+      "at": [
+       10.6,
+       0.55
+      ],
+      "tex": "\\text{mmol/L}",
+      "anchor": "c"
+     },
+     {
+      "kind": "fn",
+      "expr": "3 - log(x)/log(10)",
+      "domain": [
+       0.0013,
+       12.5
+      ],
+      "color": "blue",
+      "step": 0
+     },
+     {
+      "kind": "point",
+      "at": [
+       10,
+       2
+      ],
+      "label": "\\text{lemon}",
+      "anchor": "ne",
+      "step": 0
+     },
+     {
+      "kind": "point",
+      "at": [
+       0.0398,
+       4.4
+      ],
+      "label": "\\text{tomato}",
+      "anchor": "ne",
+      "step": 0
+     }
+    ]
+   },
+   "scene": 3,
+   "q": 3,
+   "cont": true
+  },
+  {
+   "type": "lab",
+   "preset": "growthFamily",
+   "eyebrow": "Family recap",
+   "title": "The growth family",
+   "init": {
+    "start": {
+     "fam": "exp",
+     "k": 2,
+     "a": 1.5,
+     "r": 0.3,
+     "c": 1,
+     "la": 1,
+     "lb": 2,
+     "inv": false
+    },
+    "window": {
+     "xmin": -7,
+     "xmax": 9,
+     "ymin": -6,
+     "ymax": 9,
+     "grid": 1,
+     "xtick": 2,
+     "ytick": 2
+    }
+   }
+  }
+ ]
+}
