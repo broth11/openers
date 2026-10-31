@@ -7,8 +7,9 @@
   "topicWords": "Logistic models",
   "file": "MAI_HL_U5_L4_Lesson_LogisticModels.html",
   "artifactTitle": "MAI HL U5 L4 Logistic Models",
-  "source": "scene plan agreed with Ben 29/10/2026 (no u05-l04 module in github broth11/openers yet)",
-  "largeGraphs": true
+  "source": "scene plan agreed with Ben 29/10/2026 (no u05-l04 module in github broth11/openers yet); v2 31/10/2026: title cards, setup decode slides, colour-coded facts, zoom from scene 4, IA notepad",
+  "largeGraphs": true,
+  "animSpeed": 1.5
  },
  "slides": [
   {
@@ -19,6 +20,119 @@
    "code": "MAI HL U5 L4",
    "regime": "C",
    "regimeText": "calculator allowed"
+  },
+  {
+   "type": "sceneTitle",
+   "scene": 1,
+   "kicker": "Scene 1 of 6",
+   "title": "A Promising Start",
+   "kind": "phone",
+   "window": {
+    "xmin": 0,
+    "xmax": 1,
+    "ymin": -14,
+    "ymax": 112
+   },
+   "state": {
+    "t": 0,
+    "P": 5,
+    "Pn": "E"
+   },
+   "alt": "The phone from the lesson, drawn large: it fills as residents adopt smartphones"
+  },
+  {
+   "type": "example",
+   "scene": 1,
+   "eyebrow": "A promising start · The situation",
+   "title": "Smartphones arrive",
+   "setup": {
+    "preamble": "Smartphones have just gone on sale in a small region. Shops stock them, and the first owners show them off to friends.",
+    "para": "A survey taken at launch, which we call $t=0$, finds that $5\\%$ of residents own a smartphone. A second survey two years later, at $t=2$, finds that $10\\%$ own one. Time $t$ is measured in years.",
+    "facts": [
+     {
+      "html": "<b>$5\\%$ at $t=0$</b>: the survey at launch",
+      "c": "pink"
+     },
+     {
+      "html": "<b>$10\\%$ at $t=2$</b>: two years later",
+      "c": "indigo"
+     },
+     {
+      "html": "$t$ is measured in years since launch",
+      "shape": "none"
+     }
+    ]
+   },
+   "stem": "",
+   "blocks": [],
+   "graph": {
+    "window": {
+     "xmin": -1.8,
+     "xmax": 16.5,
+     "ymin": -14,
+     "ymax": 182,
+     "gridx": 2,
+     "gridy": 20,
+     "xtick": 2,
+     "ytick": 20,
+     "xname": "t",
+     "yname": "A",
+     "xtickFrom": 0,
+     "ytickFrom": 0
+    },
+    "scene": {
+     "kind": "phone",
+     "alt": "A phone that fills with adoption beside the graph of adoption against time",
+     "states": [
+      [
+       0,
+       {
+        "t": 0,
+        "P": 5,
+        "dp": 0,
+        "Pn": "E",
+        "G": 5
+       }
+      ],
+      [
+       1,
+       {
+        "t": 2,
+        "P": 10,
+        "dp": 0,
+        "Pn": "E",
+        "G": 10
+       }
+      ]
+     ]
+    },
+    "items": [
+     {
+      "kind": "point",
+      "at": [
+       0,
+       5
+      ],
+      "step": 1,
+      "color": "pink",
+      "label": "(0,\\,5)",
+      "anchor": "ne",
+      "tint": true
+     },
+     {
+      "kind": "point",
+      "at": [
+       2,
+       10
+      ],
+      "step": 1,
+      "color": "indigo",
+      "label": "(2,\\,10)",
+      "anchor": "se",
+      "tint": true
+     }
+    ]
+   }
   },
   {
    "type": "example",
@@ -61,7 +175,6 @@
      "xtickFrom": 0,
      "ytickFrom": 0
     },
-    "heading": "A region adopts smartphones: $5\\%$ of residents at $t=0$ and $10\\%$ at $t=2$. Time $t$ is in years.",
     "scene": {
      "kind": "phone",
      "alt": "A phone that fills with adoption beside the graph of adoption against time",
@@ -95,7 +208,8 @@
        0,
        5
       ],
-      "step": 0
+      "step": 0,
+      "color": "pink"
      },
      {
       "kind": "point",
@@ -103,7 +217,8 @@
        2,
        10
       ],
-      "step": 0
+      "step": 0,
+      "color": "indigo"
      },
      {
       "kind": "fn",
@@ -115,9 +230,18 @@
       "step": 2,
       "color": "red"
      }
+    ],
+    "given": [
+     {
+      "html": "<b>$5\\%$ at $t=0$</b>",
+      "c": "pink"
+     },
+     {
+      "html": "<b>$10\\%$ at $t=2$</b>",
+      "c": "indigo"
+     }
     ]
    },
-   "sceneStart": true,
    "scene": 1,
    "q": 1
   },
@@ -161,7 +285,6 @@
      "xtickFrom": 0,
      "ytickFrom": 0
     },
-    "heading": "A region adopts smartphones: $5\\%$ of residents at $t=0$ and $10\\%$ at $t=2$. Time $t$ is in years.",
     "scene": {
      "kind": "phone",
      "alt": "A phone that fills with adoption beside the graph of adoption against time",
@@ -195,7 +318,8 @@
        0,
        5
       ],
-      "step": 0
+      "step": 0,
+      "color": "pink"
      },
      {
       "kind": "point",
@@ -203,7 +327,8 @@
        2,
        10
       ],
-      "step": 0
+      "step": 0,
+      "color": "indigo"
      },
      {
       "kind": "fn",
@@ -226,10 +351,139 @@
       "anchor": "se",
       "answer": true
      }
+    ],
+    "given": [
+     {
+      "html": "<b>$5\\%$ at $t=0$</b>",
+      "c": "pink"
+     },
+     {
+      "html": "<b>$10\\%$ at $t=2$</b>",
+      "c": "indigo"
+     }
     ]
    },
    "scene": 1,
    "q": 2
+  },
+  {
+   "type": "sceneTitle",
+   "scene": 2,
+   "kicker": "Scene 2 of 6",
+   "title": "Follow the Model",
+   "kind": "phone",
+   "window": {
+    "xmin": 0,
+    "xmax": 1,
+    "ymin": -14,
+    "ymax": 112
+   },
+   "state": {
+    "P": 80,
+    "Pn": "E",
+    "G": 160
+   },
+   "alt": "The phone from the lesson, drawn large: it fills as residents adopt smartphones"
+  },
+  {
+   "type": "example",
+   "scene": 2,
+   "eyebrow": "Follow the model · The situation",
+   "title": "A forecast for the region",
+   "setup": {
+    "preamble": "The region's planners want to know how many phones to expect. They trust the doubling model from the first scene.",
+    "para": "Their forecast is $E(t)=5\\cdot 2^{t/2}$, the percentage of residents with a smartphone after $t$ years. A region cannot have more owners than residents, so a full region is $100\\%$.",
+    "facts": [
+     {
+      "html": "Forecast <b>$E(t)=5\\cdot 2^{t/2}$</b>",
+      "c": "red",
+      "shape": "cv"
+     },
+     {
+      "html": "A full region is <b>$100\\%$</b>",
+      "c": "brown",
+      "shape": "ln"
+     }
+    ]
+   },
+   "stem": "",
+   "blocks": [],
+   "graph": {
+    "window": {
+     "xmin": -1.8,
+     "xmax": 16.5,
+     "ymin": -14,
+     "ymax": 182,
+     "gridx": 2,
+     "gridy": 20,
+     "xtick": 2,
+     "ytick": 20,
+     "xname": "t",
+     "yname": "A",
+     "xtickFrom": 0,
+     "ytickFrom": 0
+    },
+    "scene": {
+     "kind": "phone",
+     "alt": "A phone that fills with adoption beside the graph of adoption against time",
+     "states": [
+      [
+       0,
+       {
+        "t": 4,
+        "P": 20,
+        "dp": 0,
+        "Pn": "E",
+        "G": 20
+       }
+      ]
+     ]
+    },
+    "items": [
+     {
+      "kind": "point",
+      "at": [
+       0,
+       5
+      ],
+      "step": 0,
+      "color": "pink"
+     },
+     {
+      "kind": "point",
+      "at": [
+       2,
+       10
+      ],
+      "step": 0,
+      "color": "indigo"
+     },
+     {
+      "kind": "fn",
+      "expr": "5*2**(x/2)",
+      "domain": [
+       0,
+       10.4
+      ],
+      "step": 1,
+      "color": "red"
+     },
+     {
+      "kind": "segment",
+      "from": [
+       0,
+       100
+      ],
+      "to": [
+       16.5,
+       100
+      ],
+      "step": 1,
+      "dashed": true,
+      "color": "brown"
+     }
+    ]
+   }
   },
   {
    "type": "example",
@@ -273,7 +527,6 @@
      "xtickFrom": 0,
      "ytickFrom": 0
     },
-    "heading": "The forecast $E(t)=5\\cdot 2^{t/2}$ gives the percentage with a phone after $t$ years. Full is $100\\%$.",
     "scene": {
      "kind": "phone",
      "alt": "A phone that fills with adoption beside the graph of adoption against time",
@@ -317,7 +570,8 @@
        0,
        5
       ],
-      "step": 0
+      "step": 0,
+      "color": "pink"
      },
      {
       "kind": "point",
@@ -325,7 +579,8 @@
        2,
        10
       ],
-      "step": 0
+      "step": 0,
+      "color": "indigo"
      },
      {
       "kind": "segment",
@@ -338,7 +593,8 @@
        100
       ],
       "step": 0,
-      "dashed": true
+      "dashed": true,
+      "color": "brown"
      },
      {
       "kind": "fn",
@@ -378,9 +634,20 @@
       "label": "(8,\\,80)",
       "anchor": "se"
      }
+    ],
+    "given": [
+     {
+      "html": "<b>$E(t)=5\\cdot 2^{t/2}$</b>",
+      "c": "red",
+      "shape": "cv"
+     },
+     {
+      "html": "full is <b>$100\\%$</b>",
+      "c": "brown",
+      "shape": "ln"
+     }
     ]
    },
-   "sceneStart": true,
    "scene": 2,
    "q": 1
   },
@@ -404,7 +671,7 @@
        "E(10)&=5\\cdot 2^{5}",
        "&=160"
       ],
-      "note": "That is more than all of the residents. The phone cannot hold more than $100\\%$.",
+      "note": "That is more than all of the residents. A market share cannot exceed $100\\%$ of the population.",
       "ans": true
      }
     }
@@ -424,7 +691,6 @@
      "xtickFrom": 0,
      "ytickFrom": 0
     },
-    "heading": "The forecast $E(t)=5\\cdot 2^{t/2}$ gives the percentage with a phone after $t$ years. Full is $100\\%$.",
     "scene": {
      "kind": "phone",
      "alt": "A phone that fills with adoption beside the graph of adoption against time",
@@ -458,7 +724,8 @@
        0,
        5
       ],
-      "step": 0
+      "step": 0,
+      "color": "pink"
      },
      {
       "kind": "point",
@@ -466,7 +733,8 @@
        2,
        10
       ],
-      "step": 0
+      "step": 0,
+      "color": "indigo"
      },
      {
       "kind": "segment",
@@ -479,7 +747,8 @@
        100
       ],
       "step": 0,
-      "dashed": true
+      "dashed": true,
+      "color": "brown"
      },
      {
       "kind": "fn",
@@ -511,6 +780,18 @@
       "label": "(10,\\,160)",
       "anchor": "se",
       "answer": true
+     }
+    ],
+    "given": [
+     {
+      "html": "<b>$E(t)=5\\cdot 2^{t/2}$</b>",
+      "c": "red",
+      "shape": "cv"
+     },
+     {
+      "html": "full is <b>$100\\%$</b>",
+      "c": "brown",
+      "shape": "ln"
      }
     ]
    },
@@ -564,7 +845,6 @@
      "xtickFrom": 0,
      "ytickFrom": 0
     },
-    "heading": "The forecast $E(t)=5\\cdot 2^{t/2}$ gives the percentage with a phone after $t$ years. Full is $100\\%$.",
     "scene": {
      "kind": "phone",
      "alt": "A phone that fills with adoption beside the graph of adoption against time",
@@ -588,7 +868,8 @@
        0,
        5
       ],
-      "step": 0
+      "step": 0,
+      "color": "pink"
      },
      {
       "kind": "point",
@@ -596,7 +877,8 @@
        2,
        10
       ],
-      "step": 0
+      "step": 0,
+      "color": "indigo"
      },
      {
       "kind": "segment",
@@ -609,7 +891,8 @@
        100
       ],
       "step": 0,
-      "dashed": true
+      "dashed": true,
+      "color": "brown"
      },
      {
       "kind": "fn",
@@ -631,10 +914,147 @@
       "label": "(10,\\,160)",
       "anchor": "se"
      }
+    ],
+    "given": [
+     {
+      "html": "<b>$E(t)=5\\cdot 2^{t/2}$</b>",
+      "c": "red",
+      "shape": "cv"
+     },
+     {
+      "html": "full is <b>$100\\%$</b>",
+      "c": "brown",
+      "shape": "ln"
+     }
     ]
    },
    "scene": 2,
    "q": 3
+  },
+  {
+   "type": "sceneTitle",
+   "scene": 3,
+   "kicker": "Scene 3 of 6",
+   "title": "What Should Happen?",
+   "kind": "phone",
+   "window": {
+    "xmin": 0,
+    "xmax": 1,
+    "ymin": -14,
+    "ymax": 112
+   },
+   "state": {
+    "P": 69,
+    "Pn": "A"
+   },
+   "alt": "The phone from the lesson, drawn large: it fills as residents adopt smartphones"
+  },
+  {
+   "type": "example",
+   "scene": 3,
+   "eyebrow": "What should happen? · The situation",
+   "title": "The region, followed for longer",
+   "setup": {
+    "preamble": "The forecast passed $100\\%$, which cannot happen. Before choosing a new formula, think about how adoption really spreads.",
+    "para": "We return to the same region and follow it for longer. What we knew still holds: $5\\%$ owned a phone at launch, $10\\%$ two years later, and never more than $100\\%$ of residents can own one. The doubling forecast stays on the graph, faded.",
+    "facts": [
+     {
+      "html": "<b>$5\\%$ at $t=0$</b>: the survey at launch",
+      "c": "pink"
+     },
+     {
+      "html": "<b>$10\\%$ at $t=2$</b>: two years later",
+      "c": "indigo"
+     },
+     {
+      "html": "Never more than <b>$100\\%$</b>",
+      "c": "brown",
+      "shape": "ln"
+     },
+     {
+      "html": "The doubling forecast, <b>faded</b>",
+      "c": "grey",
+      "shape": "cv"
+     }
+    ]
+   },
+   "stem": "",
+   "blocks": [],
+   "graph": {
+    "window": {
+     "xmin": -1.8,
+     "xmax": 16.5,
+     "ymin": -14,
+     "ymax": 182,
+     "gridx": 2,
+     "gridy": 20,
+     "xtick": 2,
+     "ytick": 20,
+     "xname": "t",
+     "yname": "A",
+     "xtickFrom": 0,
+     "ytickFrom": 0
+    },
+    "scene": {
+     "kind": "phone",
+     "alt": "A phone that fills with adoption beside the graph of adoption against time",
+     "states": [
+      [
+       0,
+       {
+        "t": 2,
+        "P": 10,
+        "dp": 0,
+        "Pn": "A"
+       }
+      ]
+     ]
+    },
+    "items": [
+     {
+      "kind": "point",
+      "at": [
+       0,
+       5
+      ],
+      "step": 1,
+      "color": "pink"
+     },
+     {
+      "kind": "point",
+      "at": [
+       2,
+       10
+      ],
+      "step": 1,
+      "color": "indigo"
+     },
+     {
+      "kind": "segment",
+      "from": [
+       0,
+       100
+      ],
+      "to": [
+       16.5,
+       100
+      ],
+      "step": 1,
+      "dashed": true,
+      "color": "brown"
+     },
+     {
+      "kind": "fn",
+      "expr": "5*2**(x/2)",
+      "domain": [
+       0,
+       10.4
+      ],
+      "step": 1,
+      "color": "grey"
+     }
+    ]
+   }
   },
   {
    "type": "example",
@@ -667,7 +1087,6 @@
      "xtickFrom": 0,
      "ytickFrom": 0
     },
-    "heading": "The same region, followed for longer. The exponential forecast stays, faded.",
     "scene": {
      "kind": "phone",
      "alt": "A phone that fills with adoption beside the graph of adoption against time",
@@ -689,7 +1108,8 @@
        0,
        5
       ],
-      "step": 0
+      "step": 0,
+      "color": "pink"
      },
      {
       "kind": "point",
@@ -697,7 +1117,8 @@
        2,
        10
       ],
-      "step": 0
+      "step": 0,
+      "color": "indigo"
      },
      {
       "kind": "segment",
@@ -710,7 +1131,8 @@
        100
       ],
       "step": 0,
-      "dashed": true
+      "dashed": true,
+      "color": "brown"
      },
      {
       "kind": "fn",
@@ -722,9 +1144,23 @@
       "step": 0,
       "color": "grey"
      }
+    ],
+    "given": [
+     {
+      "html": "<b>$5\\%$ at $t=0$</b>",
+      "c": "pink"
+     },
+     {
+      "html": "<b>$10\\%$ at $t=2$</b>",
+      "c": "indigo"
+     },
+     {
+      "html": "at most <b>$100\\%$</b>",
+      "c": "brown",
+      "shape": "ln"
+     }
     ]
    },
-   "sceneStart": true,
    "scene": 3,
    "q": 1
   },
@@ -774,7 +1210,6 @@
      "xtickFrom": 0,
      "ytickFrom": 0
     },
-    "heading": "The same region, followed for longer. The exponential forecast stays, faded.",
     "scene": {
      "kind": "phone",
      "alt": "A phone that fills with adoption beside the graph of adoption against time",
@@ -824,7 +1259,8 @@
        0,
        5
       ],
-      "step": 0
+      "step": 0,
+      "color": "pink"
      },
      {
       "kind": "point",
@@ -832,7 +1268,8 @@
        2,
        10
       ],
-      "step": 0
+      "step": 0,
+      "color": "indigo"
      },
      {
       "kind": "segment",
@@ -845,7 +1282,8 @@
        100
       ],
       "step": 0,
-      "dashed": true
+      "dashed": true,
+      "color": "brown"
      },
      {
       "kind": "fn",
@@ -897,6 +1335,21 @@
       ],
       "step": 3
      }
+    ],
+    "given": [
+     {
+      "html": "<b>$5\\%$ at $t=0$</b>",
+      "c": "pink"
+     },
+     {
+      "html": "<b>$10\\%$ at $t=2$</b>",
+      "c": "indigo"
+     },
+     {
+      "html": "at most <b>$100\\%$</b>",
+      "c": "brown",
+      "shape": "ln"
+     }
     ]
    },
    "scene": 3,
@@ -937,7 +1390,6 @@
      "xtickFrom": 0,
      "ytickFrom": 0
     },
-    "heading": "The same region, followed for longer. The exponential forecast stays, faded.",
     "scene": {
      "kind": "phone",
      "alt": "A phone that fills with adoption beside the graph of adoption against time",
@@ -970,7 +1422,8 @@
        0,
        5
       ],
-      "step": 0
+      "step": 0,
+      "color": "pink"
      },
      {
       "kind": "point",
@@ -978,7 +1431,8 @@
        2,
        10
       ],
-      "step": 0
+      "step": 0,
+      "color": "indigo"
      },
      {
       "kind": "segment",
@@ -991,7 +1445,8 @@
        100
       ],
       "step": 0,
-      "dashed": true
+      "dashed": true,
+      "color": "brown"
      },
      {
       "kind": "segment",
@@ -1004,7 +1459,8 @@
        80
       ],
       "step": 2,
-      "dashed": true
+      "dashed": true,
+      "color": "green"
      },
      {
       "kind": "fn",
@@ -1056,45 +1512,84 @@
       ],
       "step": 0
      }
+    ],
+    "given": [
+     {
+      "html": "<b>$5\\%$ at $t=0$</b>",
+      "c": "pink"
+     },
+     {
+      "html": "<b>$10\\%$ at $t=2$</b>",
+      "c": "indigo"
+     },
+     {
+      "html": "at most <b>$100\\%$</b>",
+      "c": "brown",
+      "shape": "ln"
+     }
     ]
    },
    "scene": 3,
    "q": 3
   },
   {
+   "type": "sceneTitle",
+   "scene": 4,
+   "kicker": "Scene 4 of 6",
+   "title": "Meet the Logistic",
+   "kind": "phone",
+   "window": {
+    "xmin": 0,
+    "xmax": 1,
+    "ymin": -14,
+    "ymax": 112
+   },
+   "state": {
+    "P": 47,
+    "Pn": "P",
+    "cap": 80
+   },
+   "formula": "P(t)=\\dfrac{L}{1+Ae^{-kt}}",
+   "alt": "The phone from the lesson, drawn large: it fills as residents adopt smartphones"
+  },
+  {
    "type": "example",
-   "eyebrow": "Meet the logistic · Question 1",
-   "title": "Check the logistic model (1 of 2)",
-   "stem": "A logistic model $L(t)$ must give $5\\%$ at $t=0$, give $10\\%$ at $t=2$, and level off at $80\\%$. Does this one do it?",
-   "blocks": [
-    {
-     "walk": {
-      "cap": "The three conditions",
-      "tex": [
-       "L(0)&=5",
-       "L(2)&=10",
-       "L(t)&\\to 80\\ \\text{ as }t\\to\\infty"
-      ]
+   "scene": 4,
+   "eyebrow": "Meet the logistic · The situation",
+   "title": "A model with a ceiling",
+   "setup": {
+    "preamble": "The later readings rose and then slowed. A logistic model does that: it grows like the doubling forecast at first, then levels off.",
+    "para": "A logistic model has the form $P(t)=\\dfrac{L}{1+Ae^{-kt}}$, with three unknowns: the limit $L$, a constant $A$, and the growth rate $k$. We take $L=80$, the ceiling proposed in the last scene. Then two readings, $5\\%$ at $t=0$ and $10\\%$ at $t=2$, fix $A$ and $k$.",
+    "facts": [
+     {
+      "html": "Model <b>$P(t)=\\dfrac{L}{1+Ae^{-kt}}$</b>: three unknowns",
+      "shape": "none"
+     },
+     {
+      "html": "Limit <b>$L=80$</b>: the ceiling from the last scene",
+      "c": "green",
+      "shape": "ln"
+     },
+     {
+      "html": "<b>$5\\%$ at $t=0$</b>: the survey at launch",
+      "c": "pink"
+     },
+     {
+      "html": "<b>$10\\%$ at $t=2$</b>: two years later",
+      "c": "indigo"
      }
-    },
-    {
-     "walk": {
-      "cap": "A logistic model",
-      "tex": [
-       "L(t)&=\\frac{80}{1+15e^{-0.381t}}"
-      ],
-      "note": "The numerator is the limit. The $15$ and $0.381$ make the other two conditions hold."
-     }
-    }
-   ],
+    ]
+   },
+   "stem": "",
+   "blocks": [],
    "graph": {
     "window": {
      "xmin": -1.8,
      "xmax": 16.5,
-     "ymin": -14,
-     "ymax": 182,
+     "ymin": -9,
+     "ymax": 120,
      "gridx": 2,
-     "gridy": 20,
+     "gridy": 10,
      "xtick": 2,
      "ytick": 20,
      "xname": "t",
@@ -1102,7 +1597,6 @@
      "xtickFrom": 0,
      "ytickFrom": 0
     },
-    "heading": "A second model, $L(t)$, fits the same two readings and levels off at $80\\%$.",
     "scene": {
      "kind": "phone",
      "alt": "A phone that fills with adoption beside the graph of adoption against time",
@@ -1113,7 +1607,16 @@
         "t": 0,
         "P": 5,
         "dp": 0,
-        "Pn": "L",
+        "Pn": "P"
+       }
+      ],
+      [
+       1,
+       {
+        "t": 0,
+        "P": 5,
+        "dp": 0,
+        "Pn": "P",
         "cap": 80
        }
       ]
@@ -1121,22 +1624,6 @@
     },
     "items": [
      {
-      "kind": "point",
-      "at": [
-       0,
-       5
-      ],
-      "step": 0
-     },
-     {
-      "kind": "point",
-      "at": [
-       2,
-       10
-      ],
-      "step": 0
-     },
-     {
       "kind": "segment",
       "from": [
        0,
@@ -1145,19 +1632,6 @@
       "to": [
        16.5,
        100
-      ],
-      "step": 0,
-      "dashed": true
-     },
-     {
-      "kind": "segment",
-      "from": [
-       0,
-       80
-      ],
-      "to": [
-       16.5,
-       80
       ],
       "step": 0,
       "dashed": true
@@ -1173,44 +1647,64 @@
       "color": "grey"
      },
      {
-      "kind": "fn",
-      "expr": "80/(1+15*exp(-x*log(Rational(15,7))/2))",
-      "domain": [
+      "kind": "point",
+      "at": [
        0,
-       16.5
+       5
       ],
-      "step": 2,
-      "color": "blue"
+      "step": 1,
+      "color": "pink"
+     },
+     {
+      "kind": "point",
+      "at": [
+       2,
+       10
+      ],
+      "step": 1,
+      "color": "indigo"
+     },
+     {
+      "kind": "segment",
+      "from": [
+       0,
+       80
+      ],
+      "to": [
+       16.5,
+       80
+      ],
+      "step": 1,
+      "dashed": true,
+      "color": "green"
      }
     ]
-   },
-   "sceneStart": true,
-   "scene": 4,
-   "q": 1
+   }
   },
   {
    "type": "example",
+   "scene": 4,
+   "q": 1,
    "eyebrow": "Meet the logistic · Question 1",
-   "title": "Check the logistic model (2 of 2)",
-   "stem": "A logistic model $L(t)$ must give $5\\%$ at $t=0$, give $10\\%$ at $t=2$, and level off at $80\\%$. Does this one do it?",
+   "title": "Find A and k (1 of 2)",
+   "stem": "Take $L=80$, the ceiling from the last scene. Use the two readings to find $A$ and $k$ in $P(t)=\\frac{L}{1+Ae^{-kt}}$.",
    "blocks": [
     {
      "walk": {
-      "cap": "Check $t=0$",
+      "cap": "$A$ from $P(0)=5$",
       "tex": [
-       "L(0)&=\\frac{80}{1+15e^{0}}=\\frac{80}{16}",
-       "&=5"
+       "\\frac{80}{1+A}&=5",
+       "1+A&=16,\\quad A=15"
       ]
      }
     },
     {
      "walk": {
-      "cap": "Check $t=2$",
+      "cap": "$k$ from $P(2)=10$",
       "tex": [
-       "L(2)&=\\frac{80}{1+15e^{-0.762}}\\approx\\frac{80}{8}",
-       "&=10"
-      ],
-      "ans": true
+       "\\frac{80}{1+15e^{-2k}}&=10",
+       "1+15e^{-2k}&=8,\\quad e^{-2k}=\\tfrac{7}{15}"
+      ]
      }
     }
    ],
@@ -1218,10 +1712,10 @@
     "window": {
      "xmin": -1.8,
      "xmax": 16.5,
-     "ymin": -14,
-     "ymax": 182,
+     "ymin": -9,
+     "ymax": 120,
      "gridx": 2,
-     "gridy": 20,
+     "gridy": 10,
      "xtick": 2,
      "ytick": 20,
      "xname": "t",
@@ -1229,7 +1723,6 @@
      "xtickFrom": 0,
      "ytickFrom": 0
     },
-    "heading": "A second model, $L(t)$, fits the same two readings and levels off at $80\\%$.",
     "scene": {
      "kind": "phone",
      "alt": "A phone that fills with adoption beside the graph of adoption against time",
@@ -1240,7 +1733,7 @@
         "t": 0,
         "P": 5,
         "dp": 0,
-        "Pn": "L",
+        "Pn": "P",
         "cap": 80
        }
       ],
@@ -1250,7 +1743,7 @@
         "t": 2,
         "P": 10,
         "dp": 0,
-        "Pn": "L",
+        "Pn": "P",
         "cap": 80
        }
       ]
@@ -1258,12 +1751,36 @@
     },
     "items": [
      {
+      "kind": "segment",
+      "from": [
+       0,
+       100
+      ],
+      "to": [
+       16.5,
+       100
+      ],
+      "step": 0,
+      "dashed": true
+     },
+     {
+      "kind": "fn",
+      "expr": "5*2**(x/2)",
+      "domain": [
+       0,
+       10.4
+      ],
+      "step": 0,
+      "color": "grey"
+     },
+     {
       "kind": "point",
       "at": [
        0,
        5
       ],
-      "step": 0
+      "step": 0,
+      "color": "pink"
      },
      {
       "kind": "point",
@@ -1271,8 +1788,256 @@
        2,
        10
       ],
-      "step": 0
+      "step": 0,
+      "color": "indigo"
      },
+     {
+      "kind": "segment",
+      "from": [
+       0,
+       80
+      ],
+      "to": [
+       16.5,
+       80
+      ],
+      "step": 0,
+      "dashed": true,
+      "color": "green"
+     }
+    ],
+    "given": [
+     {
+      "html": "<b>$5\\%$ at $t=0$</b>",
+      "c": "pink"
+     },
+     {
+      "html": "<b>$10\\%$ at $t=2$</b>",
+      "c": "indigo"
+     },
+     {
+      "html": "limit <b>$L=80$</b>",
+      "c": "green",
+      "shape": "ln"
+     }
+    ]
+   }
+  },
+  {
+   "type": "example",
+   "scene": 4,
+   "q": 1,
+   "eyebrow": "Meet the logistic · Question 1",
+   "title": "Find A and k (2 of 2)",
+   "stem": "Take $L=80$, the ceiling from the last scene. Use the two readings to find $A$ and $k$ in $P(t)=\\frac{L}{1+Ae^{-kt}}$.",
+   "blocks": [
+    {
+     "walk": {
+      "cap": "Solve for $k$",
+      "tex": [
+       "k&=\\tfrac{1}{2}\\ln\\tfrac{15}{7}\\approx 0.381",
+       "P(t)&=\\frac{80}{1+15e^{-0.381t}}"
+      ],
+      "ans": true,
+      "note": "When $L$ is not known, enter the data in the GDC and use logistic regression: it finds $L$, $A$ and $k$ together."
+     }
+    }
+   ],
+   "graph": {
+    "window": {
+     "xmin": -1.8,
+     "xmax": 16.5,
+     "ymin": -9,
+     "ymax": 120,
+     "gridx": 2,
+     "gridy": 10,
+     "xtick": 2,
+     "ytick": 20,
+     "xname": "t",
+     "yname": "A",
+     "xtickFrom": 0,
+     "ytickFrom": 0
+    },
+    "scene": {
+     "kind": "phone",
+     "alt": "A phone that fills with adoption beside the graph of adoption against time",
+     "states": [
+      [
+       0,
+       {
+        "t": 2,
+        "P": 10,
+        "dp": 0,
+        "Pn": "P",
+        "cap": 80
+       }
+      ]
+     ]
+    },
+    "items": [
+     {
+      "kind": "segment",
+      "from": [
+       0,
+       100
+      ],
+      "to": [
+       16.5,
+       100
+      ],
+      "step": 0,
+      "dashed": true
+     },
+     {
+      "kind": "fn",
+      "expr": "5*2**(x/2)",
+      "domain": [
+       0,
+       10.4
+      ],
+      "step": 0,
+      "color": "grey"
+     },
+     {
+      "kind": "point",
+      "at": [
+       0,
+       5
+      ],
+      "step": 0,
+      "color": "pink"
+     },
+     {
+      "kind": "point",
+      "at": [
+       2,
+       10
+      ],
+      "step": 0,
+      "color": "indigo"
+     },
+     {
+      "kind": "segment",
+      "from": [
+       0,
+       80
+      ],
+      "to": [
+       16.5,
+       80
+      ],
+      "step": 0,
+      "dashed": true,
+      "color": "green"
+     },
+     {
+      "kind": "fn",
+      "expr": "80/(1+15*exp(-x*log(Rational(15,7))/2))",
+      "domain": [
+       0,
+       16.5
+      ],
+      "step": 1,
+      "color": "blue"
+     }
+    ],
+    "given": [
+     {
+      "html": "<b>$5\\%$ at $t=0$</b>",
+      "c": "pink"
+     },
+     {
+      "html": "<b>$10\\%$ at $t=2$</b>",
+      "c": "indigo"
+     },
+     {
+      "html": "limit <b>$L=80$</b>",
+      "c": "green",
+      "shape": "ln"
+     }
+    ]
+   },
+   "cont": true
+  },
+  {
+   "type": "example",
+   "eyebrow": "Meet the logistic · Question 2",
+   "title": "Check against later readings",
+   "stem": "The model used only two readings. Does it agree with the later readings, $32\\%$ at $t=6$ and $60\\%$ at $t=10$?",
+   "blocks": [
+    {
+     "walk": {
+      "cap": "At $t=6$",
+      "tex": [
+       "P(6)&=\\frac{80}{1+15e^{-2.286}}",
+       "&\\approx 31.7\\%\\quad(\\text{reading: }32\\%)"
+      ]
+     }
+    },
+    {
+     "walk": {
+      "cap": "At $t=10$",
+      "tex": [
+       "P(10)&=\\frac{80}{1+15e^{-3.81}}",
+       "&\\approx 60.1\\%\\quad(\\text{reading: }60\\%)"
+      ],
+      "ans": true,
+      "note": "Built from two readings, the model still matches the later ones."
+     }
+    }
+   ],
+   "graph": {
+    "window": {
+     "xmin": -1.8,
+     "xmax": 16.5,
+     "ymin": -9,
+     "ymax": 120,
+     "gridx": 2,
+     "gridy": 10,
+     "xtick": 2,
+     "ytick": 20,
+     "xname": "t",
+     "yname": "A",
+     "xtickFrom": 0,
+     "ytickFrom": 0
+    },
+    "scene": {
+     "kind": "phone",
+     "alt": "A phone that fills with adoption beside the graph of adoption against time",
+     "states": [
+      [
+       0,
+       {
+        "t": 2,
+        "P": 10,
+        "dp": 0,
+        "Pn": "P",
+        "cap": 80
+       }
+      ],
+      [
+       1,
+       {
+        "t": 6,
+        "P": 31.7,
+        "dp": 1,
+        "Pn": "P",
+        "cap": 80
+       }
+      ],
+      [
+       2,
+       {
+        "t": 10,
+        "P": 60.1,
+        "dp": 1,
+        "Pn": "P",
+        "cap": 80
+       }
+      ]
+     ]
+    },
+    "items": [
      {
       "kind": "segment",
       "from": [
@@ -1297,7 +2062,8 @@
        80
       ],
       "step": 0,
-      "dashed": true
+      "dashed": true,
+      "color": "green"
      },
      {
       "kind": "fn",
@@ -1318,16 +2084,64 @@
       ],
       "step": 0,
       "color": "blue"
+     },
+     {
+      "kind": "point",
+      "at": [
+       0,
+       5
+      ],
+      "step": 0,
+      "color": "pink"
+     },
+     {
+      "kind": "point",
+      "at": [
+       2,
+       10
+      ],
+      "step": 0,
+      "color": "indigo"
+     },
+     {
+      "kind": "point",
+      "at": [
+       6,
+       32
+      ],
+      "step": 1
+     },
+     {
+      "kind": "point",
+      "at": [
+       10,
+       60
+      ],
+      "step": 2
+     }
+    ],
+    "given": [
+     {
+      "html": "<b>$5\\%$ at $t=0$</b>",
+      "c": "pink"
+     },
+     {
+      "html": "<b>$10\\%$ at $t=2$</b>",
+      "c": "indigo"
+     },
+     {
+      "html": "limit <b>$L=80$</b>",
+      "c": "green",
+      "shape": "ln"
      }
     ]
    },
    "scene": 4,
-   "q": 1,
-   "cont": true
+   "q": 2
   },
   {
    "type": "example",
-   "eyebrow": "Meet the logistic · Question 2",
+   "eyebrow": "Meet the logistic · Question 3",
    "title": "What the exponential term does",
    "stem": "Predict: as $t$ increases, what happens to $e^{-0.381t}$?",
    "choices": [
@@ -1349,7 +2163,7 @@
      "walk": {
       "cap": "The denominator approaches $1$",
       "tex": [
-       "L(t)&\\to\\frac{80}{1+0}=80"
+       "P(t)&\\to\\frac{80}{1+0}=80"
       ],
       "note": "$y=80$ is a horizontal asymptote: adoption nears $80\\%$, never reaching it.",
       "ans": true
@@ -1360,10 +2174,10 @@
     "window": {
      "xmin": -1.8,
      "xmax": 16.5,
-     "ymin": -14,
-     "ymax": 182,
+     "ymin": -9,
+     "ymax": 120,
      "gridx": 2,
-     "gridy": 20,
+     "gridy": 10,
      "xtick": 2,
      "ytick": 20,
      "xname": "t",
@@ -1371,7 +2185,6 @@
      "xtickFrom": 0,
      "ytickFrom": 0
     },
-    "heading": "A second model, $L(t)$, fits the same two readings and levels off at $80\\%$.",
     "scene": {
      "kind": "phone",
      "alt": "A phone that fills with adoption beside the graph of adoption against time",
@@ -1382,7 +2195,7 @@
         "t": 10,
         "P": 60.1,
         "dp": 1,
-        "Pn": "L",
+        "Pn": "P",
         "cap": 80
        }
       ],
@@ -1392,7 +2205,7 @@
         "t": 16,
         "P": 77.4,
         "dp": 1,
-        "Pn": "L",
+        "Pn": "P",
         "cap": 80
        }
       ]
@@ -1405,7 +2218,8 @@
        0,
        5
       ],
-      "step": 0
+      "step": 0,
+      "color": "pink"
      },
      {
       "kind": "point",
@@ -1413,7 +2227,8 @@
        2,
        10
       ],
-      "step": 0
+      "step": 0,
+      "color": "indigo"
      },
      {
       "kind": "segment",
@@ -1439,7 +2254,8 @@
        80
       ],
       "step": 0,
-      "dashed": true
+      "dashed": true,
+      "color": "green"
      },
      {
       "kind": "fn",
@@ -1469,10 +2285,25 @@
       ],
       "step": 2
      }
+    ],
+    "given": [
+     {
+      "html": "<b>$5\\%$ at $t=0$</b>",
+      "c": "pink"
+     },
+     {
+      "html": "<b>$10\\%$ at $t=2$</b>",
+      "c": "indigo"
+     },
+     {
+      "html": "limit <b>$L=80$</b>",
+      "c": "green",
+      "shape": "ln"
+     }
     ]
    },
    "scene": 4,
-   "q": 2
+   "q": 3
   },
   {
    "type": "lab",
@@ -1484,10 +2315,10 @@
     "window": {
      "xmin": -1.8,
      "xmax": 16.5,
-     "ymin": -14,
-     "ymax": 182,
+     "ymin": -9,
+     "ymax": 120,
      "gridx": 2,
-     "gridy": 20,
+     "gridy": 10,
      "xtick": 2,
      "ytick": 20,
      "xname": "t",
@@ -1497,6 +2328,129 @@
     },
     "start": 0,
     "seconds": 14
+   }
+  },
+  {
+   "type": "sceneTitle",
+   "scene": 5,
+   "kicker": "Scene 5 of 6",
+   "title": "Where Is It Fastest?",
+   "kind": "phone",
+   "window": {
+    "xmin": 0,
+    "xmax": 1,
+    "ymin": -14,
+    "ymax": 112
+   },
+   "state": {
+    "P": 40,
+    "Pn": "P",
+    "cap": 80
+   },
+   "alt": "The phone from the lesson, drawn large: it fills as residents adopt smartphones"
+  },
+  {
+   "type": "example",
+   "scene": 5,
+   "eyebrow": "Where is it fastest? · The situation",
+   "title": "Planning for the busiest years",
+   "setup": {
+    "preamble": "The planners now trust a model that levels off. Next they want to know when the region changes fastest, so shops and networks are ready.",
+    "para": "Adoption in the region follows $P(t)=\\dfrac{80}{1+15e^{-0.381t}}$, with $t$ in years since launch. The model levels off at $80\\%$.",
+    "facts": [
+     {
+      "html": "Model <b>$P(t)=\\dfrac{80}{1+15e^{-0.381t}}$</b>",
+      "c": "blue",
+      "shape": "cv"
+     },
+     {
+      "html": "Levels off at <b>$80\\%$</b>",
+      "c": "green",
+      "shape": "ln"
+     }
+    ]
+   },
+   "stem": "",
+   "blocks": [],
+   "graph": {
+    "window": {
+     "xmin": -2.4,
+     "xmax": 22,
+     "ymin": -9,
+     "ymax": 120,
+     "gridx": 2,
+     "gridy": 10,
+     "xtick": 4,
+     "ytick": 20,
+     "xname": "t",
+     "yname": "A",
+     "xtickFrom": 0,
+     "ytickFrom": 0
+    },
+    "scene": {
+     "kind": "phone",
+     "alt": "A phone that fills with adoption beside the graph of adoption against time",
+     "states": [
+      [
+       0,
+       {
+        "t": 0,
+        "P": 5,
+        "dp": 0,
+        "Pn": "P"
+       }
+      ],
+      [
+       1,
+       {
+        "t": 0,
+        "P": 5,
+        "dp": 0,
+        "Pn": "P",
+        "cap": 80
+       }
+      ]
+     ]
+    },
+    "items": [
+     {
+      "kind": "segment",
+      "from": [
+       0,
+       100
+      ],
+      "to": [
+       22,
+       100
+      ],
+      "step": 0,
+      "dashed": true
+     },
+     {
+      "kind": "fn",
+      "expr": "80/(1+15*exp(-x*log(Rational(15,7))/2))",
+      "domain": [
+       0,
+       22
+      ],
+      "step": 1,
+      "color": "blue"
+     },
+     {
+      "kind": "segment",
+      "from": [
+       0,
+       80
+      ],
+      "to": [
+       22,
+       80
+      ],
+      "step": 1,
+      "dashed": true,
+      "color": "green"
+     }
+    ]
    }
   },
   {
@@ -1527,10 +2481,10 @@
     "window": {
      "xmin": -2.4,
      "xmax": 22,
-     "ymin": -12,
-     "ymax": 140,
+     "ymin": -9,
+     "ymax": 120,
      "gridx": 2,
-     "gridy": 20,
+     "gridy": 10,
      "xtick": 4,
      "ytick": 20,
      "xname": "t",
@@ -1538,7 +2492,6 @@
      "xtickFrom": 0,
      "ytickFrom": 0
     },
-    "heading": "$L(t)=\\dfrac{80}{1+15e^{-0.381t}}$. Where is adoption increasing fastest?",
     "scene": {
      "kind": "phone",
      "alt": "A phone that fills with adoption beside the graph of adoption against time",
@@ -1549,7 +2502,7 @@
         "t": 0,
         "P": 5,
         "dp": 0,
-        "Pn": "L",
+        "Pn": "P",
         "cap": 80
        }
       ],
@@ -1559,7 +2512,7 @@
         "t": 6,
         "P": 32,
         "dp": 0,
-        "Pn": "L",
+        "Pn": "P",
         "cap": 80
        }
       ]
@@ -1590,7 +2543,8 @@
        80
       ],
       "step": 0,
-      "dashed": true
+      "dashed": true,
+      "color": "green"
      },
      {
       "kind": "fn",
@@ -1608,7 +2562,8 @@
        0,
        5
       ],
-      "step": 0
+      "step": 0,
+      "color": "pink"
      },
      {
       "kind": "point",
@@ -1616,7 +2571,8 @@
        2,
        10
       ],
-      "step": 0
+      "step": 0,
+      "color": "indigo"
      },
      {
       "kind": "point",
@@ -1712,9 +2668,20 @@
       "step": 1,
       "dotted": true
      }
+    ],
+    "given": [
+     {
+      "html": "<b>$P(t)=\\tfrac{80}{1+15e^{-0.381t}}$</b>",
+      "c": "blue",
+      "shape": "cv"
+     },
+     {
+      "html": "levels off at <b>$80\\%$</b>",
+      "c": "green",
+      "shape": "ln"
+     }
     ]
    },
-   "sceneStart": true,
    "scene": 5,
    "q": 1
   },
@@ -1748,10 +2715,10 @@
     "window": {
      "xmin": -2.4,
      "xmax": 22,
-     "ymin": -12,
-     "ymax": 140,
+     "ymin": -9,
+     "ymax": 120,
      "gridx": 2,
-     "gridy": 20,
+     "gridy": 10,
      "xtick": 4,
      "ytick": 20,
      "xname": "t",
@@ -1759,7 +2726,6 @@
      "xtickFrom": 0,
      "ytickFrom": 0
     },
-    "heading": "$L(t)=\\dfrac{80}{1+15e^{-0.381t}}$. Where is adoption increasing fastest?",
     "scene": {
      "kind": "phone",
      "alt": "A phone that fills with adoption beside the graph of adoption against time",
@@ -1770,7 +2736,7 @@
         "t": 6,
         "P": 32,
         "dp": 0,
-        "Pn": "L",
+        "Pn": "P",
         "cap": 80
        }
       ],
@@ -1780,7 +2746,7 @@
         "t": 12,
         "P": 69,
         "dp": 0,
-        "Pn": "L",
+        "Pn": "P",
         "cap": 80
        }
       ]
@@ -1811,7 +2777,8 @@
        80
       ],
       "step": 0,
-      "dashed": true
+      "dashed": true,
+      "color": "green"
      },
      {
       "kind": "fn",
@@ -1829,7 +2796,8 @@
        0,
        5
       ],
-      "step": 0
+      "step": 0,
+      "color": "pink"
      },
      {
       "kind": "point",
@@ -1837,7 +2805,8 @@
        2,
        10
       ],
-      "step": 0
+      "step": 0,
+      "color": "indigo"
      },
      {
       "kind": "point",
@@ -1859,7 +2828,7 @@
       "kind": "point",
       "at": [
        8,
-       46.8
+       46.7
       ],
       "step": 0
      },
@@ -1978,7 +2947,7 @@
       ],
       "to": [
        8,
-       46.8
+       46.7
       ],
       "step": 1,
       "dotted": true
@@ -1987,11 +2956,11 @@
       "kind": "segment",
       "from": [
        8,
-       46.8
+       46.7
       ],
       "to": [
        10,
-       46.8
+       46.7
       ],
       "step": 1,
       "dotted": true
@@ -2000,7 +2969,7 @@
       "kind": "segment",
       "from": [
        10,
-       46.8
+       46.7
       ],
       "to": [
        10,
@@ -2034,6 +3003,18 @@
       ],
       "step": 1,
       "dotted": true
+     }
+    ],
+    "given": [
+     {
+      "html": "<b>$P(t)=\\tfrac{80}{1+15e^{-0.381t}}$</b>",
+      "c": "blue",
+      "shape": "cv"
+     },
+     {
+      "html": "levels off at <b>$80\\%$</b>",
+      "c": "green",
+      "shape": "ln"
      }
     ]
    },
@@ -2051,14 +3032,14 @@
      "walk": {
       "cap": "Half the limiting level",
       "tex": [
-       "L&=\\frac{80}{2}=40"
+       "P&=\\frac{L}{2}=\\frac{80}{2}=40"
       ],
       "note": "The inflection point is at half the limit."
      }
     },
     {
      "walk": {
-      "cap": "Set $L(t)=40$",
+      "cap": "Set $P(t)=40$",
       "tex": [
        "\\frac{80}{1+15e^{-0.381t}}&=40",
        "1+15e^{-0.381t}&=\\frac{80}{40}"
@@ -2070,10 +3051,10 @@
     "window": {
      "xmin": -2.4,
      "xmax": 22,
-     "ymin": -12,
-     "ymax": 140,
+     "ymin": -9,
+     "ymax": 120,
      "gridx": 2,
-     "gridy": 20,
+     "gridy": 10,
      "xtick": 4,
      "ytick": 20,
      "xname": "t",
@@ -2081,7 +3062,6 @@
      "xtickFrom": 0,
      "ytickFrom": 0
     },
-    "heading": "$L(t)=\\dfrac{80}{1+15e^{-0.381t}}$. Where is adoption increasing fastest?",
     "scene": {
      "kind": "phone",
      "alt": "A phone that fills with adoption beside the graph of adoption against time",
@@ -2092,7 +3072,7 @@
         "t": 6,
         "P": 32,
         "dp": 0,
-        "Pn": "L",
+        "Pn": "P",
         "cap": 80
        }
       ],
@@ -2102,7 +3082,7 @@
         "t": 6,
         "P": 32,
         "dp": 0,
-        "Pn": "L",
+        "Pn": "P",
         "cap": 80
        }
       ]
@@ -2133,7 +3113,8 @@
        80
       ],
       "step": 0,
-      "dashed": true
+      "dashed": true,
+      "color": "green"
      },
      {
       "kind": "fn",
@@ -2157,6 +3138,18 @@
       ],
       "step": 1,
       "dotted": true
+     }
+    ],
+    "given": [
+     {
+      "html": "<b>$P(t)=\\tfrac{80}{1+15e^{-0.381t}}$</b>",
+      "c": "blue",
+      "shape": "cv"
+     },
+     {
+      "html": "levels off at <b>$80\\%$</b>",
+      "c": "green",
+      "shape": "ln"
      }
     ]
    },
@@ -2192,10 +3185,10 @@
     "window": {
      "xmin": -2.4,
      "xmax": 22,
-     "ymin": -12,
-     "ymax": 140,
+     "ymin": -9,
+     "ymax": 120,
      "gridx": 2,
-     "gridy": 20,
+     "gridy": 10,
      "xtick": 4,
      "ytick": 20,
      "xname": "t",
@@ -2203,7 +3196,6 @@
      "xtickFrom": 0,
      "ytickFrom": 0
     },
-    "heading": "$L(t)=\\dfrac{80}{1+15e^{-0.381t}}$. Where is adoption increasing fastest?",
     "scene": {
      "kind": "phone",
      "alt": "A phone that fills with adoption beside the graph of adoption against time",
@@ -2214,7 +3206,7 @@
         "t": 6,
         "P": 32,
         "dp": 0,
-        "Pn": "L",
+        "Pn": "P",
         "cap": 80
        }
       ],
@@ -2224,7 +3216,7 @@
         "t": 7.106,
         "P": 40,
         "dp": 1,
-        "Pn": "L",
+        "Pn": "P",
         "cap": 80
        }
       ]
@@ -2255,7 +3247,8 @@
        80
       ],
       "step": 0,
-      "dashed": true
+      "dashed": true,
+      "color": "green"
      },
      {
       "kind": "fn",
@@ -2284,7 +3277,7 @@
       "kind": "segment",
       "from": [
        7.106,
-       -12
+       -9
       ],
       "to": [
        7.106,
@@ -2301,6 +3294,18 @@
       ],
       "step": 2,
       "answer": true
+     }
+    ],
+    "given": [
+     {
+      "html": "<b>$P(t)=\\tfrac{80}{1+15e^{-0.381t}}$</b>",
+      "c": "blue",
+      "shape": "cv"
+     },
+     {
+      "html": "levels off at <b>$80\\%$</b>",
+      "c": "green",
+      "shape": "ln"
      }
     ]
    },
@@ -2337,10 +3342,10 @@
     "window": {
      "xmin": -2.4,
      "xmax": 22,
-     "ymin": -12,
-     "ymax": 140,
+     "ymin": -9,
+     "ymax": 120,
      "gridx": 2,
-     "gridy": 20,
+     "gridy": 10,
      "xtick": 4,
      "ytick": 20,
      "xname": "t",
@@ -2348,7 +3353,6 @@
      "xtickFrom": 0,
      "ytickFrom": 0
     },
-    "heading": "$L(t)=\\dfrac{80}{1+15e^{-0.381t}}$. Where is adoption increasing fastest?",
     "scene": {
      "kind": "phone",
      "alt": "A phone that fills with adoption beside the graph of adoption against time",
@@ -2359,7 +3363,7 @@
         "t": 8,
         "P": 47,
         "dp": 0,
-        "Pn": "L",
+        "Pn": "P",
         "cap": 80
        }
       ],
@@ -2369,7 +3373,7 @@
         "t": 12,
         "P": 69,
         "dp": 0,
-        "Pn": "L",
+        "Pn": "P",
         "cap": 80
        }
       ]
@@ -2400,7 +3404,8 @@
        80
       ],
       "step": 0,
-      "dashed": true
+      "dashed": true,
+      "color": "green"
      },
      {
       "kind": "fn",
@@ -2416,7 +3421,7 @@
       "kind": "point",
       "at": [
        8,
-       46.8
+       46.7
       ],
       "step": 0
      },
@@ -2440,11 +3445,11 @@
       "kind": "segment",
       "from": [
        8,
-       46.8
+       46.7
       ],
       "to": [
        10,
-       46.8
+       46.7
       ],
       "step": 1,
       "dotted": true
@@ -2453,7 +3458,7 @@
       "kind": "segment",
       "from": [
        10,
-       46.8
+       46.7
       ],
       "to": [
        10,
@@ -2488,10 +3493,158 @@
       "step": 1,
       "dotted": true
      }
+    ],
+    "given": [
+     {
+      "html": "<b>$P(t)=\\tfrac{80}{1+15e^{-0.381t}}$</b>",
+      "c": "blue",
+      "shape": "cv"
+     },
+     {
+      "html": "levels off at <b>$80\\%$</b>",
+      "c": "green",
+      "shape": "ln"
+     }
     ]
    },
    "scene": 5,
    "q": 3
+  },
+  {
+   "type": "sceneTitle",
+   "scene": 6,
+   "kicker": "Scene 6 of 6",
+   "title": "Explore and Judge",
+   "kind": "phone",
+   "window": {
+    "xmin": 0,
+    "xmax": 1,
+    "ymin": -14,
+    "ymax": 112
+   },
+   "state": {
+    "P": 60,
+    "Pn": "P",
+    "cap": 80
+   },
+   "alt": "The phone from the lesson, drawn large: it fills as residents adopt smartphones"
+  },
+  {
+   "type": "example",
+   "scene": 6,
+   "eyebrow": "Explore and judge · The situation",
+   "title": "Three settings on one model",
+   "setup": {
+    "preamble": "The region will soon weigh some proposals. First, see what each part of the model controls.",
+    "para": "A logistic model of this kind has three settings. The growth rate $k$ sets how quickly adoption rises, the limit $L$ is the level it settles towards, and the start is the percentage at $t=0$. For our region, $k\\approx 0.38$, $L=80$, and the start is $5\\%$.",
+    "facts": [
+     {
+      "html": "Growth rate <b>$k\\approx 0.38$</b>: how steep",
+      "c": "blue",
+      "shape": "cv"
+     },
+     {
+      "html": "Limit <b>$L=80$</b>: where it levels off",
+      "c": "green",
+      "shape": "ln"
+     },
+     {
+      "html": "Start <b>$5\\%$</b>: the level at $t=0$",
+      "c": "pink"
+     }
+    ]
+   },
+   "stem": "",
+   "blocks": [],
+   "graph": {
+    "window": {
+     "xmin": -2.4,
+     "xmax": 22,
+     "ymin": -9,
+     "ymax": 120,
+     "gridx": 2,
+     "gridy": 10,
+     "xtick": 4,
+     "ytick": 20,
+     "xname": "t",
+     "yname": "A",
+     "xtickFrom": 0,
+     "ytickFrom": 0
+    },
+    "scene": {
+     "kind": "phone",
+     "alt": "A phone that fills with adoption beside the graph of adoption against time",
+     "states": [
+      [
+       0,
+       {
+        "t": 8,
+        "P": 47,
+        "dp": 0,
+        "Pn": "P"
+       }
+      ],
+      [
+       1,
+       {
+        "t": 8,
+        "P": 47,
+        "dp": 0,
+        "Pn": "P",
+        "cap": 80
+       }
+      ]
+     ]
+    },
+    "items": [
+     {
+      "kind": "segment",
+      "from": [
+       0,
+       100
+      ],
+      "to": [
+       22,
+       100
+      ],
+      "step": 0,
+      "dashed": true
+     },
+     {
+      "kind": "fn",
+      "expr": "80/(1+15*exp(-0.38*x))",
+      "domain": [
+       0,
+       22
+      ],
+      "step": 1,
+      "color": "blue"
+     },
+     {
+      "kind": "segment",
+      "from": [
+       0,
+       80
+      ],
+      "to": [
+       22,
+       80
+      ],
+      "step": 1,
+      "dashed": true,
+      "color": "green"
+     },
+     {
+      "kind": "point",
+      "at": [
+       0,
+       5
+      ],
+      "step": 1,
+      "color": "pink"
+     }
+    ]
+   }
   },
   {
    "type": "lab",
@@ -2502,10 +3655,10 @@
     "window": {
      "xmin": -2.4,
      "xmax": 22,
-     "ymin": -12,
-     "ymax": 140,
+     "ymin": -9,
+     "ymax": 120,
      "gridx": 2,
-     "gridy": 20,
+     "gridy": 10,
      "xtick": 4,
      "ytick": 20,
      "xname": "t",
@@ -2544,10 +3697,10 @@
     "window": {
      "xmin": -2.4,
      "xmax": 22,
-     "ymin": -12,
-     "ymax": 140,
+     "ymin": -9,
+     "ymax": 120,
      "gridx": 2,
-     "gridy": 20,
+     "gridy": 10,
      "xtick": 4,
      "ytick": 20,
      "xname": "t",
@@ -2555,7 +3708,6 @@
      "xtickFrom": 0,
      "ytickFrom": 0
     },
-    "heading": "A logistic model can change in three ways: growth rate, limit, and starting level.",
     "scene": {
      "kind": "phone",
      "alt": "A phone that fills with adoption beside the graph of adoption against time",
@@ -2566,7 +3718,7 @@
         "t": 8,
         "P": 47,
         "dp": 0,
-        "Pn": "L",
+        "Pn": "P",
         "cap": 80
        }
       ]
@@ -2597,7 +3749,8 @@
        80
       ],
       "step": 0,
-      "dashed": true
+      "dashed": true,
+      "color": "green"
      },
      {
       "kind": "fn",
@@ -2609,9 +3762,24 @@
       "step": 0,
       "color": "blue"
      }
+    ],
+    "given": [
+     {
+      "html": "<b>$k\\approx 0.38$</b>",
+      "c": "blue",
+      "shape": "cv"
+     },
+     {
+      "html": "limit <b>$L=80$</b>",
+      "c": "green",
+      "shape": "ln"
+     },
+     {
+      "html": "start <b>$5\\%$</b>",
+      "c": "pink"
+     }
     ]
    },
-   "sceneStart": true,
    "scene": 6,
    "q": 1
   },
@@ -2650,10 +3818,10 @@
     "window": {
      "xmin": -2.4,
      "xmax": 22,
-     "ymin": -12,
-     "ymax": 140,
+     "ymin": -9,
+     "ymax": 120,
      "gridx": 2,
-     "gridy": 20,
+     "gridy": 10,
      "xtick": 4,
      "ytick": 20,
      "xname": "t",
@@ -2661,7 +3829,6 @@
      "xtickFrom": 0,
      "ytickFrom": 0
     },
-    "heading": "A logistic model can change in three ways: growth rate, limit, and starting level.",
     "scene": {
      "kind": "phone",
      "alt": "A phone that fills with adoption beside the graph of adoption against time",
@@ -2672,7 +3839,7 @@
         "t": 8,
         "P": 47,
         "dp": 0,
-        "Pn": "L",
+        "Pn": "P",
         "cap": 80
        }
       ],
@@ -2682,7 +3849,7 @@
         "t": 8,
         "P": 71,
         "dp": 0,
-        "Pn": "L",
+        "Pn": "P",
         "cap": 80
        }
       ],
@@ -2692,7 +3859,7 @@
         "t": 8,
         "P": 51,
         "dp": 0,
-        "Pn": "L",
+        "Pn": "P",
         "cap": 95
        }
       ],
@@ -2702,7 +3869,7 @@
         "t": 8,
         "P": 70,
         "dp": 0,
-        "Pn": "L",
+        "Pn": "P",
         "cap": 80
        }
       ]
@@ -2733,7 +3900,8 @@
        80
       ],
       "step": 0,
-      "dashed": true
+      "dashed": true,
+      "color": "green"
      },
      {
       "kind": "fn",
@@ -2778,6 +3946,22 @@
       "until": 3,
       "color": "red"
      }
+    ],
+    "given": [
+     {
+      "html": "<b>$k\\approx 0.38$</b>",
+      "c": "blue",
+      "shape": "cv"
+     },
+     {
+      "html": "limit <b>$L=80$</b>",
+      "c": "green",
+      "shape": "ln"
+     },
+     {
+      "html": "start <b>$5\\%$</b>",
+      "c": "pink"
+     }
     ]
    },
    "scene": 6,
@@ -2813,10 +3997,10 @@
     "window": {
      "xmin": -2.4,
      "xmax": 22,
-     "ymin": -12,
-     "ymax": 140,
+     "ymin": -9,
+     "ymax": 120,
      "gridx": 2,
-     "gridy": 20,
+     "gridy": 10,
      "xtick": 4,
      "ytick": 20,
      "xname": "t",
@@ -2824,7 +4008,6 @@
      "xtickFrom": 0,
      "ytickFrom": 0
     },
-    "heading": "A logistic model can change in three ways: growth rate, limit, and starting level.",
     "scene": {
      "kind": "phone",
      "alt": "A phone that fills with adoption beside the graph of adoption against time",
@@ -2835,7 +4018,7 @@
         "t": 8,
         "P": 47,
         "dp": 0,
-        "Pn": "L",
+        "Pn": "P",
         "cap": 80
        }
       ]
@@ -2866,7 +4049,8 @@
        80
       ],
       "step": 0,
-      "dashed": true
+      "dashed": true,
+      "color": "green"
      },
      {
       "kind": "fn",
@@ -2888,6 +4072,22 @@
       "step": 0,
       "color": "red"
      }
+    ],
+    "given": [
+     {
+      "html": "<b>$k\\approx 0.38$</b>",
+      "c": "blue",
+      "shape": "cv"
+     },
+     {
+      "html": "limit <b>$L=80$</b>",
+      "c": "green",
+      "shape": "ln"
+     },
+     {
+      "html": "start <b>$5\\%$</b>",
+      "c": "pink"
+     }
     ]
    },
    "scene": 6,
@@ -2904,65 +4104,242 @@
      {
       "group": "Nature",
       "title": "Yeast in sugar water",
-      "what": "The number of yeast cells in a closed bottle of warm sugar water.",
-      "why": "Cells divide quickly while there is plenty of sugar. Then the sugar runs low and waste builds up, so the population levels off at what the bottle can support.",
-      "exp": "Put warm sugar water and a pinch of yeast in a clear bottle. Every 15 minutes for three hours, measure the height of the foam with a ruler. Foam height tracks how many cells are working. Plot height against time."
+      "what": [
+       "The number of yeast cells in a bottle of warm sugar water",
+       "Tracked through the height of the foam they make"
+      ],
+      "why": [
+       "Cells divide quickly while sugar is plentiful",
+       "The sugar runs low and waste builds up",
+       "The population levels off at what the bottle can support"
+      ],
+      "exp": [
+       [
+        "Set up",
+        [
+         "Mix 250 mL warm water and 2 tbsp sugar in a clear bottle",
+         "Stir in 1 teaspoon of dried yeast",
+         "Tape a ruler to the side; cover the top loosely"
+        ]
+       ],
+       "Every 15 minutes for 3 hours, read the foam height",
+       "Record time and height in a table",
+       "Plot height against time"
+      ]
      },
      {
       "group": "Nature",
       "title": "Duckweed on a tray of water",
-      "what": "The number of duckweed fronds floating on a tray of pond water.",
-      "why": "Every frond makes new fronds. As the surface fills, they crowd and shade each other, so growth slows towards the number the tray can hold.",
-      "exp": "Start with 5 fronds in a tray by a window. Each day, photograph the tray from above and count the fronds. Keep going for about three weeks, then plot the count against days."
+      "what": [
+       "The number of duckweed fronds floating on a tray of pond water"
+      ],
+      "why": [
+       "Every frond buds new fronds",
+       "As the surface fills, fronds crowd and shade each other",
+       "Growth slows towards the number the tray can hold"
+      ],
+      "exp": [
+       [
+        "Set up",
+        [
+         "Fill a shallow tray with pond water",
+         "Add 5 fronds and place the tray by a window"
+        ]
+       ],
+       [
+        "Each day at the same time",
+        [
+         "Photograph the tray from directly above",
+         "Count the fronds on the photo"
+        ]
+       ],
+       "Continue for about three weeks",
+       "Plot the count against days"
+      ]
      },
      {
       "group": "Nature",
       "title": "Bean seedling height",
-      "what": "The height of a bean plant, measured every day from planting.",
-      "why": "A seedling grows slowly at first, fastest in the middle of its life, then slows as it nears the height its species can reach.",
-      "exp": "Plant several beans in pots on a windowsill. At the same time each day, measure each stem with a ruler. Average the heights and plot the average against days for six weeks."
+      "what": [
+       "The height of a bean plant, day by day from planting"
+      ],
+      "why": [
+       "A seedling grows slowly at first",
+       "It grows fastest in the middle of its growth",
+       "It slows as it nears the height its species can reach"
+      ],
+      "exp": [
+       "Plant five beans in separate pots on a windowsill",
+       [
+        "Each day at the same time",
+        [
+         "Measure each stem from soil to tip",
+         "Record the five heights"
+        ]
+       ],
+       "Find the mean height for each day",
+       "After six weeks, plot mean height against days"
+      ]
      },
      {
       "group": "Nature",
       "title": "Fish in a stocked pond",
-      "what": "The number of fish after a pond is stocked with a few.",
-      "why": "With food and space to spare, numbers climb quickly. Crowding and a limited food supply then hold the population near what the pond can support.",
-      "exp": "Use mark and recapture. Tag 20 fish and release them. Later, catch a second sample and use the fraction that are tagged to estimate the total. Repeat each month. Practise first on a bowl of beans."
+      "what": [
+       "The number of fish after a pond is stocked with a few"
+      ],
+      "why": [
+       "With food and space to spare, numbers climb quickly",
+       "Crowding and a limited food supply then slow growth",
+       "The population settles near what the pond can support"
+      ],
+      "exp": [
+       [
+        "Practise mark and recapture on a bowl of dried beans",
+        [
+         "Mark 20 beans and mix them back in",
+         "Draw a handful and count the marked ones"
+        ]
+       ],
+       [
+        "Estimate the total",
+        [
+         "$\\text{total}\\approx 20\\times \\text{handful}\\div\\text{marked}$"
+        ]
+       ],
+       "Repeat monthly on a real pond, with its keeper's help",
+       "Plot the estimates against months"
+      ]
      },
      {
       "group": "Business and society",
       "title": "Flu in a school",
-      "what": "The total number of people who have caught flu since the first case.",
-      "why": "Early on, each sick student meets many healthy ones. Later most people have already had it, so new cases fall away and the total levels off.",
-      "exp": "Play it as a class game. One student holds a card. Each round, every card holder taps one random classmate, who takes a card too. Count card holders after each round and plot the count against rounds."
+      "what": [
+       "The total number of people who have caught flu since the first case"
+      ],
+      "why": [
+       "Early on, each sick student meets many healthy ones",
+       "Later, most people have already had it",
+       "New cases fall away, so the total levels off"
+      ],
+      "exp": [
+       [
+        "Set up the game",
+        [
+         "Give one student a card",
+         "Everyone else starts without one"
+        ]
+       ],
+       [
+        "Each round",
+        [
+         "Each card holder taps one random classmate",
+         "They take a card if they have none"
+        ]
+       ],
+       "Count the card holders after each round",
+       "Stop when it levels off; plot count against round"
+      ]
      },
      {
       "group": "Business and society",
       "title": "Streaming subscribers",
-      "what": "The total number of paying subscribers to a new streaming service.",
-      "why": "Word of mouth speeds growth at first. Eventually most people who would ever subscribe already have, so the total flattens.",
-      "exp": "Companies publish subscriber totals each quarter. Collect eight to twelve quarters from the service's first years, plot subscribers against quarter, and find where the curve bends."
+      "what": [
+       "The total number of paying subscribers to a new streaming service"
+      ],
+      "why": [
+       "Word of mouth speeds growth at first",
+       "Eventually most people who would subscribe already have",
+       "The total flattens"
+      ],
+      "exp": [
+       [
+        "Find published data",
+        [
+         "Open the company's quarterly reports",
+         "Note totals for 8 to 12 quarters from launch"
+        ]
+       ],
+       "Record quarter number and total in a table",
+       "Plot subscribers against quarter",
+       "Mark where the curve bends from speeding up to slowing down"
+      ]
      },
      {
       "group": "Business and society",
       "title": "Electric cars on the road",
-      "what": "The share of cars in a country that are electric.",
-      "why": "A few early adopters go first. The share then climbs quickly as prices fall and chargers spread, and slows as the market fills.",
-      "exp": "Once a month, tally 100 cars in the school car park and record how many are electric. Plot the percentage against months for a year."
+      "what": [
+       "The share of cars that are electric"
+      ],
+      "why": [
+       "A few early adopters go first",
+       "The share climbs quickly as prices fall and chargers spread",
+       "It slows as the market fills"
+      ],
+      "exp": [
+       [
+        "Once a month, same day and time",
+        [
+         "Tally 100 cars in the school car park",
+         "Count how many are electric"
+        ]
+       ],
+       "Work out the percentage",
+       "After a year, plot percentage against months",
+       "Compare with national figures from a transport statistics website"
+      ]
      },
      {
       "group": "Business and society",
       "title": "A viral video's views",
-      "what": "The total views of a new video, day by day.",
-      "why": "Each viewer shares it, so views surge. After a while most people who would watch it already have, so new views dry up.",
-      "exp": "Pick a video posted today. At the same time each day for two weeks, note its view count. Plot total views against days and find the day with the most new views."
+      "what": [
+       "The total views of a new video, day by day"
+      ],
+      "why": [
+       "Each viewer may share it, so views surge",
+       "Most people who would watch it soon have",
+       "New views dry up and the total levels off"
+      ],
+      "exp": [
+       "Choose a video posted today",
+       [
+        "Each day at the same time",
+        [
+         "Note the total view count",
+         "Work out the new views since yesterday"
+        ]
+       ],
+       "Continue for two weeks",
+       [
+        "Plot total views against days",
+        [
+         "Mark the day with the most new views"
+        ]
+       ]
+      ]
      },
      {
       "group": "Business and society",
       "title": "A rumour in a class",
-      "what": "The number of students who have heard a piece of news.",
-      "why": "Each student who knows it tells friends, so the number who know grows faster and faster. Later, few students are left who have not heard it.",
-      "exp": "Tell one student a harmless message in the morning. At each break, ask everyone who knows it to raise a hand and count. Plot the count against the time of day."
+      "what": [
+       "The number of students who have heard a harmless piece of news"
+      ],
+      "why": [
+       "Each student who knows tells friends, so it spreads faster and faster",
+       "Later, few students are left who have not heard",
+       "The count levels off"
+      ],
+      "exp": [
+       "In the morning, tell one student a harmless message",
+       [
+        "At each break",
+        [
+         "Ask everyone who knows it to raise a hand",
+         "Count the hands"
+        ]
+       ],
+       "Record the time and the count",
+       "Plot the count against the time of day"
+      ]
      }
     ]
    }

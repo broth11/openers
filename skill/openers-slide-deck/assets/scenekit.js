@@ -47,6 +47,42 @@
     return { row, g, draw };
   }
 
+  /* v22: the drawing alone, large (scene title cards). win sets the drawing's vertical scale; state.bare hides readouts */
+  function sceneArt(el, win, kind, state, opts) {
+    opts = opts || {};
+    const W = 600, H = 1000;
+    const sc = document.createElement('div'); sc.className = 'scene'; el.appendChild(sc);
+    if (kind === 'phone') { phoneArt(sc, state || {}, opts); return { el: sc }; }
+    const svg = mk('svg', { viewBox: `0 0 ${W} ${H}`, preserveAspectRatio: 'none', class: 'scene-svg', role: 'img', 'aria-label': opts.alt || kind }, sc);
+    const labs = document.createElement('div'); labs.className = 'scene-labels'; sc.appendChild(labs);
+    const Y = v => (win.ymax - v) / (win.ymax - win.ymin) * H;
+    const grp = mk('g', {}, svg);
+    const api = { W, H, Y, win, el: (t, a, p) => mk(t, a, p || grp),
+      text(x, y, html, cls, anchor) { const d = document.createElement('div'); d.className = 'scene-text ' + (cls || '');
+        d.style.left = (x / W * 100) + '%'; d.style.top = (y / H * 100) + '%';
+        d.style.transform = { w: 'translate(0,-50%)', e: 'translate(-100%,-50%)', c: 'translate(-50%,-50%)' }[anchor || 'w'];
+        d.innerHTML = prose(html); labs.appendChild(d); return d; } };
+    SCENES[kind](api, Object.assign({ bare: true }, state || {}));
+    return { el: sc };
+  }
+
+  /* v22b: the phone as an object (title cards): 49 x 100, a real phone's proportions; the screen fills to P % */
+  function phoneArt(sc, s, opts) {
+    const W = 490, H = 1000, svg = mk('svg', { viewBox: `0 0 ${W} ${H}`, class: 'scene-svg', role: 'img', 'aria-label': opts.alt || 'phone' }, sc);
+    const id = 'pa' + Math.random().toString(36).slice(2, 8);
+    mk('rect', { x: 8, y: 8, width: W - 16, height: H - 16, rx: 74, fill: '#D6DEE6', stroke: '#9AA8B4', 'stroke-width': 8 }, svg);
+    const sx = 34, sy = 70, sw = W - 68, sh = H - 140;
+    mk('rect', { x: sx, y: sy, width: sw, height: sh, rx: 44 }, mk('clipPath', { id }, mk('defs', {}, svg)));
+    const scr = mk('g', { 'clip-path': `url(#${id})` }, svg);
+    mk('rect', { x: sx, y: sy, width: sw, height: sh, fill: '#FFFFFF' }, scr);
+    const P = Math.max(0, Math.min(100, s.P || 0)), fy = sy + sh * (1 - P / 100);
+    if (P > 0) mk('rect', { x: sx, y: fy, width: sw, height: sy + sh - fy, style: s.Pn === 'E' ? 'fill:var(--sc-red);fill-opacity:.75' : `fill:${CURVE_C};fill-opacity:.85` }, scr);
+    if (s.cap != null) mk('line', { x1: sx, x2: sx + sw, y1: sy + sh * (1 - s.cap / 100), y2: sy + sh * (1 - s.cap / 100), stroke: '#55636F', 'stroke-width': 5, 'stroke-dasharray': '18 12' }, scr);
+    mk('rect', { x: sx, y: sy, width: sw, height: sh, rx: 44, fill: 'none', stroke: '#9AA8B4', 'stroke-width': 4 }, svg);
+    mk('rect', { x: W / 2 - 46, y: 34, width: 92, height: 14, rx: 7, fill: '#9AA8B4' }, svg);
+    mk('rect', { x: W / 2 - 56, y: H - 48, width: 112, height: 10, rx: 5, fill: '#9AA8B4' }, svg);
+  }
+
   /* ---------- drawings ---------- */
   const SCENES = {
     /* cooling coffee: cup on a table (steam fades as T falls), thermometer on the graph's T scale */
@@ -151,6 +187,14 @@
       for (let v = 0; v <= gTop; v += 20) a.el('line', { x1: gx + gw + 4, x2: gx + gw + 22, y1: a.Y(v), y2: a.Y(v), class: 'sc-tick', 'stroke-width': 3 });
       a.el('line', { x1: px + pw + 16, x2: gx + gw + 22, y1: top100, y2: top100, class: 'sc-tick', 'stroke-width': 4, 'stroke-dasharray': '14 10' });
     }
+    if (s.bare) return;
+    /* v22: a zoomed window (top of the graph just above 100) leaves room for one row only: t on the left, the level on the right */
+    if (!s.avail && top100 - 40 < 190) {
+      const yy = Math.max(30, (top100 - 40) / 2);
+      if (s.t != null) a.text(14, yy, `$t=${fx(s.t, dp ? 1 : 0)}\\text{ yr}$`, 'sc-read sc-sm', 'w');
+      if (s.P != null && !hasG) a.text(586, yy, `$${s.Pn || 'A'}=${fx(P, dp)}\\%$`, 'sc-read sc-sm ' + (s.Pn === 'E' ? 'sc-T' : 'sc-S'), 'e');   /* beside the gauge, the lab's own readout carries the level */
+      return;
+    }
     /* readouts: the name sits right-aligned and the "=" starts the value, so every equals sign shares one x */
     const XE = s.avail ? 236 : 66;
     const row = (y, lhs, rhs, cls) => { a.text(XE, y, `$${lhs}$`, 'sc-read ' + cls, 'e'); a.text(XE + 8, y, `$=${rhs}$`, 'sc-read ' + cls, 'w'); };
@@ -185,7 +229,7 @@
       if (!playing) return;
       const dt = Math.min(0.1, (now - last) / 1000); last = now;
       if (wait > 0) { wait -= dt; if (wait <= 0) { cur = o.min; o.set(cur); } raf = requestAnimationFrame(frame); return; }
-      cur += (o.max - o.min) * dt / o.seconds;
+      cur += (o.max - o.min) * dt * (window.LAB_SPEED || 1) / o.seconds;   /* v22: deck-wide speed (meta.animSpeed) */
       if (cur >= o.max) { cur = o.max; o.set(cur); if (loop) { wait = 0.7; raf = requestAnimationFrame(frame); return; } stop(); return; }
       o.set(cur); raf = requestAnimationFrame(frame);
     }
@@ -228,7 +272,7 @@
     /* smartphone adoption (MAI HL U5 L4): the phone fills with the logistic model L, the gauge shows the exponential E */
     phone: { name: 't', min: 0, max: 16, step: 0.1, start: 0, dp: 1, play: true, auto: true, seconds: 14,
       alt: 'A phone that fills with adoption and a gauge for the exponential forecast beside the graph of adoption against time',
-      guideFrom: 0, group: 'Time in years', eq: ['E(t)=5\\cdot 2^{t/2}', 'L(t)=\\dfrac{80}{1+15e^{-0.381t}}'], eqTitle: '', outTitle: '',
+      guideFrom: 0, group: 'Time in years', eq: ['E(t)=5\\cdot 2^{t/2}', 'P(t)=\\dfrac{80}{1+15e^{-0.381t}}'], eqTitle: '', outTitle: '',
       f: v => PHONE.L(v), pt: (v, f) => ({ x: v, y: f(v) }),
       static(g, w) {
         g.segment({ x: 0, y: 100 }, { x: w.xmax, y: 100 }, { dashed: true });
@@ -241,8 +285,8 @@
       extra(g, getV, w) {
         const ep = g.point({ x: getV(), y: PHONE.E(getV()) }, { color: RED_C, visible: () => PHONE.E(getV()) <= w.ymax - 4 });
         return () => { ep.x = getV(); ep.y = PHONE.E(getV()); }; },
-      reads: [(v) => `E=${fx(PHONE.E(v), 1)}\\%,\\quad L=${fx(PHONE.L(v), 1)}\\%`],
-      scene: v => ({ t: v, P: PHONE.L(v), G: PHONE.E(v), cap: 80, dp: 1, Pn: 'L' }) },
+      reads: [(v) => `E=${fx(PHONE.E(v), 1)}\\%,\\quad P=${fx(PHONE.L(v), 1)}\\%`],
+      scene: v => ({ t: v, P: PHONE.L(v), G: PHONE.E(v), cap: 80, dp: 1, Pn: 'P' }) },
   };
   const PHONE = { k: Math.log(15 / 7) / 2, E: t => 5 * Math.pow(2, t / 2) };
   PHONE.L = t => 80 / (1 + 15 * Math.exp(-PHONE.k * t));
@@ -412,15 +456,15 @@
       if (title) { const h = document.createElement('div'); h.className = 'lab-group-title'; h.innerHTML = title; s.appendChild(h); } right.appendChild(s); return s; };
     const gp = grp('Change the model');
     Lab.slider(gp, { min: 0.1, max: 1, step: 0.02, value: st.k, label: 'k', format: x => num(x, 2), onChange: x => { st.k = x; refresh(); } });
-    Lab.slider(gp, { min: 40, max: 100, step: 2, value: st.M, label: '\\text{limit}', format: x => num(x, 0), onChange: x => { st.M = x; refresh(); } });
+    Lab.slider(gp, { min: 40, max: 100, step: 2, value: st.M, label: 'L', format: x => num(x, 0), onChange: x => { st.M = x; refresh(); } });
     Lab.slider(gp, { min: 1, max: 30, step: 1, value: st.P0, label: '\\text{start}', format: x => num(x, 0), onChange: x => { st.P0 = x; refresh(); } });
     Lab.slider(gp, { min: 0, max: tmax, step: 0.1, value: st.t, label: 't', format: x => fx(x, 1), onChange: x => { st.t = x; refresh(); } });
     const gr = grp('Readings');
-    const r0 = Lab.readout(gr, () => `L(t)=\\dfrac{${num(st.M, 0)}}{1+${num(Aof(st), 2)}e^{-${num(st.k, 2)}t}}`);
-    const r1 = Lab.readout(gr, () => `L(${fx(st.t, 1)})=${fx(Lf(st.t, st), 1)}\\%`);
+    const r0 = Lab.readout(gr, () => `P(t)=\\dfrac{${num(st.M, 0)}}{1+${num(Aof(st), 2)}e^{-${num(st.k, 2)}t}}`);
+    const r1 = Lab.readout(gr, () => `P(${fx(st.t, 1)})=${fx(Lf(st.t, st), 1)}\\%`);
     const r2 = Lab.readout(gr, () => Aof(st) > 1 ? `\\text{steepest: }t=${fx(Math.log(Aof(st)) / st.k, 1)}` : '\\text{steepest: before }t=0');
     const readouts = [r0, r1, r2];
-    function refresh() { const y = Lf(st.t, st); mp.x = st.t; mp.y = y; g.redraw(); sr.draw({ t: st.t, P: y, cap: st.M, dp: 1, Pn: 'L' }); readouts.forEach(r => r.update()); }
+    function refresh() { const y = Lf(st.t, st); mp.x = st.t; mp.y = y; g.redraw(); sr.draw({ t: st.t, P: y, cap: st.M, dp: 1, Pn: 'P' }); readouts.forEach(r => r.update()); }
     refresh();
     const state = { g, controls: right, readouts, refresh, enter() {}, leave() {} };
     container.__lab = state;
@@ -428,6 +472,7 @@
   }
 
   window.Lab.sceneRow = sceneRow;
+  window.Lab.sceneArt = sceneArt;
 
   /* ---------- catalogue: a list of cases on the left, one case's panes on the right (clicked, or Up / Down) ---------- */
   function catalogue(container, init) {
@@ -443,8 +488,20 @@
       list.appendChild(b); btns.push(b);
       const pane = mk('cat-item'), main = mk('cat-main'), exp = mk('cat-exp');
       pane.appendChild(mk('cat-title', 'h3', it.title));
-      [['What grows', it.what], ['Why it levels off', it.why]].forEach(([h, t]) => { const q = mk('cat-q'); q.appendChild(mk('cat-h', 'span', h)); q.appendChild(mk('', 'p', t)); main.appendChild(q); });
-      exp.appendChild(mk('cat-h', 'span', 'How could I conduct an experiment to measure?')); exp.appendChild(mk('', 'p', it.exp));
+      /* v22: what / why may be lists (bullets); exp may be a list of steps, each a string or [string, [sub-steps]] (a notepad procedure) */
+      [['What grows', it.what], ['Why it levels off', it.why]].forEach(([h, t]) => { const q = mk('cat-q'); q.appendChild(mk('cat-h', 'span', h));
+        if (Array.isArray(t)) { const ul = mk('', 'ul'); t.forEach(x => { const li = mk('', 'li'); li.innerHTML = prose(x); ul.appendChild(li); }); q.appendChild(ul); }
+        else q.appendChild(mk('', 'p', t)); main.appendChild(q); });
+      if (Array.isArray(it.exp)) {
+        exp.classList.add('pad');
+        const top = mk('pad-top'); top.appendChild(mk('', 'span', 'How could I conduct an experiment to measure?')); top.appendChild(mk('', 'span', 'Procedure')); exp.appendChild(top);
+        const bodyp = mk('pad-body'), ol = mk('', 'ol');
+        it.exp.forEach(stp => { const li = mk('', 'li'), [txt, subs] = Array.isArray(stp) ? stp : [stp, null];
+          const sp = mk('', 'span'); sp.innerHTML = prose(txt); li.appendChild(sp);
+          if (subs && subs.length) { const o2 = mk('', 'ol'); subs.forEach(x => { const l2 = mk('', 'li'); l2.innerHTML = prose(x); o2.appendChild(l2); }); li.appendChild(o2); }
+          ol.appendChild(li); });
+        bodyp.appendChild(ol); exp.appendChild(bodyp);
+      } else { exp.appendChild(mk('cat-h', 'span', 'How could I conduct an experiment to measure?')); exp.appendChild(mk('', 'p', it.exp)); }
       const row = mk('cat-row'); row.appendChild(main); row.appendChild(exp); pane.appendChild(row);
       stack.appendChild(pane); panes.push(pane);
     });

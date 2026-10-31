@@ -191,6 +191,11 @@ def resolve_colours(content, hexes):
     for b in list(deck.values()):
         assert b in ROLES, f'meta.t2c: unknown role {b!r} (roles: {ROLES}; yellow is the answer, never a role)'
     assert len(deck) <= 3, 'at most three bound symbols per deck'
+    for s in content['slides']:   # v22: key facts (setup slides, given lists) carry a role; the page gets its hex
+        for f in (s.get('setup') or {}).get('facts', []) + (s.get('graph') or {}).get('given', []):
+            if f.get('c'):
+                assert f['c'] in ROLES, f'fact colour {f["c"]!r}: use a role name'
+                f['hex'] = hexes[f['c']]
     for s in content['slides']:
         if s.get('type') == 'lab' and deck:   # v6: a preset may colour bound symbols in its readouts
             s.setdefault('init', {}).setdefault('t2c', {k: hexes[v] for k, v in deck.items()})
@@ -208,6 +213,12 @@ def resolve_colours(content, hexes):
                     st['tex'] = apply_t2c(st['tex'], bind, hexes)
             elif 'text' in blk:
                 blk['text'] = t2c_prose(blk['text'], bind, hexes)
+            elif 'walk' in blk:   # v22: walk blocks take the slide's colours too
+                w = blk['walk']
+                w['tex'] = [apply_t2c(x, bind, hexes) for x in w.get('tex', [])]
+                for key in ('cap', 'note'):
+                    if w.get(key):
+                        w[key] = t2c_prose(w[key], bind, hexes)
         g = s.get('graph')
         if not g:
             continue
@@ -226,6 +237,8 @@ def resolve_colours(content, hexes):
                 it['color'] = hexes[bind[sym]]
             elif it.get('color') in ROLES:
                 it['color'] = hexes[it['color']]
+                if it.pop('tint', False) and it.get('label'):   # v22: a point's label in the point's own colour
+                    it['label'] = '\\textcolor{%s}{%s}' % (it['color'], it['label'])
             elif it.get('color'):
                 assert it['color'].upper() == '#B189C6', f'colour {it["color"]!r}: use a role name (the violet angle is the one hex allowed)'
             if it.get('color') and it.get('kind') == 'label':

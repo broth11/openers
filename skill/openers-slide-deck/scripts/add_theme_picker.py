@@ -65,9 +65,11 @@ def role_table(name):
     t2c, lab = j['t2c'], j.get('lab')
     if name == 'skyblue':
         return dict(grid='#D3E3EE', frame='#D3E3EE', grey='#55636F', ink='#14202B', handle='#4230A8',
-                    blue=t2c['blue'], orange=t2c['orange'], green=t2c['green'], red=t2c['red'])
+                    blue=t2c['blue'], orange=t2c['orange'], green=t2c['green'], red=t2c['red'],
+                    pink=t2c['pink'], brown=t2c['brown'], indigo=t2c['indigo'], teal=t2c['teal'])
     return dict(grid=lab['grid'], frame='transparent', grey=lab['gr'], ink=lab['ink'], handle=lab['handle'],
-                blue=lab['curve'], orange=t2c['orange'], green=t2c['green'], red=t2c['red'])
+                blue=lab['curve'], orange=t2c['orange'], green=t2c['green'], red=t2c['red'],
+                pink=t2c['pink'], brown=t2c['brown'], indigo=t2c['indigo'], teal=t2c['teal'])   # v22: fact colours in graphs
 
 # ---------------------------------------------------------------- CSS
 DEFAULTS = r'''
@@ -120,7 +122,7 @@ LATE = r'''(function(){
 'use strict';
 var ORDER=%(order)s, LABEL=%(labels)s, ROLES=%(roles)s, SWATCH=%(swatches)s, T2C=%(t2c)s, KEY='deck.skin';
 /* colours the build wrote into the graphs (skyblue values) -> role */
-var SRC={'#d3e3ee':'grid','#55636f':'grey','#14202b':'ink','#1c758a':'blue','#ff862f':'orange','#699c52':'green','#cf5044':'red','#4230a8':'handle'};
+var SRC={'#d3e3ee':'grid','#55636f':'grey','#14202b':'ink','#1c758a':'blue','#ff862f':'orange','#699c52':'green','#cf5044':'red','#4230a8':'handle','#94424f':'pink','#8b5a2b':'brown','#3b5bdb':'indigo','#49a88f':'teal'};
 var root=document.documentElement;
 function current(){ return root.getAttribute('data-skin')||'skyblue'; }
 

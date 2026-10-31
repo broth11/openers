@@ -473,6 +473,60 @@ html:root[data-skin="3b1b"],html:root[data-skin="goldteal"],html:root[data-skin=
 .tl-b.now{box-shadow:0 0 0 2px var(--ground),0 0 0 4px var(--kring);position:relative;z-index:1}
 #foot{padding-top:max(4px,.8cqh);padding-bottom:max(5px,1cqh)}
 #counter{min-width:4.6em}
+
+/* v22 (Ben, 31/10/2026): scene title cards, setup slides that decode a paragraph into key facts, given lists, big IA button, notepad procedures */
+.tl-b.big{height:max(28px,4.6cqh)}
+.s-stitle{justify-content:center;align-items:center;text-align:center;gap:max(6px,1.4cqh)}
+.s-stitle .tc-kick{font-size:var(--fs-eyebrow);font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--eyebrow)}
+.s-stitle h1{font-size:calc(var(--fs-hero)*1.08);font-weight:600;margin:0;line-height:1.08;color:var(--title)}
+.s-stitle .tc-art{height:min(56cqh,62cqw);aspect-ratio:49/100;max-width:100%;position:relative;margin-top:max(6px,1.2cqh)}
+.s-stitle .tc-row{display:flex;align-items:center;justify-content:center;gap:max(24px,6cqw);flex-wrap:wrap}
+.s-stitle .tc-row .tc-art{height:min(50cqh,56cqw)}
+.s-stitle .tc-formula{font-size:var(--fs-hero);color:var(--title)}
+.s-stitle .tc-formula .katex-display{margin:0}
+.s-stitle .tc-art .scene{height:100%;width:100%}
+.s-stitle .tc-art .scene-svg{width:100%;height:100%;display:block}
+.s-setup .panel.work:empty{display:none}
+.setup-pre{margin:0;color:var(--prose);font-size:calc(var(--fs-stem)*var(--k));line-height:1.45;max-width:62ch}
+.decode{display:grid;margin-top:.2em}
+.decode>*{grid-area:1/1;margin:0;transition:opacity .45s ease-out,transform .45s ease-out}
+.decode .para{color:var(--title);line-height:1.5;max-width:62ch}
+.decode .para.gone{opacity:0;visibility:hidden;transform:translateY(-.3em)}
+.facts,.given{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.45em}
+.facts li,.given li{display:grid;grid-template-columns:1.3em minmax(0,1fr);align-items:baseline;line-height:1.35;color:var(--title)}
+.facts li{opacity:1;transform:none;transition:opacity .4s ease-out,transform .4s ease-out}
+.facts.hid li{opacity:0;transform:translateX(-.6em)}
+.facts li:nth-child(2){transition-delay:.12s}.facts li:nth-child(3){transition-delay:.24s}.facts li:nth-child(4){transition-delay:.36s}
+.gk{display:inline-block;width:.62em;height:.62em;border-radius:50%;background:currentColor;align-self:center}
+.gk.ln{width:1em;height:0;border-radius:0;background:none;border-top:.16em dashed currentColor}
+.gk.cv{width:1em;height:0;border-radius:0;background:none;border-top:.18em solid currentColor}
+.gk.none{background:none;border:.12em solid var(--note);width:.5em;height:.5em}
+.facts b,.given b{font-weight:700}
+.facts li>span .katex,.given li>span .katex{color:inherit}
+.given{font-size:var(--fs-body);flex-direction:row;flex-wrap:wrap;gap:.2em 1.3em}
+.given li{display:flex;gap:.45em;align-items:baseline;white-space:nowrap}
+.ex.scn .given{max-width:calc(min(30cqw,45cqh)*1.6)}
+.scene-text.sc-sm{font-size:calc(var(--fs-stem)*.78)}
+/* IA: the notepad gets the wider column */
+.cat-row:has(.pad){grid-template-columns:minmax(0,.82fr) minmax(0,1.18fr)}
+/* IA: what and why as bullets; the experiment as a lab procedure on a notepad (a physical page: same paper in every theme) */
+.cat-q ul{margin:.15em 0 0;padding-left:1.1em;display:flex;flex-direction:column;gap:.12em;color:var(--prose);line-height:1.3}
+.cat-q li::marker{color:var(--eyebrow)}
+.cat-exp.pad{border:0;border-radius:3px;padding:0;background:#FCFBF4;color:#1E2A3A;box-shadow:0 1px 0 #d8d3c2,0 6px 16px rgba(0,0,0,.22);position:relative;overflow:hidden}
+.pad .pad-top{background:#A8352A;color:#FFF8EE;padding:.38em .9em .32em 2.6em;font-size:.8em;font-weight:700;letter-spacing:.06em;display:flex;justify-content:space-between;gap:1em;position:relative}
+.pad .pad-top::before{content:"";position:absolute;left:.75em;right:.75em;top:-.15em;height:.5em;background:radial-gradient(circle at .3em .3em,#3a3a3a .17em,transparent .2em) 0 0/1.2em .6em repeat-x}
+.pad .pad-top span:last-child{font-weight:500;opacity:.9;letter-spacing:.02em}
+.pad .pad-body{--lh:1.38em;font-size:.94em;padding:.25em .8em .7em 2.6em;line-height:var(--lh);
+  background:linear-gradient(90deg,transparent 2.05em,#E8A0A0 2.05em,#E8A0A0 2.15em,transparent 2.15em),
+             repeating-linear-gradient(180deg,transparent 0,transparent calc(var(--lh) - 1px),#C9DCEC calc(var(--lh) - 1px),#C9DCEC var(--lh));
+  background-position:0 0,0 .25em}
+.pad ol{margin:0;padding:0;list-style:none;counter-reset:st}
+.pad ol>li{counter-increment:st;position:relative;padding-left:1.7em}
+.pad ol>li::before{content:counter(st) ".";position:absolute;left:0;font-weight:700;color:#1F4E8C}
+.pad ol ol{counter-reset:sub}
+.pad ol ol>li{counter-increment:sub;padding-left:2.1em}
+.pad ol ol>li::before{content:counter(st) "." counter(sub);font-weight:600;color:#3F6FA8}
+.pad .katex{color:inherit}
 </style>
 <!--/PART-A-->
 </head>
@@ -524,6 +578,7 @@ html:root[data-skin="3b1b"],html:root[data-skin="goldteal"],html:root[data-skin=
 'use strict';
 const C = JSON.parse(document.getElementById('content').textContent);
 if (C.meta && C.meta.largeGraphs) document.documentElement.classList.add('lg');   /* v16 */
+window.LAB_SPEED = (C.meta && C.meta.animSpeed) || 1.5;   /* v22: slider animations run 1.5 times their v21 speed unless meta.animSpeed says otherwise */
 const KOPTS = {throwOnError:false, strict:false, trust:true,
   macros:{"\\gr":"\\textcolor{##55636F}{#1}","\\bl":"\\textcolor{##4230A8}{#1}"}};
 const DELIMS = [{left:"$$",right:"$$",display:true},{left:"$",right:"$",display:false}];
@@ -540,6 +595,9 @@ C.slides.forEach(d => {
     slides_title_d = d; addSlide('s-title', `<div class="eyebrow">${esc(d.eyebrow)}</div><h1>${esc(d.title)}</h1><p class="lede">${esc(d.lede)}</p><div class="rule"></div>
       <p class="meta"><strong>${esc(d.code)}</strong><span>·</span>${tagHTML(d.regime)}<span>${esc(d.regimeText)}</span></p>
       <p class="keys">→ / Space next step · ← back · tap right or left third on a phone · S scratch pad · F fullscreen · ? help</p>`);
+  } else if (d.type==='sceneTitle'){
+    const s = addSlide('s-stitle', `<div class="tc-kick">${esc(d.kicker||('Scene '+d.scene))}</div><h1>${nb(d.title)}</h1>${d.formula?`<div class="tc-row"><div class="tc-art" role="img" aria-label="${esc(d.alt||'')}"></div><div class="tc-formula">$$${d.formula}$$</div></div>`:`<div class="tc-art" role="img" aria-label="${esc(d.alt||'')}"></div>`}`);
+    s.d = d; s.art = d;
   } else if (d.type==='today'){
     addSlide('s-today', `<div class="eyebrow">Lesson ${C.meta.lesson} · ${esc(C.meta.topicWords)}</div><h2>${esc(d.title)}</h2>
       <ul class="can">${d.can.map(c=>`<li>${c}</li>`).join('')}</ul>
@@ -547,13 +605,18 @@ C.slides.forEach(d => {
   } else if (d.type==='example'){
     const sceneG = d.graph && d.graph.scene;
     const picks = d.choices ? `<ol class="picks">${d.choices.map((c,i)=>`<li class="pick" data-on="${i===d.correct?d.pickStep:''}"><b>${'ABCD'[i]}.</b>${c}</li>`).join('')}</ol>` : '';
-    const s = addSlide('s-example', `<div class="eyebrow">${d.eyebrow ? esc(d.eyebrow) : `Worked Example ${d.n} · ${tagHTML(d.tag)}`}</div><h2>${esc(d.title)}</h2>
-      <div class="ex${sceneG?' scn':''}"><div class="stem"><p>${nb(d.stem)}</p>${d.prompt?`<p class="prompt">${nb(d.prompt)}</p>`:''}${picks}</div>
-      <div class="panel work"></div>${d.note?`<p class="note">${nb(d.note)}</p>`:''}<div class="fig">${sceneG&&d.graph.heading?`<p class="scene-head">${nb(d.graph.heading)}</p>`:''}</div></div>`);
+    const factLi = f => `<li><i class="gk ${f.shape||''}" style="color:${f.hex||'inherit'}"></i><span${f.hex?` style="color:${f.hex}"`:''}>${nb(String(f.html))}</span></li>`;
+    const head = d.graph && d.graph.given ? `<ul class="given">${d.graph.given.map(factLi).join('')}</ul>` : (sceneG&&d.graph.heading?`<p class="scene-head">${nb(d.graph.heading)}</p>`:'');
+    const stemHTML = d.setup ? `<p class="setup-pre">${nb(d.setup.preamble)}</p><div class="decode"><p class="para" data-until="0">${nb(d.setup.para)}</p><ul class="facts" data-step="1">${d.setup.facts.map(factLi).join('')}</ul></div>`
+      : `<p>${nb(d.stem)}</p>${d.prompt?`<p class="prompt">${nb(d.prompt)}</p>`:''}${picks}`;
+    const s = addSlide('s-example'+(d.setup?' s-setup':''), `<div class="eyebrow">${d.eyebrow ? esc(d.eyebrow) : `Worked Example ${d.n} · ${tagHTML(d.tag)}`}</div><h2>${esc(d.title)}</h2>
+      <div class="ex${sceneG?' scn':''}"><div class="stem">${stemHTML}</div>
+      <div class="panel work"></div>${d.note?`<p class="note">${nb(d.note)}</p>`:''}<div class="fig">${head}</div></div>`);
     const panel = s.el.querySelector('.panel.work'); let k = 0;
     s.d = d; s.off = d.sceneStart ? 1 : 0;
     if (d.sceneStart){ k = 1; s.el.querySelector('.ex .stem').dataset.step = 1; }
-    d.blocks.forEach(b => {
+    if (d.setup) k = 1;
+    (d.blocks||[]).forEach(b => {
       if (b.steps){
         const wide = [], narrow = [];
         b.steps.forEach(st => { k++; const i = st.tex.indexOf('&');
@@ -600,6 +663,7 @@ slides.forEach(s => { if (!s.figSpec) return;
   const g = Lab.figure(gh, sp, () => s.shown - (s.off||0));
   const stateAt = n => { let st = {}; (sp.scene.states || []).forEach(([k, v]) => { if (k <= n) st = v; }); return st; };
   s.fig = { redraw(){ g.redraw(); sr.draw(stateAt(s.shown - (s.off||0))); } }; s.fig.redraw(); });
+slides.forEach(s => { if (!s.art) return; Lab.sceneArt(s.el.querySelector('.tc-art'), s.art.window, s.art.kind, s.art.state || {}, {alt: s.art.alt}); });
 slides.forEach(s => { if (s.lab){ const box=document.createElement('div'); box.style.cssText='flex:1;min-width:0';
   s.lab.host.appendChild(box); s.lab.state = Lab.presets[s.lab.preset](box, s.lab.init);
   const head = document.createElement('div'); head.className = 'lab-head'; head.innerHTML = s.lab_head;
@@ -610,6 +674,7 @@ const dots = document.getElementById('dots'), counter = document.getElementById(
 slides.forEach((s,i)=>{ const b=document.createElement('button'); b.type='button'; b.setAttribute('aria-label','Slide '+(i+1)); b.addEventListener('click',e=>{e.stopPropagation(); go(i,0);}); dots.appendChild(b); });
 let cur = 0;
 function paintSteps(s){ s.steps.forEach((els,i)=>els.forEach(e=>e.classList.toggle('hid', i>=s.shown))); if (s.fig) s.fig.redraw();
+  s.el.querySelectorAll('[data-until]').forEach(e=>e.classList.toggle('gone', s.shown > +e.dataset.until));
   s.el.querySelectorAll('.pick[data-on]').forEach(p=>{ const n=+p.dataset.on; p.classList.toggle('on', n>0 && s.shown>=n+(s.off||0)); }); }
 function overSlide(s){
   const r = s.el.getBoundingClientRect();
@@ -690,13 +755,16 @@ slides.forEach((s, i) => { const d = s.d || {};
   if (s.el.classList.contains('s-title')) BEATS.push({i, n:0, kind:'scene', label:'L'+C.meta.lesson, tip:'Title'});
   else if (s.el.classList.contains('s-gdc')){ BEATS.push({i, n:0, kind:'pose', label:'G'+(d.skill||''), tip:'GDC skill '+(d.skill||'')+': '+(d.title||'')});
     (d.steps||[]).forEach((st, q) => BEATS.push({i, n:q+1, kind:'step', label:'W', tip:'GDC step '+(q+1)})); }
-  else if (s.lab) BEATS.push(d.preset==='catalogue' ? {i, n:0, kind:'pose', label:d.beat||'IA', tip:d.title} : d.preset==='growthFamily' ? {i, n:0, kind:'scene', label:'R', tip:d.title, gap:true} : {i, n:0, kind:'animate', label:'A', tip:(d.eyebrow||'')+': '+d.title});
+  else if (s.el.classList.contains('s-stitle')) BEATS.push({i, n:0, kind:'scene', label:String(d.scene), tip:'Scene '+d.scene+': '+String(d.title).replace(/[$\\{}]/g,''), gap:true});
+  else if (d.setup){ const sc = (d.eyebrow||'').split(' · ')[0];
+    BEATS.push({i, n:0, kind:'pose', label:'P', tip:sc+': the situation'}); BEATS.push({i, n:1, kind:'step', label:'K', tip:sc+': key facts'}); }
+  else if (s.lab) BEATS.push(d.preset==='catalogue' ? {i, n:0, kind:'pose', label:d.beat||'IA', tip:d.title, big:true} : d.preset==='growthFamily' ? {i, n:0, kind:'scene', label:'R', tip:d.title, gap:true} : {i, n:0, kind:'animate', label:'A', tip:(d.eyebrow||'')+': '+d.title});
   else { const sc = (d.eyebrow||'').split(' · ')[0];
     if (d.sceneStart){ BEATS.push({i, n:0, kind:'scene', label:String(d.scene), tip:sc, gap:true}); BEATS.push({i, n:1, kind:'pose', label:'Q'+d.q, tip:sc+': question '+d.q}); }
     else if (!d.cont) BEATS.push({i, n:0, kind:'pose', label:'Q'+d.q, tip:sc+': question '+d.q});
     let k = s.off||0; (d.blocks||[]).forEach(b => { k++; const w = b.walk||{}; const plain = String(w.cap||'').replace(/[$\\{}]/g,'');
       BEATS.push({i, n:k, kind: w.ans ? 'answer' : 'step', label: w.ans ? 'S' : 'W', tip: sc+': '+plain}); }); } });
-tl.innerHTML = BEATS.map((b, j) => `<button type="button" class="tl-b k-${b.kind}${b.gap?' gap':''}" data-b="${j}" title="${esc(b.tip).replace(/"/g,'&quot;')}" aria-label="${esc(b.tip).replace(/"/g,'&quot;')}">${b.label}</button>`).join('');
+tl.innerHTML = BEATS.map((b, j) => `<button type="button" class="tl-b k-${b.kind}${b.gap?' gap':''}${b.big?' big':''}" data-b="${j}" title="${esc(b.tip).replace(/"/g,'&quot;')}" aria-label="${esc(b.tip).replace(/"/g,'&quot;')}">${b.label}</button>`).join('');
 tl.addEventListener('click', e => { const b = e.target.closest('.tl-b'); if (!b) return; e.stopPropagation(); const B = BEATS[+b.dataset.b]; go(B.i, B.n); });
 function paintBar(){ const s = slides[cur]; let j = -1;
   BEATS.forEach((b, q) => { if (b.i === cur && b.n <= s.shown) j = q; if (j < 0 && b.i === cur) j = q; });
