@@ -53,6 +53,7 @@
     const W = 600, H = 1000;
     const sc = document.createElement('div'); sc.className = 'scene'; el.appendChild(sc);
     if (kind === 'phone') { phoneArt(sc, state || {}, opts); return { el: sc }; }
+    if (kind === 'scatter') { scatterArt(sc, state || {}, opts); return { el: sc }; }
     const svg = mk('svg', { viewBox: `0 0 ${W} ${H}`, preserveAspectRatio: 'none', class: 'scene-svg', role: 'img', 'aria-label': opts.alt || kind }, sc);
     const labs = document.createElement('div'); labs.className = 'scene-labels'; sc.appendChild(labs);
     const Y = v => (win.ymax - v) / (win.ymax - win.ymin) * H;
@@ -514,78 +515,105 @@
     select(0);
     return { enter() {}, leave() {} };
   }
-  /* ---------- MAI HL U5 L6: scatter drawing (title cards) and the scatter lab (Ben, 31/10/2026) ----------
-     SCENES.scatter draws axes and the points of state.pts (each [0..1, 0..1]; state.cols optional) large.
+  /* ---------- MAI HL U5 L6: scatter title-card art and the scatter lab (Ben, 31/10/2026, v2) ----------
+     scatterArt: a square drawing of the scene's own graph (state.win = the graph window, state.pts in data units,
+       state.cols optional, state.xname / state.yname the axis names as TeX).
      scatterLab: one lab for every correlation scene.
-       init.window                 graph window
-       init.sets  [{name, pts:[[x,y]..], noise?:[..], tied?}]   datasets; the toggle switches between them
+       init.window                 graph window (xname / yname name the variables of the story)
+       init.sets  [{name, pts:[[x,y]..]}]  datasets; a toggle switches between them. A set with {x, noise, ymean, ysd}
+                                    is an r-set: its points are rebuilt so that Pearson's r equals the slider exactly
        init.start                  name of the set shown first
-       init.spread {min,max,step,start,seconds}   (set.noise) y_i = pts_i.y + s * noise_i
+       init.rslider {min,max,step,start,seconds,auto}   slider for r (r-sets only), autoplays once on arrival by Next
+       init.fit                    draw the least-squares line of the points shown
        init.extra  {at:[x,y], on:bool, toggle:bool}   one more draggable point (an outlier)
        init.dragIndex              the index of one data point that becomes draggable (an athlete)
        init.rs                     show r_s as well as r (ranks average ties)
-       init.cards                  show the four recap cards
-       init.scale                  [t1,t2,t3,t4] thresholds for |r|: very weak, weak, moderate, strong, very strong */
-  SCENES.scatter = function (a, s) {
-    const W = a.W, H = a.H, x0 = 70, x1 = W - 40, y0 = H - 90, y1 = 70;
-    a.el('line', { x1: x0, y1: y0, x2: x1 + 10, y2: y0, class: 'sc-tick', 'stroke-width': 6, 'stroke-linecap': 'round' });
-    a.el('line', { x1: x0, y1: y0, x2: x0, y2: y1 - 10, class: 'sc-tick', 'stroke-width': 6, 'stroke-linecap': 'round' });
-    (s.pts || []).forEach((p, i) => a.el('circle', { cx: x0 + (x1 - x0) * p[0], cy: y0 - (y0 - y1) * p[1], r: 17, fill: (s.cols && s.cols[i]) || CURVE_C }));
-  };
+       init.cards                  show the four recap cards */
+  function scatterArt(sc, s, opts) {
+    const W = 1000, w = s.win || { xmin: 0, xmax: 1, ymin: 0, ymax: 1 };
+    const host = sc.parentNode; host.style.aspectRatio = '1 / 1'; host.style.height = 'min(50cqh, 60cqw)';
+    const svg = mk('svg', { viewBox: `0 0 ${W} ${W}`, class: 'scene-svg', role: 'img', 'aria-label': opts.alt || 'scatter diagram' }, sc);
+    const labs = document.createElement('div'); labs.className = 'scene-labels'; sc.appendChild(labs);
+    const X = x => 40 + (x - w.xmin) / (w.xmax - w.xmin) * (W - 80), Y = y => W - 40 - (y - w.ymin) / (w.ymax - w.ymin) * (W - 80);
+    const ax = Math.max(X(0), X(w.xmin)), ay = Math.min(Y(0), Y(w.ymin));
+    mk('line', { x1: ax, y1: ay, x2: W - 20, y2: ay, class: 'sc-tick', 'stroke-width': 8, 'stroke-linecap': 'round' }, svg);
+    mk('line', { x1: ax, y1: ay, x2: ax, y2: 20, class: 'sc-tick', 'stroke-width': 8, 'stroke-linecap': 'round' }, svg);
+    (s.pts || []).forEach((p, i) => mk('circle', { cx: X(p[0]), cy: Y(p[1]), r: 24, fill: (s.cols && s.cols[i]) || CURVE_C }, svg));
+    const lab = (x, y, t, anchor) => { const d = document.createElement('div'); d.className = 'scene-text sc-unit';
+      d.style.left = (x / W * 100) + '%'; d.style.top = (y / W * 100) + '%'; d.style.transform = anchor; d.innerHTML = math(t); labs.appendChild(d); };
+    if (s.xname) lab(W - 20, ay + 50, s.xname, 'translate(-100%,0)');
+    if (s.yname) lab(ax + 24, 30, s.yname, 'translate(0,0)');
+  }
   const rankOf = v => { const idx = v.map((x, i) => [x, i]).sort((p, q) => p[0] - q[0]); const r = new Array(v.length); let i = 0;
     while (i < idx.length) { let j = i; while (j + 1 < idx.length && idx[j + 1][0] === idx[i][0]) j++; const avg = (i + j) / 2 + 1;
       for (let k = i; k <= j; k++) r[idx[k][1]] = avg; i = j + 1; } return r; };
-  const pearsonR = (x, y) => { const n = x.length, mx = x.reduce((a, b) => a + b, 0) / n, my = y.reduce((a, b) => a + b, 0) / n; let sxy = 0, sxx = 0, syy = 0;
-    for (let i = 0; i < n; i++) { const dx = x[i] - mx, dy = y[i] - my; sxy += dx * dy; sxx += dx * dx; syy += dy * dy; } return sxy / Math.sqrt(sxx * syy); };
+  const meanOf = v => v.reduce((a, b) => a + b, 0) / v.length;
+  const pearsonR = (x, y) => { const mx = meanOf(x), my = meanOf(y); let sxy = 0, sxx = 0, syy = 0;
+    for (let i = 0; i < x.length; i++) { const dx = x[i] - mx, dy = y[i] - my; sxy += dx * dy; sxx += dx * dx; syy += dy * dy; } return sxy / Math.sqrt(sxx * syy); };
+  /* r-set: standardised x, and a noise vector made exactly uncorrelated with x and scaled to unit spread */
+  function rSetBasis(set) {
+    const x = set.x, n = x.length, mx = meanOf(x), sx = Math.sqrt(x.reduce((a, b) => a + (b - mx) * (b - mx), 0) / n);
+    const zx = x.map(v => (v - mx) / sx), e = set.noise, me = meanOf(e);
+    const c = e.reduce((a, v, i) => a + (v - me) * zx[i], 0) / n;
+    const res = e.map((v, i) => v - me - c * zx[i]), sr = Math.sqrt(res.reduce((a, b) => a + b * b, 0) / n);
+    return { zx, ew: res.map(v => v / sr) };
+  }
   function scatterLab(container, init) {
     container.classList.add('lab', 'scenelab', 'scatlab'); if (init.cards) container.classList.add('famlab');
     const left = document.createElement('div'); left.className = 'lab-left';
     const right = document.createElement('div'); right.className = 'lab-controls';
     container.appendChild(left); container.appendChild(right);
-    const w = init.window, g = Lab.graph(left, w), sets = init.sets, SC = init.scale || [0.25, 0.5, 0.75, 0.9];
-    let cur = sets.find(s => s.name === init.start) || sets[0], sp = init.spread ? init.spread.start : 0;
+    const w = init.window, g = Lab.graph(left, w), sets = init.sets, SC = [0.25, 0.5, 0.75, 0.9];
+    sets.forEach(s => { if (s.x) s.basis = rSetBasis(s); });
+    const RS = init.rslider;
+    let cur = sets.find(s => s.name === init.start) || sets[0], sp = RS ? RS.start : 0;
     let extraOn = init.extra ? init.extra.on !== false : false;
-    const maxN = Math.max(...sets.map(s => s.pts.length));
+    const maxN = Math.max(...sets.map(s => s.x ? s.x.length : s.pts.length));
     let P = [];
-    const load = () => { P = cur.pts.map(p => p.slice()); if (cur.noise) P = P.map((p, i) => [p[0], p[1] + sp * cur.noise[i]]); };
+    const load = () => { if (cur.x) { const b = cur.basis, k = Math.sqrt(Math.max(0, 1 - sp * sp));
+        P = cur.x.map((x, i) => [x, cur.ymean + cur.ysd * (sp * b.zx[i] + k * b.ew[i])]); }
+      else P = cur.pts.map(p => p.slice()); };
     load();
     const ex = init.extra ? { x: init.extra.at[0], y: init.extra.at[1] } : null;
     const hs = [];
     for (let i = 0; i < maxN; i++) {
       const dragIt = init.dragIndex != null && i === init.dragIndex;
-      const h = g.point({ x: 0, y: 0 }, dragIt ? { drag: true, snap: 0, name: 'athlete', onMove: q => { P[i][0] = q.x; P[i][1] = q.y; refresh(); },
-        visible: () => i < P.length } : { color: CURVE_C, visible: () => i < P.length });
-      hs.push(h);
+      hs.push(g.point({ x: 0, y: 0 }, dragIt ? { drag: true, snap: 0, name: 'athlete', onMove: q => { P[i][0] = q.x; P[i][1] = q.y; refresh(); },
+        visible: () => i < P.length } : { color: CURVE_C, visible: () => i < P.length }));
     }
     const eh = ex ? g.point({ x: ex.x, y: ex.y }, { drag: true, snap: 0, name: 'extra point', visible: () => extraOn,
       onMove: q => { ex.x = q.x; ex.y = q.y; refresh(); } }) : null;
     const xs = () => P.map(p => p[0]).concat(extraOn && ex ? [ex.x] : []), ys = () => P.map(p => p[1]).concat(extraOn && ex ? [ex.y] : []);
-    const R = () => pearsonR(xs(), ys()), RS = () => pearsonR(rankOf(xs()), rankOf(ys()));
+    const R = () => pearsonR(xs(), ys()), RSP = () => pearsonR(rankOf(xs()), rankOf(ys()));
+    const line = () => { const x = xs(), y = ys(), mx = meanOf(x), my = meanOf(y); let sxy = 0, sxx = 0;
+      for (let i = 0; i < x.length; i++) { sxy += (x[i] - mx) * (y[i] - my); sxx += (x[i] - mx) * (x[i] - mx); }
+      const a = sxy / sxx; return { a, b: my - a * mx }; };
+    if (init.fit) g.line(() => ({ x: w.xmin, y: line().a * w.xmin + line().b }), () => ({ x: w.xmax, y: line().a * w.xmax + line().b }), { color: RED_C });
     const word = r => { const a = Math.abs(r), d = r < 0 ? 'negative' : 'positive';
       return a < SC[0] ? 'very weak' : a < SC[1] ? `weak ${d}` : a < SC[2] ? `moderate ${d}` : a < SC[3] ? `strong ${d}` : `very strong ${d}`; };
     const grp = (title, cls) => { const s = document.createElement('div'); s.className = 'lab-group' + (cls ? ' ' + cls : '');
       if (title) { const h = document.createElement('div'); h.className = 'lab-group-title'; h.innerHTML = title; s.appendChild(h); } right.appendChild(s); return s; };
     let pl = null, slider = null;
     if (sets.length > 1) { const gd = grp('Data');
-      Lab.toggle(gd, { options: sets.map(s => s.name), value: cur.name, onChange: n => { cur = sets.find(s => s.name === n); sp = init.spread ? init.spread.start : 0; load(); if (slider) slider.set(sp); refresh(); } }); }
-    if (init.spread) { const gs = grp('Spread');
-      slider = Lab.slider(gs, { min: init.spread.min, max: init.spread.max, step: init.spread.step, value: sp, label: '\\text{spread}', format: v => fx(v, 1),
-        onChange: v => { sp = v; if (cur.noise) { load(); } refresh(); } });
+      Lab.toggle(gd, { options: sets.map(s => s.name), value: cur.name, onChange: n => { cur = sets.find(s => s.name === n); load(); refresh(); } }); }
+    if (RS) { const gs = grp('Correlation');
+      slider = Lab.slider(gs, { min: RS.min, max: RS.max, step: RS.step, value: sp, label: 'r', format: v => fx(v, 2),
+        onChange: v => { sp = v; load(); refresh(); } });
       ['pointerdown', 'keydown'].forEach(ev => slider.input.addEventListener(ev, () => pl && pl.stop()));
-      pl = player(gs, { min: init.spread.min, max: init.spread.max, seconds: init.spread.seconds || 6, get: () => sp,
-        set: v => { sp = v; slider.input.value = v; const out = slider.input.parentNode.querySelector('output'); if (out) out.innerHTML = math(fx(v, 1)); load(); refresh(); } }); }
+      pl = player(gs, { min: RS.min, max: RS.max, seconds: RS.seconds || 8, get: () => sp,
+        set: v => { sp = Math.round(v * 100) / 100; slider.input.value = sp; const out = slider.input.parentNode.querySelector('output'); if (out) out.innerHTML = math(fx(sp, 2)); load(); refresh(); } }); }
     if (init.extra && init.extra.toggle) { const ge = grp('Extra point');
       Lab.toggle(ge, { options: ['Off', 'On'], value: extraOn ? 'On' : 'Off', onChange: v => { extraOn = v === 'On'; refresh(); } }); }
     const gr = grp('Readings');
     const readouts = [Lab.readout(gr, () => `r=${fx(R(), 3)}`)];
-    if (init.rs) readouts.push(Lab.readout(gr, () => `r_s=${fx(RS(), 3)}`));
+    if (init.rs) readouts.push(Lab.readout(gr, () => `r_s=${fx(RSP(), 3)}`));
     let slots = [];
     if (init.cards) {
       const gc = document.createElement('div'); gc.className = 'fam-cards'; container.appendChild(gc);
       gc.innerHTML = '<div class="fc-head">Recap cards</div>';
       for (let i = 0; i < 4; i++) { const d = document.createElement('div'); d.className = 'fam-card'; gc.appendChild(d); slots.push(d); }
     }
-    const cardsNow = () => { const r = R(), s = RS(), out = [];
+    const cardsNow = () => { const r = R(), s = RSP(), out = [];
       out.push({ title: 'Strength and direction', tone: 'curve', line: `$r=${fx(r, 2)}$ is ${word(r)}. Closer to $\\pm 1$ means a tighter straight-line pattern.` });
       out.push(init.rs && s - r > 0.03
         ? { title: '$r_s$ is larger than $r$', tone: 'ans', line: 'This suggests the data rise (or fall) steadily but along a curve, or that an extreme point is dragging $r$ down. Check the scatter.' }
@@ -602,7 +630,7 @@
     }
     refresh();
     const state = { g, controls: right, readouts, refresh,
-      enter(byNext) { if (!pl) return; pl.stop(); if (byNext && init.spread.auto && !reduced()) pl.play(true); },
+      enter(byNext) { if (!pl) return; pl.stop(); if (byNext && RS.auto && !reduced()) pl.play(true); },
       leave() { if (pl) pl.stop(); } };
     container.__lab = state;
     return state;

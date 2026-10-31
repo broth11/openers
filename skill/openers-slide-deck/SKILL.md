@@ -210,3 +210,9 @@ U5 L3 deck: checker PASS at nine sizes.
   than hiding them; show the model as a static line, not a readout.
 - Cards that change with sliders get fixed-height slots; sweep the states for overflow (U5 L3: 360 states, six sizes).
 - Phone (portrait): scene row `min(52cqw, 30cqh)`; recap cards hidden.
+
+
+## scatterLab updates (31/10/2026)
+- `rslider {min,max,step,start,seconds,auto}` with a set's `noise` rebuilds the points so r equals the slider exactly (standardised x plus a noise vector made orthogonal to x). `fit: true` draws the least-squares line live.
+- `scene` kind `scatter` (`scatterArt`) draws title-card art that follows the graph's window (`state.win`, `pts`, `xname`, `yname`, `bare`), so cards match the graph's proportions.
+- Graph `xname`/`yname` are plain text (not TeX); the title-card art wraps them in `\text{}`.
