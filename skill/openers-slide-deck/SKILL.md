@@ -15,7 +15,7 @@ at nine sizes, 31/10/2026). `assets/examples/MAI_U5_L3/make_content.py` is the o
 ```
 assets/deck_template.html   layout, engine, scenes in examples, walk blocks, picks, timeline bar, autoplay hooks
 assets/labkit.js            SVG graph kit and the AA SL presets (fixed API, unchanged)
-assets/scenekit.js          scenes (Lab.sceneRow, Lab.scenes), sceneLab + SPEC, player, growthFamily recap
+assets/scenekit.js          scenes (Lab.sceneRow, Lab.scenes), sceneLab + SPEC, player, growthFamily recap, scatterLab + scene 'scatter' (U5 L6)
 assets/themes/, fonts/, katex/   as in the AA SL kit
 assets/examples/MAI_U5_L4/  the v22 model: make_content.py (reads v1_content.json, writes content.json), phone scene
 assets/examples/MAI_U5_L3/  the v21 model generator (coffee, typing, pH scenes + recap); AA SL models kept beside it
@@ -133,6 +133,14 @@ Example slide:
 - `meta.largeGraphs: true` (labels, ticks and lab text at 0.9 of body; the checker fails anything under 85 %).
 - Degrees in maths: `\,{}^{\circ}\mathrm{C}` (a bare `\,^{\circ}` fails in KaTeX). The model converts `$92$ °C`.
 
+Scatter and correlation decks (MAI HL U5 L6, 31/10/2026): there is no drawing beside the graph, so example slides use a
+plain `graph` (points as `point` items in role colours, `until` swaps a data set at a reveal) and a title card with
+`"kind": "scatter"` (`state.pts` in 0..1). `Lab.presets.scatterLab` is the one lab: `init.sets` (datasets, a toggle when more
+than one), `spread` (a slider that scales a fixed noise pattern, autoplays once), `extra` (one draggable outlier, optional
+On/Off toggle), `dragIndex` (one data point made draggable), `rs` (a second readout: Spearman, ties take the average
+rank), `cards` (the four recap cards). Every readout must change under the checker's moves, so no word readout.
+Model generator: `decks/mai-hl-u05-l06/make_content.py` in broth11/openers.
+
 Lab slides: `{"type":"lab","preset":"sceneLab","eyebrow":"Typing speed · Trace the model","title":"...",
 "init":{"kind":"typing","window":{...},"start":1,"seconds":12}}` and `{"preset":"growthFamily","init":{"start":{...},
 "window":{...}}}`.
@@ -183,6 +191,11 @@ present. The timeline letters it `G<skill>` then `W` per step. Screens are real 
 U5 L3 deck: checker PASS at nine sizes.
 
 ## Pitfalls met (29/10/2026, 31/10/2026)
+
+- A plain graph (no `graph.scene`) is square and as wide as its column, so it overflows the slide and pulls --G to 0.6.
+  Give example-slide windows `"aspect": 1.4` (a wide graph); labs size their own. A `graph.given` row above a plain graph
+  overflows the same way, so a scatter deck puts the facts on the setup slide. Lab titles are not rendered by KaTeX:
+  no `$` in a lab `title`. Fractional tick steps (0.2) print 0.6000000000000001: give `yticks` explicitly.
 
 - A setup slide with no blocks leaves an empty work panel; the template hides it (`.s-setup .panel.work:empty`).
 - Point labels near a steep curve or another reading touch them; on crowded setup slides colour the points and
