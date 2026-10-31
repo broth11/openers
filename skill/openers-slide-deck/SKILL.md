@@ -108,6 +108,8 @@ When it applies, the deck ends with one catalogue slide, timeline label **IA**:
   slide height, and the notepad was the deck's limiting slide until its steps were trimmed (U5 L4: 0.82 → 0.96).
   A plain string in `what`, `why` or `exp` still renders the v21 way.
 - The IA button in the timeline is as large as the scene buttons.
+- The pane headings default to "What grows" and "Why it levels off" (logistic wording). For other topics set `init.headings`, e.g. `"headings": ["What is measured", "Why the model fits"]` (U5 L3).
+- Title cards (`sceneTitle`) draw the coffee, typing and pH scenes without their readouts; the unit labels (°C, wpm, pH) stay, anchored above the scale.
 - Each `exp` is something a student could really do: what to measure, how often, for how long, what to plot.
   Prefer a classroom or home method; if the real thing cannot be run, name the public data to collect or a
   safe simulation. No lab hazards.

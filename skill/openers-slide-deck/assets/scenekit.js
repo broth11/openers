@@ -60,9 +60,10 @@
     const api = { W, H, Y, win, el: (t, a, p) => mk(t, a, p || grp),
       text(x, y, html, cls, anchor) { const d = document.createElement('div'); d.className = 'scene-text ' + (cls || '');
         d.style.left = (x / W * 100) + '%'; d.style.top = (y / H * 100) + '%';
-        d.style.transform = { w: 'translate(0,-50%)', e: 'translate(-100%,-50%)', c: 'translate(-50%,-50%)' }[anchor || 'w'];
+        d.style.transform = { w: 'translate(0,-50%)', e: 'translate(-100%,-50%)', c: 'translate(-50%,-50%)', nw: 'translate(0,0)', n: 'translate(-50%,0)', s: 'translate(-50%,-100%)', sw: 'translate(0,-100%)' }[anchor || 'w'];
         d.innerHTML = prose(html); labs.appendChild(d); return d; } };
     SCENES[kind](api, Object.assign({ bare: true }, state || {}));
+    if ((state || {}).bare !== false) labs.querySelectorAll('.sc-read').forEach(n => n.remove());   /* title cards: the drawing alone (readouts hidden) */
     return { el: sc };
   }
 
@@ -490,7 +491,7 @@
       const pane = mk('cat-item'), main = mk('cat-main'), exp = mk('cat-exp');
       pane.appendChild(mk('cat-title', 'h3', it.title));
       /* v22: what / why may be lists (bullets); exp may be a list of steps, each a string or [string, [sub-steps]] (a notepad procedure) */
-      [['What grows', it.what], ['Why it levels off', it.why]].forEach(([h, t]) => { const q = mk('cat-q'); q.appendChild(mk('cat-h', 'span', h));
+      [[(init.headings || [])[0] || 'What grows', it.what], [(init.headings || [])[1] || 'Why it levels off', it.why]].forEach(([h, t]) => { const q = mk('cat-q'); q.appendChild(mk('cat-h', 'span', h));
         if (Array.isArray(t)) { const ul = mk('', 'ul'); t.forEach(x => { const li = mk('', 'li'); li.innerHTML = prose(x); ul.appendChild(li); }); q.appendChild(ul); }
         else q.appendChild(mk('', 'p', t)); main.appendChild(q); });
       if (Array.isArray(it.exp)) {
