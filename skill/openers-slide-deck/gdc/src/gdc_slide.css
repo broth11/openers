@@ -3,6 +3,8 @@
 /* two columns from the top: text on the left (eyebrow, title, stem, steps), the calculator full height on the right */
 .slide.s-gdc.active,.slide.s-gdc.measure:not(.active){display:grid}
 .s-gdc{grid-template-columns:minmax(0,1fr) auto;grid-template-rows:minmax(0,1fr);column-gap:var(--b3);align-items:start}
+.s-gdc .gtable{font-size:calc(var(--fs-stem)*var(--k,1))}
+.s-gdc .gtable .katex-display{margin:.1em 0;text-align:left}.s-gdc .gtable .katex-display>.katex{text-align:left}
 .s-gdc .gl{display:flex;flex-direction:column;gap:var(--b2);min-width:0;min-height:0}
 .gsteps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.55em;font-size:calc(var(--fs-stem)*var(--k,1));line-height:1.4;color:var(--note)}
 .gsteps li{display:grid;grid-template-columns:1.6em 1fr;align-items:baseline}

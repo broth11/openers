@@ -242,6 +242,8 @@ def T4(rh=None, rt=None):
            + '\\text{hours}&2&3&5&6&8&9&11&14\\\\[-0.12em] \\hline ' + '\\text{time}&0.12&0.31&0.52&0.52&0.68&0.74&0.80&0.83')
     return top + (('\\\\[-0.12em] ' + Y('\\text{ranked time}') + '&' + '&'.join(Y(v) for v in rt)) if rt else '') + '\\end{array}'
 TBL = '$' + T4() + '$'
+T2G = ('\\begin{array}{r|cccccccc}' + Y('\\text{ranked hours}') + '&' + '&'.join(Y(v) for v in '12345678') + '\\\\[-0.12em] '
+       + Y('\\text{ranked time}') + '&' + '&'.join(Y(v) for v in ['1', '2', '3.5', '3.5', '5', '6', '7', '8']) + '\\end{array}')
 T2 = '\\begin{array}{r|cccccccc}\\text{ranked hours}&1&2&3&4&5&6&7&8\\\\ \\text{ranked time}&1&2&\\mathbf{3.5}&\\mathbf{3.5}&5&6&7&8\\end{array}'
 question(3, 1, N3, 'Rank by hand', 'Rank $h$ and $t$, smallest first. What rank do the two tied athletes get?',
          [walk(None, [T4(['1', '2', '3', '4', '5', '6', '7', '8'], ['1', '2', '\\mathbf{3.5}', '\\mathbf{3.5}', '5', '6', '7', '8'])],
@@ -254,7 +256,7 @@ question(3, 2, N3, 'Which is closer to 1?', 'Next the GDC finds $r$ for the data
          second=(WRK, pts(RXf, RYf, 'green')))
 
 lcd = lambda n, a, **kw: img(n, a, **kw)
-S.append({'type': 'gdc', 'skill': 1, 'tag': 'C', 'title': 'Find $r$ for the data',
+S.append({'type': 'gdc', 'skill': 1, 'tag': 'C', 'title': 'Find $r$ for the data', 'table': T4(),
           'stem': 'Hours $h$ are in List 1 and improvements $t$ in List 2.',
           'start': lcd('p0', 'List 1 holds the hours and List 2 the improvements'),
           'steps': [{'t': 'Press [F2] CALC.', 's': lcd('p1', 'The CALC menu: 1-VAR, 2-VAR, REG, SET')},
@@ -268,7 +270,7 @@ question(3, 3, N3, 'Read the line', 'The GDC line is $t=0.0575h+0.148$. What do 
          [walk('Slope: seconds gained per hour', ['a&=0.0575'], 'Each extra hour of training goes with about $0.06$ s more improvement.', True),
           walk('Intercept: the gain at $0$ hours', ['b&=0.148'], 'About $0.15$ s with no training. Nobody trained under $2$ hours, so treat this with care.')],
          W3, pts(HX, HYf, 'orange') + [line(A_S, B_S, 'blue', 1, None, 0, 15), {'kind': 'label', 'at': [3.8, 0.9], 'tex': 't=0.0575h+0.148', 'anchor': 'c', 'step': 1}], G3)
-S.append({'type': 'gdc', 'skill': 2, 'tag': 'C', 'title': 'Find $r_s$ from the ranks',
+S.append({'type': 'gdc', 'skill': 2, 'tag': 'C', 'title': 'Find $r_s$ from the ranks', 'table': T2G,
           'stem': 'Your ranks of $h$ are in List 3 and your ranks of $t$ in List 4. The tied ranks are $3.5$.',
           'start': lcd('s0', 'Ranks entered in List 3 and List 4; the CALC menu is open'),
           'steps': [{'t': 'Press [F6] SET. [DOWN] twice, [F1] LIST, {3} [EXE] for 2Var XList. Then [DOWN], [F1] LIST, {4} [EXE] for 2Var YList.', 's': lcd('s1', 'SET: 2Var XList List 3, 2Var YList List 4')},

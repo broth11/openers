@@ -2948,6 +2948,7 @@
    "skill": 1,
    "tag": "C",
    "title": "Find $r$ for the data",
+   "table": "\\begin{array}{r|cccccccc}\\text{hours}&2&3&5&6&8&9&11&14\\\\[-0.12em] \\hline \\text{time}&0.12&0.31&0.52&0.52&0.68&0.74&0.80&0.83\\end{array}",
    "stem": "Hours $h$ are in List 1 and improvements $t$ in List 2.",
    "start": {
     "type": "img",
@@ -3171,6 +3172,7 @@
    "skill": 2,
    "tag": "C",
    "title": "Find $r_s$ from the ranks",
+   "table": "\\begin{array}{r|cccccccc}\\htmlClass{ansc}{\\text{ranked hours}}&\\htmlClass{ansc}{1}&\\htmlClass{ansc}{2}&\\htmlClass{ansc}{3}&\\htmlClass{ansc}{4}&\\htmlClass{ansc}{5}&\\htmlClass{ansc}{6}&\\htmlClass{ansc}{7}&\\htmlClass{ansc}{8}\\\\[-0.12em] \\htmlClass{ansc}{\\text{ranked time}}&\\htmlClass{ansc}{1}&\\htmlClass{ansc}{2}&\\htmlClass{ansc}{3.5}&\\htmlClass{ansc}{3.5}&\\htmlClass{ansc}{5}&\\htmlClass{ansc}{6}&\\htmlClass{ansc}{7}&\\htmlClass{ansc}{8}\\end{array}",
    "stem": "Your ranks of $h$ are in List 3 and your ranks of $t$ in List 4. The tied ranks are $3.5$.",
    "start": {
     "type": "img",

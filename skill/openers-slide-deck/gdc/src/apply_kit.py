@@ -13,6 +13,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 
 BRANCH = r"""  } else if (d.type==='gdc'){
     const s = addSlide('s-gdc', `<div class="eyebrow">GDC Skill ${d.skill} · ${tagHTML(d.tag||'C')}</div><h2>${esc(d.title)}</h2>
+      ${d.table?`<div class="gtable">$$${d.table}$$</div>`:''}
       ${d.stem?`<p class="stem">${nb(d.stem)}</p>`:''}
       <ol class="gsteps">${d.steps.map((st,i)=>`<li data-step="${i+1}"><span class="n">${i+1}</span><span>${GDC.step(st.t)}</span></li>`).join('')}</ol>
       <div class="calc"><img class="body" src="${GDC.BODY}" alt=""><div class="bezel"><div class="lcd" role="img" aria-label="Calculator screen"></div></div><div class="keys" aria-hidden="true">${GDC.keypad()}</div></div>`);

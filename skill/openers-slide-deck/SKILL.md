@@ -220,3 +220,4 @@ U5 L3 deck: checker PASS at nine sizes.
 - `solo: true` on an example hides the graph so a wide table can use the full width (the 8-column rank tables).
 - `tagline` on a `sceneTitle` adds an italic line under the title. The title-card art keeps its axis names above the axis so they stay inside the art box.
 - Stacked graphs get a clear gap (`.ex.dual .fig`) and the generator adds room under each axis for the tick labels. A lab's title block is kept 14px clear of the first control group by a guard in `fit()` plus a ResizeObserver, so a wrapped title never runs into READINGS or DATA. `\htmlClass{ansc}{...}` in a walk's TeX colours that part in the answer yellow.
+- A `gdc` slide takes `table` (TeX, shown as a display under the title, left aligned) for the data students type into the calculator.
