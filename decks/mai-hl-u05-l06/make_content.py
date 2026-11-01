@@ -128,8 +128,8 @@ S = [{'type': 'title', 'eyebrow': 'IB Mathematics: Applications and Interpretati
 NSC = 4
 
 
-def scene_title(n, title, xs, ys, w, alt):
-    S.append({'type': 'sceneTitle', 'scene': n, 'kicker': f'Scene {n} of {NSC}', 'title': title, 'kind': 'scatter', 'window': ART,
+def scene_title(n, title, xs, ys, w, alt, tagline=None):
+    S.append({'type': 'sceneTitle', 'scene': n, **({'tagline': tagline} if tagline else {}), 'kicker': f'Scene {n} of {NSC}', 'title': title, 'kind': 'scatter', 'window': ART,
               'state': {'pts': [[a, b] for a, b in zip(xs, ys)], 'win': {k: w[k] for k in ('xmin', 'xmax', 'ymin', 'ymax')},
                         'xname': '\\text{' + w['xname'] + '}', 'yname': '\\text{' + w['yname'] + '}', 'bare': True}, 'alt': alt})
 
@@ -140,12 +140,14 @@ def setup(n, name, title, pre, para, fts, window, items):
               'graph': {'window': dict(window, aspect=1.4), 'items': items}})
 
 
-def question(n, q, name, title, stem, blocks, window, items, given=None, choices=None, correct=None, cont=False, prompt=None):
+def question(n, q, name, title, stem, blocks, window, items, given=None, choices=None, correct=None, cont=False, prompt=None, second=None, solo=False):
     d = {'type': 'example', 'scene': n, 'q': q, 'eyebrow': f'{name} · Question {q}', 'title': title, 'stem': stem,
          'blocks': blocks, 'graph': {'window': dict(window, aspect=1.4), 'items': items}}
     if prompt: d['prompt'] = prompt
+    if second: d['graph']['second'] = {'window': dict(second[0], aspect=3.0), 'items': second[1]}; d['graph']['window']['aspect'] = 3.0
     if choices: d.update(choices=choices, correct=correct, pickStep=1)
     if cont: d['cont'] = True
+    if solo: d['solo'] = True
     S.append(d)
 
 
@@ -154,8 +156,8 @@ def norm(xs, ys, xm, ym):
 
 
 # ================================================================ scene 1
-N1 = 'How tight is the cloud?'
-scene_title(1, 'How Tight Is the Cloud?', X1, Y_TIGHT, W1, 'A scatter diagram of twenty points rising in a tight cloud')
+N1 = 'How tight is the scatter plot?'
+scene_title(1, 'How Tight Is the Scatter Plot?', X1, Y_TIGHT, W1, 'A scatter diagram of twenty points rising in a tight cloud')
 F1 = facts(('<b>20 students</b>: one point for each', {'c': 'pink'}),
            ('$h$: hours of revision each week', {'shape': 'none'}),
            ('$m$: test mark out of $100$', {'shape': 'none'}))
@@ -178,6 +180,12 @@ question(1, 2, N1, 'Spread the points', 'A second school finds the same trend, b
                '$r$ falls as the points spread out. It stays positive because the trend still rises.', True)],
          W1, pts(X1, Y_TIGHT, 'pink', 0, 0) + pts(X1, Y_WIDE, 'orange', 1), G1,
          ['$r$ rises', '$r$ falls, still positive', '$r$ falls and turns negative'], 1)
+A_M, B_M = lsrl(X1, Y_TIGHT)
+assert round(A_M, 2) == 4.02 and round(B_M, 1) == 18.3
+question(1, 3, N1, 'Read the line', 'The GDC line is $m=4.02h+18.3$. What do the slope and the intercept mean here?',
+         [walk('Slope: marks gained per hour', ['a&=4.02'], 'Each extra hour of revision a week goes with about $4$ more marks.', True),
+          walk('Intercept: the mark at $0$ hours', ['b&=18.3'], 'About $18$ marks with no revision. That is sensible: the data start near $0$ hours.')],
+         W1, pts(X1, Y_TIGHT, 'pink') + [line(A_M, B_M, 'blue', 1, None, 0, 16), {'kind': 'label', 'at': [3.5, 92], 'tex': 'm=4.02h+18.3', 'anchor': 'c', 'step': 1}], G1)
 S.append({'type': 'lab', 'preset': 'scatterLab', 'eyebrow': N1 + ' · Slide r', 'title': 'Slide r from -1 to 1',
           'init': {'window': WL1, 'start': 'Revision', 'fit': True,
                    'rslider': {'min': -1, 'max': 1, 'step': 0.05, 'start': 0.95, 'seconds': 8, 'auto': True},
@@ -197,14 +205,19 @@ question(2, 1, N2, 'Always rising', 'Predict: the plant rises every week. What i
           walk('Always rising, but not a line', None, 'A relationship that only rises, or only falls, is monotonic. $r$ only rewards a straight line, so it stays below $1$.')],
          W2, pts(XP, YP, 'pink') + [line(A1, B1, 'blue', 1), {'kind': 'label', 'at': [2.2, 27], 'tex': 'r=0.888', 'anchor': 'c', 'step': 1}],
          G2, ['$r=1$', '$r$ just under $1$', '$r$ near $0.5$'], 1)
-question(2, 2, N2, 'One odd point', 'A sensor glitch records the plant at only $5$ cm in week 11. Predict what happens to $r$.',
+assert round(A1, 2) == 3.03 and round(B1, 2) == -7.77
+question(2, 2, N2, 'Read the line', 'The GDC line is $H=3.03w-7.77$. What do the slope and the intercept mean here?',
+         [walk('Slope: height gained per week', ['a&=3.03'], 'On average the plant grows about $3$ cm each week.', True),
+          walk('Intercept: the height at week $0$', ['b&=-7.77'], 'A height of $-7.77$ cm is impossible. The line only fits the weeks measured, not week $0$.')],
+         W2, pts(XP, YP, 'pink') + [line(A1, B1, 'blue', 1), {'kind': 'label', 'at': [3.2, 27], 'tex': 'H=3.03w-7.77', 'anchor': 'c', 'step': 1}], G2)
+question(2, 3, N2, 'One odd point', 'A sensor glitch records the plant at only $5$ cm in week 11. Predict what happens to $r$.',
          [walk('One point changes it', ['r_{\\text{before}}&=0.888', 'r_{\\text{after}}&=0.704'], 'One unusual point, an outlier, can drag $r$ a long way.', True)],
          W2, pts(XP, YP, 'pink') + [line(A1, B1, 'blue', 0, 0), line(A1, B1, 'grey', 1), line(A2, B2, 'red', 1),
                                     {'kind': 'point', 'at': list(OUT), 'step': 1, 'color': 'orange', 'label': '(11,\\,5)', 'anchor': 'se'},
                                     {'kind': 'label', 'at': [2.2, 27], 'tex': 'r=0.888', 'anchor': 'c', 'step': 0, 'until': 0},
                                     {'kind': 'label', 'at': [2.2, 27], 'tex': 'r=0.704', 'anchor': 'c', 'step': 1}], G2,
          ['$r$ rises', '$r$ falls', '$r$ stays the same'], 1)
-S.append({'type': 'lab', 'preset': 'scatterLab', 'eyebrow': N2 + ' · Drag the outlier', 'title': 'One point and correlation',
+S.append({'type': 'lab', 'preset': 'scatterLab', 'eyebrow': N2 + ' · Drag the outlier', 'title': 'The effects of one point on the Pearson’s Product-Moment Correlation Coefficient',
           'init': {'window': WL2, 'start': 'Plant', 'fit': True, 'extra': {'at': list(OUT), 'on': True},
                    'sets': [{'name': 'Plant', 'pts': [[a, b] for a, b in zip(XP, YP)]}]}})
 
@@ -217,15 +230,23 @@ G3 = facts(('<b>8 athletes</b>', {'c': 'orange'}), ('$h$ hours, $t$ seconds gain
 setup(3, N3, 'Training and improvement', 'A coach follows eight sprinters through a season.',
       'For each athlete she records $h$, the hours of training each week, and $t$, how many seconds faster the athlete runs 100 m. '
       'More training helps, but the gains slow down.', F3, W3, pts(HX, HYf, 'orange', 1))
-TBL = '$\\begin{array}{c|cccccccc}h&2&3&5&6&8&9&11&14\\\\ \\hline t&0.12&0.31&0.52&0.52&0.68&0.74&0.80&0.83\\end{array}$'
-question(3, 1, N3, 'Rank by hand', 'On paper, rank $h$ and $t$, smallest first. Two athletes tie on $t$: what rank does each get?',
-         [walk('Ranks of $h$ (hours)', ['\\text{rank}&:\\ 1,\\ 2,\\ 3,\\ 4,\\ 5,\\ 6,\\ 7,\\ 8']),
-          walk('Ranks of $t$ (improvement)', ['\\text{rank}&:\\ 1,\\ 2,\\ \\mathbf{3.5,\\ 3.5},\\ 5,\\ 6,\\ 7,\\ 8'],
-               'The tied athletes share places 3 and 4, so each takes the average, $\\frac{3+4}{2}=3.5$.', True)],
-         W3, pts(HX, HYf, 'orange'), G3, prompt=TBL)
-question(3, 2, N3, 'Which is closer to 1?', 'Next the GDC finds $r$ for the data, then the same calculation on the ranks. Predict which is closer to $1$.',
-         [walk('Check both on the GDC', None, 'First $r$ for the data, then $r$ for the ranks. The second is called Spearman’s $r_s$.')],
-         W3, pts(HX, HYf, 'orange'), G3, ['$r$ of the data', '$r$ of the ranks', 'They are equally close'], 1)
+RXf = [float(v) for v in rx]; RYf = [float(v) for v in ry]
+A3, B3 = lsrl(RXf, RYf)
+WRK = {'xmin': -1, 'xmax': 9.5, 'ymin': -1, 'ymax': 9.5, 'gridx': 1, 'gridy': 1, 'xtick': 1, 'ytick': 1, 'xname': 'ranked hours', 'yname': 'ranked time', 'xtickFrom': 0, 'ytickFrom': 0}
+BL = '\\quad'
+T4 = lambda rh, rt: ('\\begin{array}{r|cccccccc}\\text{ranked hours}&' + '&'.join(rh) + '\\\\[-0.12em] \\text{hours}&2&3&5&6&8&9&11&14\\\\[-0.12em] \\hline '
+                     '\\text{time}&0.12&0.31&0.52&0.52&0.68&0.74&0.80&0.83\\\\[-0.12em] \\text{ranked time}&' + '&'.join(rt) + '\\end{array}')
+TBL = '$' + T4([BL] * 8, [BL] * 8) + '$'
+T2 = '\\begin{array}{r|cccccccc}\\text{ranked hours}&1&2&3&4&5&6&7&8\\\\ \\text{ranked time}&1&2&\\mathbf{3.5}&\\mathbf{3.5}&5&6&7&8\\end{array}'
+question(3, 1, N3, 'Rank by hand', 'Rank $h$ and $t$, smallest first. What rank do the two tied athletes get?',
+         [walk(None, [T4(['1', '2', '3', '4', '5', '6', '7', '8'], ['1', '2', '\\mathbf{3.5}', '\\mathbf{3.5}', '5', '6', '7', '8'])],
+               None),
+          walk(None, [T2], 'The tie takes places 3 and 4, so each gets $\\frac{3+4}{2}=3.5$.', True)],
+         W3, pts(HX, HYf, 'orange'), G3, prompt=TBL, solo=True)
+question(3, 2, N3, 'Which is closer to 1?', 'Next the GDC finds $r$ for the data, then Spearman’s $r_s$ for the ranks. Predict which is closer to $1$.',
+         [walk('Check both on the GDC', None, 'First $r$ for the data, then $r_s$ for the ranks.')],
+         W3, pts(HX, HYf, 'orange'), G3, ['$r$ of the data', '$r_s$ of the ranks', 'They are equally close'], 1,
+         second=(WRK, pts(RXf, RYf, 'green')))
 
 lcd = lambda n, a, **kw: img(n, a, **kw)
 S.append({'type': 'gdc', 'skill': 1, 'tag': 'C', 'title': 'Find $r$ for the data',
@@ -236,6 +257,12 @@ S.append({'type': 'gdc', 'skill': 1, 'tag': 'C', 'title': 'Find $r$ for the data
                     {'t': 'Press [EXIT], then [F3] REG.', 's': lcd('p2', 'The REG menu')},
                     {'t': 'Press [F1] X, the straight-line fit.', 's': lcd('p3', 'ax+b or a+bx')},
                     {'t': 'Press [F1] ax+b. Read $r=0.935$ to 3 s.f.', 's': lcd('p4', 'LinearReg: r = 0.93526507', hl=[1.5, 42, 73, 10.5])}]})
+A_S, B_S = lsrl(HX, HYf)
+assert round(A_S, 4) == 0.0575 and round(B_S, 3) == 0.148
+question(3, 3, N3, 'Read the line', 'The GDC line is $t=0.0575h+0.148$. What do the slope and the intercept mean here?',
+         [walk('Slope: seconds gained per hour', ['a&=0.0575'], 'Each extra hour of training goes with about $0.06$ s more improvement.', True),
+          walk('Intercept: the gain at $0$ hours', ['b&=0.148'], 'About $0.15$ s with no training. Nobody trained under $2$ hours, so treat this with care.')],
+         W3, pts(HX, HYf, 'orange') + [line(A_S, B_S, 'blue', 1, None, 0, 15), {'kind': 'label', 'at': [3.8, 0.9], 'tex': 't=0.0575h+0.148', 'anchor': 'c', 'step': 1}], G3)
 S.append({'type': 'gdc', 'skill': 2, 'tag': 'C', 'title': 'Find $r_s$ from the ranks',
           'stem': 'Your ranks of $h$ are in List 3 and your ranks of $t$ in List 4. The tied ranks are $3.5$.',
           'start': lcd('s0', 'Ranks entered in List 3 and List 4; the CALC menu is open'),
@@ -243,24 +270,26 @@ S.append({'type': 'gdc', 'skill': 2, 'tag': 'C', 'title': 'Find $r_s$ from the r
                     {'t': 'Press [EXIT], then [F3] REG.', 's': lcd('s2', 'The REG menu')},
                     {'t': 'Press [F1] X.', 's': lcd('s3', 'ax+b or a+bx')},
                     {'t': 'Press [F1] ax+b. Read $r_s=0.994$ to 3 s.f. Afterwards set SET back to List 1 and List 2.', 's': lcd('s4', 'LinearReg: r = 0.99402979', hl=[1.5, 42, 73, 10.5])}]})
-RXf = [float(v) for v in rx]; RYf = [float(v) for v in ry]
-A3, B3 = lsrl(RXf, RYf)
-WRK = {'xmin': -1, 'xmax': 9.5, 'ymin': -1, 'ymax': 9.5, 'gridx': 1, 'gridy': 1, 'xtick': 1, 'ytick': 1, 'xname': 'rank of h', 'yname': 'rank of t', 'xtickFrom': 0, 'ytickFrom': 0}
-question(3, 3, N3, 'Plot the ranks', 'Plot the rank of $t$ against the rank of $h$. How does this scatter compare with the original?',
+question(3, 4, N3, 'Plot the ranks', 'Plot the rank of $t$ against the rank of $h$. How does this scatter compare with the original?',
          [walk('The ranks line up almost perfectly', ['r_s&=0.994'], '$r_s$ is $r$ for the ranks. The points hug a straight line far more closely than the original scatter, so $r_s$ is closer to $1$.', True)],
-         WRK, pts(RXf, RYf, 'indigo') + [line(A3, B3, 'blue', 1, None, 0, 9), {'kind': 'label', 'at': [2.2, 7.4], 'tex': 'r_s=0.994', 'anchor': 'c', 'step': 1}], G3)
-question(3, 4, N3, 'What does $r_s>r$ suggest?', 'The GDC gives $r=0.935$ and $r_s=0.994$. What does $r_s>r$ suggest?',
+         WRK, pts(RXf, RYf, 'green') + [line(A3, B3, 'blue', 1, None, 0, 9), {'kind': 'label', 'at': [2.2, 7.4], 'tex': 'r_s=0.994', 'anchor': 'c', 'step': 1}], G3)
+question(3, 5, N3, 'What does $r_s>r$ suggest?', 'The GDC gives $r=0.935$ and $r_s=0.994$. What does $r_s>r$ suggest?',
          [walk('The ranks line up better', ['r_s&=0.994', 'r&=0.935'],
                'It suggests the data rise steadily but along a curve, or an outlier is dragging $r$ down. Always check the scatter.', True)],
-         W3, pts(HX, HYf, 'orange'), G3,
-         ['A perfect straight line', 'A steady rise along a curve', '$r_s$ is never larger than $r$'], 1)
+         W3, pts(HX, HYf, 'orange') + [line(A_S, B_S, 'blue', 1, None, 0, 15), {'kind': 'label', 'at': [3.2, 0.9], 'tex': 'r=0.935', 'anchor': 'c', 'step': 1}], G3,
+         ['A perfect straight line', 'A steady rise along a curve', '$r_s$ is never larger than $r$'], 1,
+         second=(WRK, pts(RXf, RYf, 'green') + [line(A3, B3, 'blue', 1, None, 0, 9.4), {'kind': 'label', 'at': [2.2, 7.4], 'tex': 'r_s=0.994', 'anchor': 'c', 'step': 1}]))
 S.append({'type': 'lab', 'preset': 'scatterLab', 'eyebrow': N3 + ' · Move one athlete', 'title': 'Two coefficients, one scatter',
           'init': {'window': W3, 'start': 'Sprinters', 'rs': True, 'fit': True, 'dragIndex': 7,
                    'sets': [{'name': 'Sprinters', 'pts': [[a, b] for a, b in zip(HX, HYf)]}]}})
 
+S.append({'type': 'lab', 'preset': 'scatterLab', 'eyebrow': N3 + ' · Back to the seedling', 'title': 'The effects of one point on the Spearman’s Rank Correlation Coefficient',
+          'init': {'window': WL2, 'start': 'Plant', 'rs': True, 'extra': {'at': list(OUT), 'on': True},
+                   'sets': [{'name': 'Plant', 'pts': [[a, b] for a, b in zip(XP, YP)]}]}})
+
 # ================================================================ scene 4
 N4 = 'Ice cream and sunburn'
-scene_title(4, 'Ice Cream and Sunburn', SALES, BURN, W4, 'Twelve months of ice cream sales against sunburn cases: a rising band')
+scene_title(4, 'Ice Cream and Sunburn', SALES, BURN, W4, 'Twelve months of ice cream sales against sunburn cases: a rising band', 'A spurious correlation')
 F4 = facts(('<b>12 months</b>: one point for each', {'c': 'pink'}), ('$I$: ice creams sold each day', {'shape': 'none'}),
            ('$S$: sunburn cases at the clinic', {'shape': 'none'}))
 G4 = facts(('<b>12 months</b>', {'c': 'pink'}), ('$I$ ice creams, $S$ sunburn cases', {'shape': 'none'}))
@@ -271,10 +300,13 @@ question(4, 1, N4, 'Cause?', 'The scatter has $r=0.99$. Does eating ice cream ca
          [walk('A high $r$ is not a cause', ['r&=0.99'], 'Correlation says the variables move together. It never says that one causes the other.', True)],
          W4, pts(SALES, BURN, 'pink'), G4,
          ['Yes: a high $r$ shows one causes the other', 'No: they have nothing to do with each other', 'They move together, but $r$ cannot say why'], 2)
-question(4, 2, N4, 'A third variable', 'Something else changes through the year. What could be behind both?',
-         [walk('Colour each month by temperature', None, 'Hot months have more ice cream and more sunburn: the weather drives both. A third variable can produce a strong $r$.', True)],
-         W4, pts(SALES, BURN, 'pink', 0, 0) + [dict(k, step=1) for k in
-             [{'kind': 'point', 'at': [a, b], 'color': 'orange' if h else 'indigo'} for a, b, h in zip(SALES, BURN, HOT)]], G4)
+WT_I = {'xmin': -4, 'xmax': 36, 'ymin': -20, 'ymax': 150, 'gridx': 5, 'gridy': 25, 'xtick': 10, 'ytick': 50, 'xname': 'temperature (T)', 'yname': 'ice creams (I)', 'xtickFrom': 0, 'ytickFrom': 0}
+WT_S = {'xmin': -4, 'xmax': 36, 'ymin': -6, 'ymax': 50, 'gridx': 5, 'gridy': 5, 'xtick': 10, 'ytick': 10, 'xname': 'temperature (T)', 'yname': 'sunburn (S)', 'xtickFrom': 0, 'ytickFrom': 0}
+AI, BI = lsrl(TEMP, SALES); AS_, BS_ = lsrl(TEMP, BURN)
+question(4, 2, N4, 'A third variable', 'Something else changes through the year. Plot each variable against the monthly temperature, $T$ in \u00b0C.',
+         [walk('Both rise with temperature', ['r_{T,I}&=0.99', 'r_{T,S}&=0.98'], 'Hot months have more ice cream sales and more sunburn: the weather drives both. A third variable can produce a strong $r$ between two things that do not affect each other.', True)],
+         WT_I, pts(TEMP, SALES, 'orange') + [line(AI, BI, 'blue', 1, None, 12, 34), {'kind': 'label', 'at': [8, 120], 'tex': 'r=0.99', 'anchor': 'c', 'step': 1}], G4,
+         second=(WT_S, pts(TEMP, BURN, 'green') + [line(AS_, BS_, 'blue', 1, None, 12, 34), {'kind': 'label', 'at': [8, 38], 'tex': 'r=0.98', 'anchor': 'c', 'step': 1}]))
 
 # ================================================================ recap
 sc = lambda xs, ys, fx, fy: [[round(a * fx, 4), round(b * fy, 4)] for a, b in zip(xs, ys)]

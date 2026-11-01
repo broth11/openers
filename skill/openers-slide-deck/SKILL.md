@@ -216,3 +216,6 @@ U5 L3 deck: checker PASS at nine sizes.
 - `rslider {min,max,step,start,seconds,auto}` with a set's `noise` rebuilds the points so r equals the slider exactly (standardised x plus a noise vector made orthogonal to x). `fit: true` draws the least-squares line live.
 - `scene` kind `scatter` (`scatterArt`) draws title-card art that follows the graph's window (`state.win`, `pts`, `xname`, `yname`, `bare`), so cards match the graph's proportions.
 - Graph `xname`/`yname` are plain text (not TeX); the title-card art wraps them in `\text{}`.
+- Two graphs on one example slide: `graph.second = {window, items}` stacks a second graph under the first (give both windows `aspect` about 3.0; both share the slide's reveal steps). The stem never goes `wide` on such a slide. Phones shrink the text (a warning, not a failure).
+- `solo: true` on an example hides the graph so a wide table can use the full width (the 8-column rank tables).
+- `tagline` on a `sceneTitle` adds an italic line under the title. The title-card art keeps its axis names above the axis so they stay inside the art box.

@@ -175,6 +175,14 @@ h2 .dim{color:var(--note);font-weight:600}
   .ex .fig .lab-graph{width:min(88cqw,33cqh)}
 }
 
+/* v23 (Ben, 1/11/2026): two graphs stacked on an example slide (graph.second); a tagline under a scene title */
+.ex.dual .fig{justify-content:center;gap:max(6px,1.2cqh)}
+.ex.solo{grid-template-columns:minmax(0,1fr)!important;grid-template-areas:"stem" "work" "note"!important}
+.ex.solo .fig{display:none}
+@container (max-aspect-ratio: 3/4){ .ex.dual .fig .lab-graph{width:min(94cqw,66cqh)} }
+.tc-tag{margin:0 0 max(8px,1.6cqh);font-size:calc(var(--fs-stem)*1.15);color:var(--prose);font-style:italic;text-align:center}
+@container (min-aspect-ratio: 3/4){ .lg .ex.dual .fig .lab-graph{width:100%;height:auto} }
+
 /* lab */
 .s-lab .lab{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto 1fr;grid-template-areas:"left head" "left ctl";
   column-gap:max(16px,3.2cqw);row-gap:max(10px,2.2cqh);align-items:start;align-content:start;min-height:0;flex:1}
@@ -479,8 +487,8 @@ html:root[data-skin="3b1b"],html:root[data-skin="goldteal"],html:root[data-skin=
 .tl-b.big{height:max(28px,4.6cqh)}
 .s-stitle{justify-content:center;align-items:center;text-align:center;gap:max(6px,1.4cqh)}
 .s-stitle .tc-kick{font-size:var(--fs-eyebrow);font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--eyebrow)}
-.s-stitle h1{font-size:calc(var(--fs-hero)*1.08);font-weight:600;margin:0;line-height:1.08;color:var(--title)}
-.s-stitle .tc-art{height:min(56cqh,62cqw);aspect-ratio:49/100;max-width:100%;position:relative;margin-top:max(6px,1.2cqh)}
+.s-stitle h1{font-size:calc(var(--fs-hero)*1.08);font-weight:600;margin:0;line-height:1.08;color:var(--title);max-width:100%;text-wrap:balance}
+.s-stitle .tc-art{height:min(50cqh,62cqw);aspect-ratio:49/100;max-width:100%;position:relative;margin-top:max(6px,1.2cqh)}
 .s-stitle .tc-row{display:flex;align-items:center;justify-content:center;gap:max(24px,6cqw);flex-wrap:wrap}
 .s-stitle .tc-row .tc-art{height:min(50cqh,56cqw)}
 .s-stitle .tc-formula{font-size:var(--fs-hero);color:var(--title)}
@@ -597,7 +605,7 @@ C.slides.forEach(d => {
       <p class="meta"><strong>${esc(d.code)}</strong><span>·</span>${tagHTML(d.regime)}<span>${esc(d.regimeText)}</span></p>
       <p class="keys">→ / Space next step · ← back · tap right or left third on a phone · S scratch pad · F fullscreen · ? help</p>`);
   } else if (d.type==='sceneTitle'){
-    const s = addSlide('s-stitle', `<div class="tc-kick">${esc(d.kicker||('Scene '+d.scene))}</div><h1>${nb(d.title)}</h1>${d.formula?`<div class="tc-row"><div class="tc-art" role="img" aria-label="${esc(d.alt||'')}"></div><div class="tc-formula">$$${d.formula}$$</div></div>`:`<div class="tc-art" role="img" aria-label="${esc(d.alt||'')}"></div>`}`);
+    const s = addSlide('s-stitle', `<div class="tc-kick">${esc(d.kicker||('Scene '+d.scene))}</div><h1>${nb(d.title)}</h1>${d.tagline?`<p class="tc-tag">${nb(d.tagline)}</p>`:''}${d.formula?`<div class="tc-row"><div class="tc-art" role="img" aria-label="${esc(d.alt||'')}"></div><div class="tc-formula">$$${d.formula}$$</div></div>`:`<div class="tc-art" role="img" aria-label="${esc(d.alt||'')}"></div>`}`);
     s.d = d; s.art = d;
   } else if (d.type==='today'){
     addSlide('s-today', `<div class="eyebrow">Lesson ${C.meta.lesson} · ${esc(C.meta.topicWords)}</div><h2>${esc(d.title)}</h2>
@@ -611,7 +619,7 @@ C.slides.forEach(d => {
     const stemHTML = d.setup ? `<p class="setup-pre">${nb(d.setup.preamble)}</p><div class="decode"><p class="para" data-until="0">${nb(d.setup.para)}</p><ul class="facts" data-step="1">${d.setup.facts.map(factLi).join('')}</ul></div>`
       : `<p>${nb(d.stem)}</p>${d.prompt?`<p class="prompt">${nb(d.prompt)}</p>`:''}${picks}`;
     const s = addSlide('s-example'+(d.setup?' s-setup':''), `<div class="eyebrow">${d.eyebrow ? esc(d.eyebrow) : `Worked Example ${d.n} · ${tagHTML(d.tag)}`}</div><h2>${esc(d.title)}</h2>
-      <div class="ex${sceneG?' scn':''}"><div class="stem">${stemHTML}</div>
+      <div class="ex${sceneG?' scn':''}${d.graph&&d.graph.second?' dual':''}${d.solo?' solo':''}"><div class="stem">${stemHTML}</div>
       <div class="panel work"></div>${d.note?`<p class="note">${nb(d.note)}</p>`:''}<div class="fig">${head}</div></div>`);
     const panel = s.el.querySelector('.panel.work'); let k = 0;
     s.d = d; s.off = d.sceneStart ? 1 : 0;
@@ -639,7 +647,7 @@ C.slides.forEach(d => {
     });
     const note = s.el.querySelector('.note'); if (note){ k++; note.dataset.step=k; }
     for (let i=1;i<=k;i++) s.steps.push([...s.el.querySelectorAll('.st'+i+', [data-step="'+i+'"]')]);
-    s.figSpec = d.graph;
+    if (!d.solo) s.figSpec = d.graph;
   } else if (d.type==='lab'){
     const s = addSlide('s-lab', `<div class="labhost"></div>`); s.d = d;
     s.lab_head = (d.eyebrow?`<div class="eyebrow">${esc(d.eyebrow)}</div>`:'') + `<h2>${esc(d.title)}</h2>`;
@@ -656,6 +664,11 @@ renderMathInElement(root, Object.assign({delimiters:DELIMS}, KOPTS));
 /* labs are built after the prose render so their own KaTeX is not re-scanned */
 slides.forEach(s => { if (!s.figSpec) return;
   const sp = s.figSpec, figEl = s.el.querySelector('.fig');
+  if (!sp.scene && sp.second){ /* v23: two graphs stacked in the figure column (graph.second = the lower spec) */
+    const h1 = document.createElement('div'), h2 = document.createElement('div'); figEl.appendChild(h1); figEl.appendChild(h2);
+    h1.style.cssText = h2.style.cssText = 'display:contents';
+    const f1 = Lab.figure(h1, sp, () => s.shown - (s.off||0)), f2 = Lab.figure(h2, sp.second, () => s.shown - (s.off||0));
+    s.fig = { redraw(){ f1.redraw(); f2.redraw(); } }; return; }
   if (!sp.scene){ s.fig = Lab.figure(figEl, sp, () => s.shown - (s.off||0)); return; }
   /* scene beside the graph: the figure draws into the row's graph host; the scene takes the state of the last reveal shown */
   const host = document.createElement('div'); figEl.appendChild(host); host.style.cssText = 'display:contents';
@@ -717,7 +730,7 @@ function fit(s){
   });
   s.fitWidth = fitWidth;
   /* density budget: a stem over 3 lines in the text column takes the full width instead */
-  const wideStem = () => { const ex = s.el.querySelector('.ex'), p = ex && ex.querySelector('.stem > p'); if (!p || !s.el.clientHeight) return;
+  const wideStem = () => { const ex = s.el.querySelector('.ex'), p = ex && ex.querySelector('.stem > p'); if (!p || !s.el.clientHeight || ex.classList.contains('dual')) return;
     ex.classList.remove('wide'); const lh = parseFloat(getComputedStyle(p).lineHeight);
     if (p.getBoundingClientRect().height > 3.05 * lh) ex.classList.add('wide'); };
   s.wideStem = wideStem;

@@ -541,7 +541,7 @@
     (s.pts || []).forEach((p, i) => mk('circle', { cx: X(p[0]), cy: Y(p[1]), r: 24, fill: (s.cols && s.cols[i]) || CURVE_C }, svg));
     const lab = (x, y, t, anchor) => { const d = document.createElement('div'); d.className = 'scene-text sc-unit';
       d.style.left = (x / W * 100) + '%'; d.style.top = (y / W * 100) + '%'; d.style.transform = anchor; d.innerHTML = math(t); labs.appendChild(d); };
-    if (s.xname) lab(W - 20, ay + 50, s.xname, 'translate(-100%,0)');
+    if (s.xname) lab(W - 20, ay - 12, s.xname, 'translate(-100%,-100%)');
     if (s.yname) lab(ax + 24, 30, s.yname, 'translate(0,0)');
   }
   const rankOf = v => { const idx = v.map((x, i) => [x, i]).sort((p, q) => p[0] - q[0]); const r = new Array(v.length); let i = 0;
