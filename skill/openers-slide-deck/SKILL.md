@@ -99,6 +99,8 @@ cursor. Model: `decks/mai-hl-u12-l01/make_content.py` (copy in `assets/examples/
   (`ts`, `t`, `none`) keeps `s` off screen until its reveal.
 - Budget: a question with three reveals does not fit (probe `--G` 0.71); split it with `cont` (the generator's `split`), trim notes,
   drop repeated prompts. The stack layout is `min(50cqw, 76cqh)` wide; keep the strip at 250 (`track`) or 290 (`ride`) units high.
+- **Labels stay put** (Ben, 1/11/2026): `window.labelMask: true` stops the placer moving point labels; they keep their anchor and a ground-coloured backing, so a curve passes behind them. Anchor labels inside the graph (an edge label overhangs and triggers the emergency shrink). Also set `aspectPortrait` equal to `aspect`: graphs are built once at load, and a tall or hidden frame reports portrait.
+- `s` means position (displacement from the start or from O) in every scene; say so when the ride never reverses (distance = displacement).
 - Wording follows the Haese chapter on kinematics (displacement relative to the origin O, instantaneously at rest, chord, tangent).
 
 ## Internal assessment tie-ins (Ben, 30/10/2026)

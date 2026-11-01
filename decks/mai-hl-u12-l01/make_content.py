@@ -64,9 +64,9 @@ M2 = {'pts': table(S2, 6, 0.05), 'dot': 1, 'xmin': -1, 'xmax': 10, 'lab': 1, 'un
 M3 = {'pts': table(S3, 19, 0.05), 'hill': HILL, 'dot': 1, 'unit': 'm', 'tunit': 'min', 'sdp': 0}
 STUB = {'pts': [[0, 0], [1, 1]], 'hill': [[0, 50, 260], [1, 950, 260]], 'dot': 1, 'unit': 'm', 'tunit': 's'}   # title cards draw no motion
 
-W1 = {'xmin': -0.5, 'xmax': 4.6, 'ymin': -6, 'ymax': 10, 'gridx': 1, 'gridy': 2, 'xtick': 1, 'ytick': 2, 'xname': 't', 'yname': 's', 'xtickFrom': 0, 'aspect': 2.2, 'aspectPortrait': 2.2}
-W2 = {'xmin': -0.5, 'xmax': 6.6, 'ymin': -2, 'ymax': 11, 'gridx': 1, 'gridy': 2, 'xtick': 1, 'ytick': 2, 'xname': 't', 'yname': 's', 'xtickFrom': 0, 'aspect': 2.2, 'aspectPortrait': 2.2}
-W3 = {'xmin': -1.5, 'xmax': 20, 'ymin': -250, 'ymax': 3000, 'gridx': 5, 'gridy': 500, 'xtick': 5, 'ytick': 500, 'xname': 't', 'yname': 's', 'xtickFrom': 0, 'aspect': 2.7, 'aspectPortrait': 2.7}
+W1 = {'xmin': -0.5, 'xmax': 4.6, 'ymin': -6, 'ymax': 10, 'gridx': 1, 'gridy': 2, 'xtick': 1, 'ytick': 2, 'xname': 't', 'yname': 's', 'xtickFrom': 0, 'aspect': 2.2, 'aspectPortrait': 2.2, 'labelMask': True}
+W2 = {'xmin': -0.5, 'xmax': 6.6, 'ymin': -2, 'ymax': 11, 'gridx': 1, 'gridy': 2, 'xtick': 1, 'ytick': 2, 'xname': 't', 'yname': 's', 'xtickFrom': 0, 'aspect': 2.2, 'aspectPortrait': 2.2, 'labelMask': True}
+W3 = {'xmin': -1.5, 'xmax': 20, 'ymin': -250, 'ymax': 3000, 'gridx': 5, 'gridy': 500, 'xtick': 5, 'ytick': 500, 'xname': 't', 'yname': 's', 'xtickFrom': 0, 'aspect': 2.7, 'aspectPortrait': 2.7, 'labelMask': True}
 
 # ---------------------------------------------------------------- facts
 F = {
@@ -76,8 +76,8 @@ F = {
     'strobe':  {'html': 'The strobe leaves <b>one dot every second</b>', 'shape': 'none'},
     'start2':  {'html': 'The car starts at <b>$O$</b>, moving to the right', 'c': ORANGE},
     'rows':    {'html': 'Dots made while it moves back drop to a <b>second row</b>', 'shape': 'none'},
-    'model':   {'html': 'Distance travelled <b>$s(t)=1.2t^3-30t^2+285t$</b>', 'c': 'blue', 'shape': 'cv'},
-    'u3':      {'html': 'Distance travelled $s$ is in metres and $t$ is in minutes, $0\\le t\\le 19$', 'shape': 'none'},
+    'model':   {'html': 'Position along the road <b>$s(t)=1.2t^3-30t^2+285t$</b>', 'c': 'blue', 'shape': 'cv'},
+    'u3':      {'html': '$s$ is measured from the start, in metres; $t$ is in minutes, $0\\le t\\le 19$', 'shape': 'none'},
     'start3':  {'html': 'At <b>$t=0$</b> he is at the start, <b>$s=0$</b>', 'c': ORANGE},
     'strobe3': {'html': 'The dots show his position <b>every minute</b>', 'shape': 'none'},
 }
@@ -184,7 +184,7 @@ out.extend(split(q(1, 2, NAME[1], 'Where is the next dot?',
               walk('Velocity and acceleration', ['v&>0\\text{ and increasing}', 'a&>0'], 'The signs of $v$ and $a$ are the same, so the speed is increasing.', ans=True),
               walk('The next dot', ['\\text{next gap}&=3.5+1=4.5', 's&=3.5+4.5=8\\ \\text{m}'], 'The gaps grow by $1$ m each second.', ans=True)],
              graph(1, [[0, {'t': 3, 'read': 'ts'}], [3, {'t': 4, 'read': 'ts'}]],
-                   [{'kind': 'point', 'at': [4, 8], 'step': 3, 'answer': True, 'label': '(4,\\,8)', 'anchor': 'se'}], frm=1)), 2, 'Where will the next dot be?', frm2=3))
+                   [{'kind': 'point', 'at': [4, 8], 'step': 3, 'answer': True, 'label': '(4,\\,8)', 'anchor': 'w'}], frm=1)), 2, 'Where will the next dot be?', frm2=3))
 # ================================================================ scene 2
 out.append(title_card(2, 'Turning Round'))
 out.append(setup(2, NAME[2], 'The car turns back',
@@ -205,13 +205,13 @@ out.append(q(2, 4, NAME[2], 'Distance and displacement',
              [walk('Distance travelled', ['9+9&=18\\ \\text{m}'], 'Distance accumulates whichever way the car travels.', ans=True),
               walk('Change in displacement', ['s(6)-s(0)&=0-0=0\\ \\text{m}'], 'The change in displacement ignores the detour.', ans=True)],
              graph(2, [[0, {'t': 6, 'read': 't'}], [2, {'t': 6, 'read': 'ts'}]],
-                   [{'kind': 'point', 'at': [6, 0], 'step': 2, 'answer': True, 'label': '(6,\\,0)', 'anchor': 'ne'}], frm=3)))
+                   [{'kind': 'point', 'at': [6, 0], 'step': 2, 'answer': True, 'label': '(6,\\,0)', 'anchor': 'nw'}], frm=3)))
 # ================================================================ scene 3
 out.append(title_card(3, "Michael's Ride"))
 out.append(setup(3, NAME[3], 'A ride over a hill',
                  'Michael rides up a hill and down the other side to his friend\'s house. The dots show his position at various times $t$.',
-                 'The distance Michael has travelled at various times is given by $s(t)=1.2t^3-30t^2+285t$ metres, for $0\\le t\\le 19$ minutes. '
-                 'The hill is drawn only as he rides, so its steepness is not visible ahead of him. The picture is a sketch, not to scale.',
+                 'His position along the road, measured from the start, is $s(t)=1.2t^3-30t^2+285t$ metres, for $0\\le t\\le 19$ minutes. '
+                 'He never rides backward, so $s$ is also the distance he has travelled. The hill is drawn only as he rides, so its steepness is not visible ahead of him. The picture is a sketch, not to scale.',
                  ['model', 'u3', 'start3', 'strobe3'],
                  [{'kind': 'point', 'at': [0, 0], 'step': 1, 'color': ORANGE, 'label': '(0,\\,0)', 'anchor': 'ne'}]))
 SHIFT = float(TM)
@@ -225,7 +225,7 @@ out.append(q(3, 5, NAME[3], 'The steepest part',
                    [{'kind': 'point', 'at': [SHIFT, float(S3.subs(t, TM))], 'step': 2, 'answer': True, 'label': '(8.3,\\,986)', 'anchor': 'se'}], frm=0)))
 out.append(q(3, 6, NAME[3], 'Average speed',
              'How can we find Michael\'s average speed between $t=5$ and $t=15$ minutes? Find it.',
-             [walk('Distance travelled', ['s(15)-s(5)&=1575-825', '&=750\\ \\text{m}'], 'Use the calculator on $s(t)$.'),
+             [walk('Change in position', ['s(15)-s(5)&=1575-825', '&=750\\ \\text{m}'], 'Also his distance, as he never goes back.'),
               walk('Average speed', ['\\frac{s(15)-s(5)}{15-5}&=\\frac{750}{10}', '&=75\\ \\text{m min}^{-1}'], 'It is the gradient of the chord through the two points.', ans=True)],
              graph(3, [[0, {'t': 15, 'read': 't'}]],
                    [{'kind': 'segment', 'from': [5, 825], 'to': [15, 1575], 'step': 2, 'dashed': True, 'color': 'indigo'},

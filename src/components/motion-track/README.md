@@ -32,6 +32,8 @@ A scene for the deck kit (`skill/openers-slide-deck/assets/`, deck kit v23) that
 - `sceneTitle` slides take `kind`, `motion`, `color` and `wide: true`; they draw the object large on a bare track or flat ground.
 - A question that needs more than the density budget is split with `cont` (the generator's `split`); the continuation can carry its own `from` so the last reveal still animates.
 
+- Labels on the s-t graph do not move (`window.labelMask`): each keeps its anchor on a ground-coloured backing and the curve passes behind it. Set `aspectPortrait` equal to `aspect` so the graph does not depend on window orientation.
+
 ## Pieces
 
 - `scenekit.js`: `Lab.motionSlide`, scene kinds `track` and `ride`, `motionArt` (title cards).

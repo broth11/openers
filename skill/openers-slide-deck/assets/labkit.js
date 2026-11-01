@@ -152,6 +152,7 @@
     const gx = o.gridx || o.grid || 1, gy = o.gridy || o.grid || 1;
     const X = x => (x - xmin) / (xmax - xmin) * W, Y = y => (ymax - y) / (ymax - ymin) * HH;
     const wrap = document.createElement('div'); wrap.className = 'lab-graph'; el.appendChild(wrap);
+    const MASK = !!o.labelMask; if (MASK) wrap.classList.add('mask');   /* v23: labels never move; a line passes behind the label's ground-coloured backing */
     if (o.aspect) { wrap.classList.add('wide'); wrap.style.aspectRatio = String(ASP); }
     const svg = mk('svg', { viewBox: `0 0 ${W} ${HH}`, class: 'lab-svg', role: 'img' }, wrap);
     const labels = document.createElement('div'); labels.className = 'lab-labels'; wrap.appendChild(labels);
@@ -234,7 +235,7 @@
       const taken = [];
       const clash = r => {
         let n = 0;
-        for (const [x, y] of pts) if (x > r.l - m && x < r.r + m && y > r.t - m && y < r.b + m) { n++; }
+        if (!MASK) for (const [x, y] of pts) if (x > r.l - m && x < r.r + m && y > r.t - m && y < r.b + m) { n++; }
         const dm = 12 * k + 2; for (const [x, y] of dots) if (x > r.l - dm && x < r.r + dm && y > r.t - dm && y < r.b + dm) n += 20;
         for (const q of taken) if (r.l < q.r + 2 && q.l < r.r + 2 && r.t < q.b + 2 && q.t < r.b + 2) n += 20;
         for (const q of ticks) if (r.l < q.r + 2 && q.l < r.r + 2 && r.t < q.b + 2 && q.t < r.b + 2) n += countOnly ? 20 : 0.3;
@@ -249,7 +250,7 @@
           'e^': [px + gap, py - h * 1.3], 'ev': [px + gap, py + h * 0.3], 'w^': [px - gap - w, py - h * 1.3], 'wv': [px - gap - w, py + h * 0.3],
           'e^^': [px + gap, py - h * 2.6], 'evv': [px + gap, py + h * 1.6], 'w^^': [px - gap - w, py - h * 2.6], 'wvv': [px - gap - w, py + h * 1.6],
           'n>>': [px + w * 0.7, py - gap - h], 'n<<': [px - w * 1.7, py - gap - h], 's>>': [px + w * 0.7, py + gap], 's<<': [px - w * 1.7, py + gap] }[dir]);
-        const side = L.pref[0], order = L.fixed ? [L.pref] : [L.pref].concat(DIRS.filter(q => q !== L.pref && q[0] === side), DIRS.filter(q => q[0] !== side));   /* v18: opts.fixed keeps the anchor */
+        const side = L.pref[0], order = (L.fixed || MASK) ? [L.pref] : [L.pref].concat(DIRS.filter(q => q !== L.pref && q[0] === side), DIRS.filter(q => q[0] !== side));   /* v18: opts.fixed keeps the anchor */
         let best = null;
         for (const dir of order) { const [l, t] = at(dir); const r = { l, t, r: l + w, b: t + h }; const n = clash(r);
           if (!best || n < best.n) best = { dir, r, n }; if (n === 0) break; }

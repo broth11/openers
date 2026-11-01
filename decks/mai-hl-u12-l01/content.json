@@ -99,7 +99,8 @@
      "yname": "s",
      "xtickFrom": 0,
      "aspect": 2.2,
-     "aspectPortrait": 2.2
+     "aspectPortrait": 2.2,
+     "labelMask": true
     },
     "scene": {
      "kind": "track",
@@ -526,7 +527,8 @@
      "yname": "s",
      "xtickFrom": 0,
      "aspect": 2.2,
-     "aspectPortrait": 2.2
+     "aspectPortrait": 2.2,
+     "labelMask": true
     },
     "scene": {
      "kind": "track",
@@ -947,7 +949,8 @@
      "yname": "s",
      "xtickFrom": 0,
      "aspect": 2.2,
-     "aspectPortrait": 2.2
+     "aspectPortrait": 2.2,
+     "labelMask": true
     },
     "scene": {
      "kind": "track",
@@ -1359,7 +1362,8 @@
      "yname": "s",
      "xtickFrom": 0,
      "aspect": 2.2,
-     "aspectPortrait": 2.2
+     "aspectPortrait": 2.2,
+     "labelMask": true
     },
     "scene": {
      "kind": "track",
@@ -1742,7 +1746,7 @@
       "step": 1,
       "answer": true,
       "label": "(4,\\,8)",
-      "anchor": "se"
+      "anchor": "w"
      }
     ],
     "given": [
@@ -1836,7 +1840,8 @@
      "yname": "s",
      "xtickFrom": 0,
      "aspect": 2.2,
-     "aspectPortrait": 2.2
+     "aspectPortrait": 2.2,
+     "labelMask": true
     },
     "scene": {
      "kind": "track",
@@ -2423,7 +2428,8 @@
      "yname": "s",
      "xtickFrom": 0,
      "aspect": 2.2,
-     "aspectPortrait": 2.2
+     "aspectPortrait": 2.2,
+     "labelMask": true
     },
     "scene": {
      "kind": "track",
@@ -2994,7 +3000,8 @@
      "yname": "s",
      "xtickFrom": 0,
      "aspect": 2.2,
-     "aspectPortrait": 2.2
+     "aspectPortrait": 2.2,
+     "labelMask": true
     },
     "scene": {
      "kind": "track",
@@ -3588,7 +3595,8 @@
      "yname": "s",
      "xtickFrom": 0,
      "aspect": 2.2,
-     "aspectPortrait": 2.2
+     "aspectPortrait": 2.2,
+     "labelMask": true
     },
     "scene": {
      "kind": "track",
@@ -4129,7 +4137,7 @@
       "step": 2,
       "answer": true,
       "label": "(6,\\,0)",
-      "anchor": "ne"
+      "anchor": "nw"
      }
     ],
     "given": [
@@ -4195,15 +4203,15 @@
    "title": "A ride over a hill",
    "setup": {
     "preamble": "Michael rides up a hill and down the other side to his friend's house. The dots show his position at various times $t$.",
-    "para": "The distance Michael has travelled at various times is given by $s(t)=1.2t^3-30t^2+285t$ metres, for $0\\le t\\le 19$ minutes. The hill is drawn only as he rides, so its steepness is not visible ahead of him. The picture is a sketch, not to scale.",
+    "para": "His position along the road, measured from the start, is $s(t)=1.2t^3-30t^2+285t$ metres, for $0\\le t\\le 19$ minutes. He never rides backward, so $s$ is also the distance he has travelled. The hill is drawn only as he rides, so its steepness is not visible ahead of him. The picture is a sketch, not to scale.",
     "facts": [
      {
-      "html": "Distance travelled <b>$s(t)=1.2t^3-30t^2+285t$</b>",
+      "html": "Position along the road <b>$s(t)=1.2t^3-30t^2+285t$</b>",
       "c": "blue",
       "shape": "cv"
      },
      {
-      "html": "Distance travelled $s$ is in metres and $t$ is in minutes, $0\\le t\\le 19$",
+      "html": "$s$ is measured from the start, in metres; $t$ is in minutes, $0\\le t\\le 19$",
       "shape": "none"
      },
      {
@@ -4232,7 +4240,8 @@
      "yname": "s",
      "xtickFrom": 0,
      "aspect": 2.7,
-     "aspectPortrait": 2.7
+     "aspectPortrait": 2.7,
+     "labelMask": true
     },
     "scene": {
      "kind": "ride",
@@ -7765,7 +7774,8 @@
      "yname": "s",
      "xtickFrom": 0,
      "aspect": 2.7,
-     "aspectPortrait": 2.7
+     "aspectPortrait": 2.7,
+     "labelMask": true
     },
     "scene": {
      "kind": "ride",
@@ -11278,12 +11288,12 @@
    "blocks": [
     {
      "walk": {
-      "cap": "Distance travelled",
+      "cap": "Change in position",
       "tex": [
        "s(15)-s(5)&=1575-825",
        "&=750\\ \\text{m}"
       ],
-      "note": "Use the calculator on $s(t)$."
+      "note": "Also his distance, as he never goes back."
      }
     },
     {
@@ -11312,7 +11322,8 @@
      "yname": "s",
      "xtickFrom": 0,
      "aspect": 2.7,
-     "aspectPortrait": 2.7
+     "aspectPortrait": 2.7,
+     "labelMask": true
     },
     "scene": {
      "kind": "ride",
@@ -14874,7 +14885,8 @@
      "yname": "s",
      "xtickFrom": 0,
      "aspect": 2.7,
-     "aspectPortrait": 2.7
+     "aspectPortrait": 2.7,
+     "labelMask": true
     },
     "scene": {
      "kind": "ride",
@@ -18417,7 +18429,8 @@
      "yname": "s",
      "xtickFrom": 0,
      "aspect": 2.7,
-     "aspectPortrait": 2.7
+     "aspectPortrait": 2.7,
+     "labelMask": true
     },
     "scene": {
      "kind": "ride",
