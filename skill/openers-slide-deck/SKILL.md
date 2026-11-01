@@ -85,6 +85,22 @@ question slides no longer use `sceneStart`; the generator drops it.
   drawing does ("the phone cannot hold more").
 - **Slider animations** run 1.5 times their v21 speed by default; `meta.animSpeed` overrides (1 = v21 speed).
 
+## Motion scenes (v23, MAI HL U12 L1, 1/11/2026)
+
+A scene kind for kinematics: an object on a track above a wide s-t graph, with strobe dots and a trace that exist only up to the
+cursor. Model: `decks/mai-hl-u12-l01/make_content.py` (copy in `assets/examples/MAI_U12_L1/`); full spec in
+`src/components/motion-track/README.md` of the openers repo.
+
+- Scene kinds `track` (car on a number line, second row for dots made moving backward) and `ride` (a rider on a ground profile drawn
+  only as far as they have gone). `graph.scene = {kind, layout: "stack", color, sec, from, motion: {pts, dot, ...}, states}`;
+  graph items `trace` and `marker` with `"pts": "motion"`; `sceneTitle` takes `motion`, `color`, `wide: true`.
+- **Checkpoints**: each question slide animates from `scene.from` to `states[0].t` on arrival by Next and stops; Next reveals the
+  answer; a later state with a larger `t` animates when reached by Next; Back and jumps show the finished state. `state.read`
+  (`ts`, `t`, `none`) keeps `s` off screen until its reveal.
+- Budget: a question with three reveals does not fit (probe `--G` 0.71); split it with `cont` (the generator's `split`), trim notes,
+  drop repeated prompts. The stack layout is `min(50cqw, 76cqh)` wide; keep the strip at 250 (`track`) or 290 (`ride`) units high.
+- Wording follows the Haese chapter on kinematics (displacement relative to the origin O, instantaneously at rest, chord, tangent).
+
 ## Internal assessment tie-ins (Ben, 30/10/2026)
 
 Every time a deck is planned, ask whether the lesson's topic could seed an IB MAI Internal Assessment

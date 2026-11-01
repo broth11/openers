@@ -50,6 +50,7 @@
   /* v22: the drawing alone, large (scene title cards). win sets the drawing's vertical scale; state.bare hides readouts */
   function sceneArt(el, win, kind, state, opts) {
     opts = opts || {};
+    if (kind === 'track' || kind === 'ride') return motionArt(el, kind, state, opts);
     const W = 600, H = 1000;
     const sc = document.createElement('div'); sc.className = 'scene'; el.appendChild(sc);
     if (kind === 'phone') { phoneArt(sc, state || {}, opts); return { el: sc }; }
@@ -473,6 +474,129 @@
     return state;
   }
 
+  /* ---------- motion scenes (MAI HL U12 L1, 1/11/2026): an object on a track above a standard s-t graph ----------
+     Lab.motionSlide(figEl, spec, shownFn) -> {redraw, enter(byNext), stepped(), stop}   (an example slide's figure)
+     spec.scene = {kind: 'track' | 'ride', layout: 'stack', color, sec, from, motion, states: [[reveal, {t, read, ...}], ...]}
+     motion = {pts: [[t, s], ...] (sampled by the generator), dot (one strobe dot per this many time units), xmin, xmax, lab, ...}
+     Nothing is drawn ahead of the cursor t: dots, trace and ground are all cut at t. The cursor moves by animation
+     (arrival by Next, or a reveal whose state has a later t); Back and jumps show the finished state without replay. */
+  const MOTION = {};
+  const ip = window.Lab.interp;
+  const strip = (kind, M) => (kind === 'ride' ? 290 : 250);
+  function motionRow(el, win, kind, sc) {
+    const W = 1000, H = strip(kind, sc.motion);
+    const row = document.createElement('div'); row.className = 'scene-row stack'; el.appendChild(row);
+    row.style.setProperty('--asp', String(win.aspect || 1.9));
+    const st = document.createElement('div'); st.className = 'scene mstrip'; st.style.aspectRatio = W + ' / ' + H; row.appendChild(st);
+    const svg = mk('svg', { viewBox: `0 0 ${W} ${H}`, class: 'scene-svg', role: 'img', 'aria-label': sc.alt || kind }, st);
+    const labs = document.createElement('div'); labs.className = 'scene-labels'; st.appendChild(labs);
+    const gh = document.createElement('div'); gh.className = 'scene-graph'; row.appendChild(gh);
+    let grp = mk('g', {}, svg);
+    const api = () => ({ W, H, el: (t, a, p) => mk(t, a, p || grp),
+      text(x, y, html, cls, anchor) { const d = document.createElement('div'); d.className = 'scene-text ' + (cls || '');
+        d.style.left = (x / W * 100) + '%'; d.style.top = (y / H * 100) + '%';
+        d.style.transform = { w: 'translate(0,-50%)', e: 'translate(-100%,-50%)', c: 'translate(-50%,-50%)', n: 'translate(-50%,0)', s: 'translate(-50%,-100%)' }[anchor || 'w'];
+        d.innerHTML = prose(html); labs.appendChild(d); return d; } });
+    function draw(state) { grp.remove(); grp = mk('g', {}, svg); labs.innerHTML = ''; MOTION[kind](api(), state || {}, sc.motion, sc.color || HANDLE_C); }
+    return { row, draw, gh };
+  }
+  /* readout row: t and s on one line (s only when the state allows it) */
+  function motionRead(a, s, M, C, y) {
+    if (s.bare || s.read === 'none') return;
+    if (M.xmin != null) a.text(960, y, `$s\\ (\\text{${M.unit}})$`, 'sc-unit', 'e');
+    a.text(40, y, `$t=${num(s.t, Math.abs(s.t - Math.round(s.t)) < 0.005 ? 0 : 1)}\\ \\text{${M.tunit}}$`, 'sc-read', 'w');   /* tenths only while the cursor is between whole units */
+    if (s.read !== 't') a.text(360, y, `$s=${num(ip(M.pts, s.t), M.sdp == null ? 1 : M.sdp)}\\ \\text{${M.unit}}$`, 'sc-read', 'w').style.color = C;
+  }
+  const dirAt = (pts, t) => { const d = ip(pts, t) - ip(pts, Math.max(0, t - 0.01)); return t < 0.011 ? 1 : (Math.abs(d) < 1e-9 ? 0 : Math.sign(d)); };
+  MOTION.track = (a, s, M, C) => {
+    const t = s.t || 0, y0 = 168, yr = 130, X = v => 50 + (v - M.xmin) / (M.xmax - M.xmin) * 900;
+    const pos = ip(M.pts, t), mk_ = a.el;
+    mk_('line', { x1: 30, x2: 970, y1: yr, y2: yr, class: 'sc-road', 'stroke-width': 8, 'stroke-linecap': 'round' });
+    mk_('line', { x1: 30, x2: 962, y1: y0, y2: y0, class: 'sc-tick', 'stroke-width': 4 });
+    mk_('polygon', { points: `976,${y0} 958,${y0 - 9} 958,${y0 + 9}`, class: 'sc-tickfill' });
+    for (let v = Math.ceil(M.xmin); v <= M.xmax + 1e-9; v++) {
+      const o = v === 0, lab = v % (M.lab || 1) === 0 || o;
+      mk_('line', { x1: X(v), x2: X(v), y1: y0 - (o ? 16 : 8), y2: y0 + (o ? 16 : 8), class: o ? 'sc-origin' : 'sc-tick', 'stroke-width': o ? 6 : 3 });
+      if (lab) a.text(X(v), y0 + 56, o ? '$\\mathbf{O}$' : `$${v}$`, o ? 'sc-unit' : 'sc-num', 'c');
+    }
+    if (!s.bare) {
+      /* strobe dots and the traced line: forward motion on the number line, backward motion one row below it */
+      const rowY = d => (d < 0 ? y0 + 26 : y0), tr = [];
+      for (let u = 0; u <= t + 1e-9; u += 0.02) { const q = Math.min(u, t); tr.push(`${X(ip(M.pts, q)).toFixed(1)},${rowY(dirAt(M.pts, q))}`); if (q >= t) break; }
+      if (t > 0) tr.push(`${X(pos).toFixed(1)},${rowY(dirAt(M.pts, t))}`);
+      if (tr.length > 1) mk_('polyline', { points: tr.join(' '), fill: 'none', stroke: C, 'stroke-width': 3, 'stroke-linejoin': 'round', opacity: .55 });
+      for (let k = 0; k * M.dot <= t + 1e-9; k++) { const tk = k * M.dot;
+        mk_('circle', { cx: X(ip(M.pts, tk)), cy: rowY(k ? dirAt(M.pts, tk) : 1), r: 11, fill: C }); }
+      mk_('line', { x1: X(pos), x2: X(pos), y1: yr + 6, y2: y0 - 12, stroke: C, 'stroke-width': 4, 'stroke-dasharray': '2 9', 'stroke-linecap': 'round' });
+    }
+    /* the car: faces the way it last moved */
+    const dir = s.bare ? 1 : (dirAt(M.pts, t) || s.last || 1);
+    const g = mk_('g', { transform: `translate(${X(pos)},${yr}) scale(${dir},1)` });
+    mk_('path', { d: 'M -52 -16 L -52 -36 Q -52 -44 -44 -44 L -26 -44 L -14 -64 Q -10 -70 -2 -70 L 22 -70 Q 30 -70 34 -64 L 44 -44 L 46 -44 Q 54 -44 54 -36 L 54 -16 Z', fill: '#F2F4F7', stroke: '#55636F', 'stroke-width': 4, 'stroke-linejoin': 'round' }, g);
+    mk_('path', { d: 'M -12 -46 L -3 -61 L 20 -61 L 29 -46 Z', fill: '#9AC4E0', stroke: '#55636F', 'stroke-width': 3 }, g);
+    [-30, 30].forEach(x => { mk_('circle', { cx: x, cy: -14, r: 15, fill: '#2B3640', stroke: '#9AA8B4', 'stroke-width': 3 }, g); mk_('circle', { cx: x, cy: -14, r: 5, fill: '#9AA8B4' }, g); });
+    motionRead(a, s, M, C, 28);
+  };
+  MOTION.ride = (a, s, M, C) => {
+    const t = s.t || 0, base = 282, d = ip(M.pts, t), mk_ = a.el;
+    const H = M.hill, hx = H.map(r => [r[0], r[1]]), hy = H.map(r => [r[0], r[2]]);
+    const P = q => [ip(hx, q), ip(hy, q)];
+    let ang = 0, px, py;
+    if (s.bare) { px = 320; py = 232; mk_('rect', { x: 0, y: py, width: 1000, height: base - py, fill: '#8B7355' }); mk_('line', { x1: 0, x2: 1000, y1: py, y2: py, stroke: '#6FA05A', 'stroke-width': 9 }); }
+    else {
+      const pts = H.filter(r => r[0] <= d + 1e-9).map(r => [r[1], r[2]]), end = P(d);
+      if (!pts.length || pts[pts.length - 1][0] < end[0] - 1e-9) pts.push(end);
+      pts.unshift([0, pts[0][1]]);   /* the flat run-in behind the start: nothing ahead of him is drawn */
+      const gid = 'gf' + Math.random().toString(36).slice(2, 7), gd = mk_('linearGradient', { id: gid, gradientUnits: 'userSpaceOnUse', x1: end[0] - 90, x2: end[0], y1: 0, y2: 0 });
+      mk_('stop', { offset: 0, 'stop-color': '#8B7355', 'stop-opacity': .9 }, gd); mk_('stop', { offset: 1, 'stop-color': '#8B7355', 'stop-opacity': 0 }, gd);
+      mk_('polygon', { points: [[0, base]].concat(pts, [[end[0], base]]).map(q => q.map(v => v.toFixed(1)).join(',')).join(' '), fill: `url(#${gid})` });
+      mk_('polyline', { points: pts.map(q => q.map(v => v.toFixed(1)).join(',')).join(' '), fill: 'none', stroke: '#6FA05A', 'stroke-width': 9, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' });
+      for (let k = 0; k * M.dot <= t + 1e-9; k++) { const [x, y] = P(ip(M.pts, k * M.dot)); mk_('circle', { cx: x, cy: y - 2, r: 9, fill: C, stroke: '#14202B', 'stroke-width': 2 }); }
+      [px, py] = end; const back = P(Math.max(0, d - 90)); ang = Math.atan2(py - back[1], px - back[0]) * 180 / Math.PI; if (d < 90) ang = Math.atan2(P(90)[1] - back[1], P(90)[0] - back[0]) * 180 / Math.PI;
+      if (s.mark != null) { const [mx, my] = P(ip(M.pts, s.mark)); mk_('circle', { cx: mx, cy: my - 2, r: 22, fill: 'none', stroke: 'var(--bl)', 'stroke-width': 6 }); a.text(mx - 34, my - 2, '$\\text{steepest}$', 'sc-mk', 'e'); }
+    }
+    const g = mk_('g', { transform: `translate(${px.toFixed(1)},${(py - 6).toFixed(1)}) rotate(${ang.toFixed(1)})` });
+    [-26, 26].forEach(x => mk_('circle', { cx: x, cy: -16, r: 16, fill: 'none', stroke: 'var(--title)', 'stroke-width': 4 }, g));
+    mk_('polyline', { points: '-26,-16 -6,-16 6,-40 22,-40 26,-16', fill: 'none', stroke: 'var(--title)', 'stroke-width': 4, 'stroke-linejoin': 'round' }, g);
+    mk_('line', { x1: 6, y1: -40, x2: -6, y2: -16, stroke: 'var(--title)', 'stroke-width': 4 }, g);
+    mk_('polyline', { points: '-6,-16 -10,-52 6,-68', fill: 'none', stroke: C, 'stroke-width': 7, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, g);
+    mk_('circle', { cx: 10, cy: -82, r: 11, fill: C }, g);
+    motionRead(a, s, M, C, 28);
+  };
+  function motionArt(el, kind, state, opts) {
+    const W = 1000, H = strip(kind), sc = document.createElement('div'); sc.className = 'scene'; el.appendChild(sc);
+    el.style.aspectRatio = W + ' / ' + H;
+    const svg = mk('svg', { viewBox: `0 0 ${W} ${H}`, class: 'scene-svg', role: 'img', 'aria-label': opts.alt || kind }, sc);
+    const labs = document.createElement('div'); labs.className = 'scene-labels'; sc.appendChild(labs);
+    const grp = mk('g', {}, svg), a = { W, H, el: (t, at, p) => mk(t, at, p || grp),
+      text(x, y, html, cls, anchor) { const d = document.createElement('div'); d.className = 'scene-text ' + (cls || '');
+        d.style.left = (x / W * 100) + '%'; d.style.top = (y / H * 100) + '%';
+        d.style.transform = { w: 'translate(0,-50%)', e: 'translate(-100%,-50%)', c: 'translate(-50%,-50%)' }[anchor || 'w'];
+        d.innerHTML = prose(html); labs.appendChild(d); return d; } };
+    MOTION[kind](a, Object.assign({ bare: true, t: 0 }, state || {}), opts.motion, opts.color || HANDLE_C);
+  }
+  function motionSlide(figEl, sp, shownFn) {
+    const sc = sp.scene, M = sc.motion;
+    const host = document.createElement('div'); host.style.cssText = 'display:contents'; figEl.appendChild(host);
+    const sr = motionRow(host, sp.window, sc.kind, sc);
+    let curT = 0, raf = 0, lastN = 0, prevN = 0;
+    const g = window.Lab.figure(sr.gh, sp, shownFn, { t: () => curT, M });
+    const stateAt = n => { let st = {}; (sc.states || []).forEach(([k, v]) => { if (k <= n) st = v; }); return st; };
+    const paint = (t, st) => { curT = t; g.redraw(); sr.draw(Object.assign({}, st, { t })); };
+    const stop = () => { if (raf) cancelAnimationFrame(raf); raf = 0; };
+    function run(from, to, st) {
+      stop(); const dur = Math.abs(to - from) * (sc.sec || 1) / (window.LAB_SPEED || 1);
+      if (reduced() || dur <= 0) { paint(to, st); return; }
+      const t0 = performance.now(); paint(from, st);
+      const frame = now => { const f = Math.min(1, (now - t0) / 1000 / dur); paint(from + (to - from) * f, st); raf = f < 1 ? requestAnimationFrame(frame) : 0; };
+      raf = requestAnimationFrame(frame);
+    }
+    return { g, stop,
+      redraw() { stop(); prevN = lastN; lastN = shownFn(); const st = stateAt(lastN); paint(st.t || 0, st); },
+      enter(byNext) { const st = stateAt(shownFn()); if (byNext && sc.from != null && sc.from < (st.t || 0)) run(sc.from, st.t, st); },
+      stepped() { const a = stateAt(prevN).t || 0, b = stateAt(lastN).t || 0; if (lastN === prevN + 1 && b > a) run(a, b, stateAt(lastN)); } };
+  }
+  window.Lab.motionSlide = motionSlide;
   window.Lab.sceneRow = sceneRow;
   window.Lab.sceneArt = sceneArt;
 

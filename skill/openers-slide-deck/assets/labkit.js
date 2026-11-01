@@ -407,9 +407,15 @@
                  label {at, tex, anchor}, angle {O,P,Q}; common: step (visible once that step is shown),
                  dashed, answer (indigo), label/anchor on a point.
      shown() returns the number of steps currently revealed on the slide. */
-  function figure(el, spec, shownFn) {
+  /* v23: linear interpolation on sorted [[x, y], ...] */
+  const interp = (pts, x) => { if (x <= pts[0][0]) return pts[0][1];
+    for (let i = 1; i < pts.length; i++) if (x <= pts[i][0]) { const [x0, y0] = pts[i - 1], [x1, y1] = pts[i]; return y0 + (y1 - y0) * (x - x0) / (x1 - x0); }
+    return pts[pts.length - 1][1]; };
+  function figure(el, spec, shownFn, ctx) {
     const g = graph(el, spec.window);
     const P = a => ({ x: a[0], y: a[1] });
+    const upd = [];   /* v23 motion items: moved from ctx.t() just before each redraw */
+    if (ctx) { const rd = g.redraw; g.redraw = () => { upd.forEach(f => f()); rd(); }; }
     spec.items.forEach(it => {
       const vis = () => (it.step || 0) <= shownFn() && (it.until === undefined || shownFn() <= it.until);   /* v6: until = last step shown */
       const o = { dashed: it.dashed, dotted: it.dotted, answer: it.answer, color: it.color, arrows: it.arrows, visible: vis, opacity: it.opacity, outline: it.outline };
@@ -424,6 +430,18 @@
       else if (it.kind === 'label') g.label(it.at[0], it.at[1], it.tex, { anchor: it.anchor || 'c', visible: vis });
       else if (it.kind === 'north') g.north(P(it.at), { len: it.len, visible: vis });
       else if (it.kind === 'arc') g.arc(P(it.at), it.from, it.to, { r: it.r, color: it.answer ? HANDLE : it.color, visible: vis });   /* v13 */
+      else if (it.kind === 'trace' && ctx) {   /* v23: a curve drawn only up to the scene's current time, with a dot per it.dots time units */
+        const T = () => ctx.t(), pts = it.pts === 'motion' ? ctx.M.pts : it.pts;   /* 'motion': the scene's own table */
+        g.path(() => { const t = T(), out = []; for (let i = 0; i < pts.length; i++) { if (pts[i][0] <= t + 1e-9) out.push(pts[i]); else { if (i > 0) out.push([t, interp(pts, t)]); break; } } return out; }, o);
+        if (it.dots) for (let k = 0, n = Math.floor(pts[pts.length - 1][0] / it.dots + 1e-9); k <= n; k++) { const x = k * it.dots;
+          g.point({ x, y: interp(pts, x) }, { color: it.dotColor, visible: () => vis() && x <= T() + 1e-9 }); }
+      }
+      else if (it.kind === 'marker' && ctx) {   /* v23: the moving marker on a traced curve, with dotted guides to the axes */
+        const m = g.point({ x: 0, y: 0 }, { color: it.color, visible: vis }), w = spec.window, mp = it.pts === 'motion' ? ctx.M.pts : it.pts;
+        upd.push(() => { const t = ctx.t(); m.x = t; m.y = interp(mp, t); });
+        g.segment(() => ({ x: m.x, y: w.ymin }), () => ({ x: m.x, y: m.y }), { dotted: true, color: it.color, visible: vis });
+        g.segment(() => ({ x: w.xmin, y: m.y }), () => ({ x: m.x, y: m.y }), { dotted: true, color: it.color, visible: vis });
+      }
       else if (it.kind === 'bearing') g.bearing(P(it.at), it.deg, { r: it.r, from: it.from, label: it.label, labelAt: it.labelAt, muted: it.muted, color: it.color, visible: vis });
     });
     g.redraw();
@@ -1265,5 +1283,5 @@
     }
   };
 
-  window.Lab = { graph, figure, placeAll: el => el.querySelectorAll('.lab-graph').forEach(w => w.__g && w.__g.redraw()), slider, toggle, readout, fitReadout, Frac, linTex, generalTex, presets };
+  window.Lab = { graph, figure, interp, placeAll: el => el.querySelectorAll('.lab-graph').forEach(w => w.__g && w.__g.redraw()), slider, toggle, readout, fitReadout, Frac, linTex, generalTex, presets };
 })();
