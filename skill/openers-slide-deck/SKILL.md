@@ -9,7 +9,7 @@ One opener, one `content.json` (written by a small Python generator), one build.
 self-contained HTML file (~1.4 MB with the picker; fonts and KaTeX embedded, zero network) that works as a
 published artifact and as a file. It is the AA SL online-lesson kit (v21) plus five additions taken from the
 openers, so everything in that kit still builds. Model for new decks: `assets/examples/MAI_U5_L4/`
-(v22 house rules: 38 slides with title cards, setup slides, colour-coded facts and the notepad IA slide; checker PASS
+(v22/v23 house rules, v23 section below: 38 slides with title cards, setup slides, colour-coded facts and the notepad IA slide; checker PASS
 at nine sizes, 31/10/2026). `assets/examples/MAI_U5_L3/make_content.py` is the older v21 model (no title cards).
 
 ```
@@ -212,12 +212,40 @@ U5 L3 deck: checker PASS at nine sizes.
 - Phone (portrait): scene row `min(52cqw, 30cqh)`; recap cards hidden.
 
 
-## scatterLab updates (31/10/2026)
-- `rslider {min,max,step,start,seconds,auto}` with a set's `noise` rebuilds the points so r equals the slider exactly (standardised x plus a noise vector made orthogonal to x). `fit: true` draws the least-squares line live.
-- `scene` kind `scatter` (`scatterArt`) draws title-card art that follows the graph's window (`state.win`, `pts`, `xname`, `yname`, `bare`), so cards match the graph's proportions.
-- Graph `xname`/`yname` are plain text (not TeX); the title-card art wraps them in `\text{}`.
-- Two graphs on one example slide: `graph.second = {window, items}` stacks a second graph under the first (give both windows `aspect` about 3.0; both share the slide's reveal steps). The stem never goes `wide` on such a slide. Phones shrink the text (a warning, not a failure).
-- `solo: true` on an example hides the graph so a wide table can use the full width (the 8-column rank tables).
-- `tagline` on a `sceneTitle` adds an italic line under the title. The title-card art keeps its axis names above the axis so they stay inside the art box.
-- Stacked graphs get a clear gap (`.ex.dual .fig`) and the generator adds room under each axis for the tick labels. A lab's title block is kept 14px clear of the first control group by a guard in `fit()` plus a ResizeObserver, so a wrapped title never runs into READINGS or DATA. `\htmlClass{ansc}{...}` in a walk's TeX colours that part in the answer yellow.
-- A `gdc` slide takes `table` (TeX, shown as a display under the title, left aligned) for the data students type into the calculator.
+## v23 house rules (Ben, 31/10 and 1/11/2026; MAI HL U5 L6 is the model: `decks/mai-hl-u05-l06/make_content.py`)
+
+Content rules
+- Axis names and story variables: graph axes carry the story's own variable and unit, e.g. `hours (h)`, `mark (m)`, never bare
+  x and y (a recap that mixes datasets keeps x and y). The same letters appear in the setup facts, the tables and the questions.
+  `xname`/`yname` in a window are plain text, not TeX; the title-card art wraps them in `\text{}` itself.
+- Title cards for a graph follow that graph: `sceneTitle` with `kind: 'scatter'` and `state {pts, win, xname, yname, bare}` draws a
+  square card whose shape and axis names match the scene's graph. `tagline` adds an italic line under the title
+  (e.g. "A spurious correlation").
+- A line of best fit has to be read, not just drawn: every regression scene gets a "Read the line" slide that states what the
+  slope and the intercept mean in the story's own units, and says when the intercept is outside the data or impossible.
+- Prediction questions that compare coefficients ask "which is closer to 1", and name both (`r` of the data, `r_s` of the ranks).
+- Both coefficients get a one-point lab: the Pearson lab (fit line, `r`) in the scene that teaches r, and a clone for Spearman
+  (`rs: true`, no fit line, both readouts) after r_s is taught. Titles: "The effects of one point on the Pearson's Product-Moment
+  Correlation Coefficient" and "...Spearman's Rank Correlation Coefficient".
+- A correlation-versus-causation scene ends by splitting the scatter into two graphs against the lurking variable (temperature),
+  each with its line and r.
+- Rank-by-hand slide: the question shows the data table only (hours, time). The answer reveals the 4-row table with the two
+  ranked rows added (yellow, `\htmlClass{ansc}{...}`), then a standalone two-row ranking table in the same yellow. The slide is
+  `solo: true` (no graph) so the 8-column tables use the full width.
+- Calculator slides show the data table students type in: `table` (TeX) on the `gdc` slide, under the title, left aligned. For r_s it is
+  the ranked table (yellow ranks); for r, the data table.
+
+Engine and layout rules
+- Two graphs on one example: `graph.second = {window, items}` stacks a second graph under the first. Give both windows
+  `aspect` 3.2 and extra room below the axis (about 9 % of the y span) so tick labels stay inside their own graph; the
+  stack has a clear gap (`.ex.dual .fig`). Both share the slide's reveal steps; the stem never goes `wide`. Phones shrink
+  the text on these slides (a checker warning, not a failure).
+- `solo: true` on an example hides the graph. `\htmlClass{ansc}{...}` colours part of a walk's TeX in the answer yellow.
+- Lab title block: a guard in `fit()` plus a ResizeObserver keep the title 14px clear of the first control group, so a long or
+  wrapped title never runs into READINGS or DATA.
+- Title-card headings wrap (`text-wrap: balance`), the art height is `min(50cqh, 62cqw)`, and its axis names sit above the axis.
+- scatterLab: `rslider {min,max,step,start,seconds,auto}` with a set's `noise` rebuilds the points so r equals the slider exactly
+  (standardised x plus a noise vector made orthogonal to x); `fit: true` draws the least-squares line; `extra`, `dragIndex`,
+  `rs`, `cards` as before. Colour roles: avoid `indigo` for data points on the dark theme (it is the answer ink).
+- Check after any change: `check_deck.py` at nine sizes, per-slide `--probe` at 1470x830, 1280x800 and 1000x545, and the deck-wide
+  `--G` (a single over-long title card once cut the whole deck to 0.83).

@@ -123,3 +123,7 @@ Emulator facts (23–24/10/2026; the full list is in `references/menu_paths_veri
 - Press K (screen only, larger, plain bezel) and check one slide; at 390×844 the calculator is
   screen only, above the steps.
 - Teacher's screens: MacBook Air 13.6" (1470×956, 1470×830); students: 13" MacBooks.
+
+
+## Data table on the slide (1/11/2026)
+When students type data in, the slide shows it: `table` on the `gdc` slide, a TeX array right under the title (ranks in yellow for Spearman). Do not make them flip back to a question slide for the numbers.

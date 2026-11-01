@@ -259,3 +259,11 @@ template then centres and enlarges the table (`.turn:last-child`) and marks the 
 ### `today`
 
 Present in the engine, **not used** (decision: no Today slide).
+
+
+## v23 additions (1/11/2026)
+- `sceneTitle`: `tagline` (optional italic line under the title); `kind: 'scatter'` takes `state {pts, win {xmin,xmax,ymin,ymax}, xname, yname, bare}` and draws a square card that follows the graph.
+- `example`: `solo: true` hides the graph (wide tables); `graph.second = {window, items}` stacks a second graph (windows with `aspect` 3.2).
+- `walk.tex` may hold a whole `\begin{array}` table; `\htmlClass{ansc}{...}` colours cells in the answer yellow.
+- `gdc`: `table` (TeX) shows the data table under the title.
+- `lab` / `scatterLab`: `rslider`, `fit`, `rs`, `extra`, `dragIndex`, `cards` (see SKILL.md, v23 house rules).
