@@ -152,6 +152,7 @@
     const gx = o.gridx || o.grid || 1, gy = o.gridy || o.grid || 1;
     const X = x => (x - xmin) / (xmax - xmin) * W, Y = y => (ymax - y) / (ymax - ymin) * HH;
     const wrap = document.createElement('div'); wrap.className = 'lab-graph'; el.appendChild(wrap);
+    const MASK = !!o.labelMask; if (MASK) wrap.classList.add('mask');   /* v23: labels never move; a line passes behind the label's ground-coloured backing */
     if (o.aspect) { wrap.classList.add('wide'); wrap.style.aspectRatio = String(ASP); }
     const svg = mk('svg', { viewBox: `0 0 ${W} ${HH}`, class: 'lab-svg', role: 'img' }, wrap);
     const labels = document.createElement('div'); labels.className = 'lab-labels'; wrap.appendChild(labels);
@@ -174,7 +175,7 @@
     /* v11: o.xticks / o.yticks = [[value, tex], ...] replace the numeric ticks (multiples of π) */
     const tickTex = (x, y, t, a) => { tick(x, y, '', a); labels.lastChild.innerHTML = tex(t); };
     if (o.xticks) o.xticks.forEach(([v, t]) => { if (!near(v, 0) && v > xmin + 1e-9 && v < xmax - 1e-9) tickTex(v, 0, t, 'tx'); });
-    else for (let x = Math.ceil(Math.max(xmin, o.xtickFrom ?? xmin) / xt) * xt; x <= xmax; x += xt) if (!near(x, 0) && !near(x, xmin) && !near(x, xmax)) tick(x, 0, num(x), 'tx');
+    else for (let x = Math.ceil(Math.max(xmin, o.xtickFrom ?? xmin) / xt) * xt; x <= xmax; x += xt) if (!near(x, 0) && !near(x, xmin) && !near(x, xmax)) tick(x, o.xtickBottom ? ymin : 0, num(x), 'tx');   /* v24: xtickBottom puts the t numbers under the frame, clear of a curve that dips below the axis */
     if (o.yticks) o.yticks.forEach(([v, t]) => { if (!near(v, 0) && v > ymin + 1e-9 && v < ymax - 1e-9) tickTex(0, v, t, 'ty'); });
     else for (let y = Math.ceil(Math.max(ymin, o.ytickFrom ?? ymin) / yt) * yt; y <= ymax; y += yt) if (!near(y, 0) && !near(y, ymin) && !near(y, ymax)) tick(0, y, num(y), 'ty');
     if (o.plain) labels.querySelectorAll('.lab-tick').forEach(e => e.remove());
@@ -234,7 +235,7 @@
       const taken = [];
       const clash = r => {
         let n = 0;
-        for (const [x, y] of pts) if (x > r.l - m && x < r.r + m && y > r.t - m && y < r.b + m) { n++; }
+        if (!MASK) for (const [x, y] of pts) if (x > r.l - m && x < r.r + m && y > r.t - m && y < r.b + m) { n++; }
         const dm = 12 * k + 2; for (const [x, y] of dots) if (x > r.l - dm && x < r.r + dm && y > r.t - dm && y < r.b + dm) n += 20;
         for (const q of taken) if (r.l < q.r + 2 && q.l < r.r + 2 && r.t < q.b + 2 && q.t < r.b + 2) n += 20;
         for (const q of ticks) if (r.l < q.r + 2 && q.l < r.r + 2 && r.t < q.b + 2 && q.t < r.b + 2) n += countOnly ? 20 : 0.3;
@@ -249,7 +250,7 @@
           'e^': [px + gap, py - h * 1.3], 'ev': [px + gap, py + h * 0.3], 'w^': [px - gap - w, py - h * 1.3], 'wv': [px - gap - w, py + h * 0.3],
           'e^^': [px + gap, py - h * 2.6], 'evv': [px + gap, py + h * 1.6], 'w^^': [px - gap - w, py - h * 2.6], 'wvv': [px - gap - w, py + h * 1.6],
           'n>>': [px + w * 0.7, py - gap - h], 'n<<': [px - w * 1.7, py - gap - h], 's>>': [px + w * 0.7, py + gap], 's<<': [px - w * 1.7, py + gap] }[dir]);
-        const side = L.pref[0], order = L.fixed ? [L.pref] : [L.pref].concat(DIRS.filter(q => q !== L.pref && q[0] === side), DIRS.filter(q => q[0] !== side));   /* v18: opts.fixed keeps the anchor */
+        const side = L.pref[0], order = (L.fixed || MASK) ? [L.pref] : [L.pref].concat(DIRS.filter(q => q !== L.pref && q[0] === side), DIRS.filter(q => q[0] !== side));   /* v18: opts.fixed keeps the anchor */
         let best = null;
         for (const dir of order) { const [l, t] = at(dir); const r = { l, t, r: l + w, b: t + h }; const n = clash(r);
           if (!best || n < best.n) best = { dir, r, n }; if (n === 0) break; }
@@ -407,9 +408,22 @@
                  label {at, tex, anchor}, angle {O,P,Q}; common: step (visible once that step is shown),
                  dashed, answer (indigo), label/anchor on a point.
      shown() returns the number of steps currently revealed on the slide. */
-  function figure(el, spec, shownFn) {
+  /* v23: linear interpolation on sorted [[x, y], ...] */
+  const interp = (pts, x) => { if (x <= pts[0][0]) return pts[0][1];
+    for (let i = 1; i < pts.length; i++) if (x <= pts[i][0]) { const [x0, y0] = pts[i - 1], [x1, y1] = pts[i]; return y0 + (y1 - y0) * (x - x0) / (x1 - x0); }
+    return pts[pts.length - 1][1]; };
+  /* v24: [[t0, t1, +1 | -1], ...] runs of one sign in a sorted table [[t, y], ...]; a sign change is split at the crossing */
+  const areaRuns = pts => { const runs = [], eps = 1e-9;
+    const push = (t0, t1, sg) => { if (t1 - t0 < eps || !sg) return; const l = runs[runs.length - 1];
+      if (l && l.sg === sg && Math.abs(l.t1 - t0) < eps) l.t1 = t1; else runs.push({ t0, t1, sg }); };
+    for (let i = 1; i < pts.length; i++) { const [xa, ya] = pts[i - 1], [xb, yb] = pts[i], sa = Math.abs(ya) < eps ? 0 : Math.sign(ya), sb = Math.abs(yb) < eps ? 0 : Math.sign(yb);
+      if (sa * sb < 0) { const xc = xa + (xb - xa) * ya / (ya - yb); push(xa, xc, sa); push(xc, xb, sb); } else push(xa, xb, sa || sb); }
+    return runs; };
+  function figure(el, spec, shownFn, ctx) {
     const g = graph(el, spec.window);
     const P = a => ({ x: a[0], y: a[1] });
+    const upd = [];   /* v23 motion items: moved from ctx.t() just before each redraw */
+    if (ctx) { const rd = g.redraw; g.redraw = () => { upd.forEach(f => f()); rd(); }; }
     spec.items.forEach(it => {
       const vis = () => (it.step || 0) <= shownFn() && (it.until === undefined || shownFn() <= it.until);   /* v6: until = last step shown */
       const o = { dashed: it.dashed, dotted: it.dotted, answer: it.answer, color: it.color, arrows: it.arrows, visible: vis, opacity: it.opacity, outline: it.outline };
@@ -424,6 +438,28 @@
       else if (it.kind === 'label') g.label(it.at[0], it.at[1], it.tex, { anchor: it.anchor || 'c', visible: vis });
       else if (it.kind === 'north') g.north(P(it.at), { len: it.len, visible: vis });
       else if (it.kind === 'arc') g.arc(P(it.at), it.from, it.to, { r: it.r, color: it.answer ? HANDLE : it.color, visible: vis });   /* v13 */
+      else if (it.kind === 'trace' && ctx) {   /* v23: a curve drawn only up to the scene's current time, with a dot per it.dots time units */
+        const T = () => ctx.t(), pts = it.pts === 'motion' ? ctx.M.pts : it.pts === 'vt' ? ctx.M.vt : it.pts;   /* 'motion': the scene's own table (v24: 'vt', its v-t table) */
+        g.path(() => { const t = T(), out = []; for (let i = 0; i < pts.length; i++) { if (pts[i][0] <= t + 1e-9) out.push(pts[i]); else { if (i > 0) out.push([t, interp(pts, t)]); break; } } return out; }, o);
+        if (it.dots) for (let k = 0, n = Math.floor(pts[pts.length - 1][0] / it.dots + 1e-9); k <= n; k++) { const x = k * it.dots;
+          g.point({ x, y: interp(pts, x) }, { color: it.dotColor, visible: () => vis() && x <= T() + 1e-9 }); }
+      }
+      else if (it.kind === 'marker' && ctx) {   /* v23: the moving marker on a traced curve, with dotted guides to the axes */
+        const m = g.point({ x: 0, y: 0 }, { color: it.color, visible: vis }), w = spec.window, mp = it.pts === 'motion' ? ctx.M.pts : it.pts === 'vt' ? ctx.M.vt : it.pts;
+        upd.push(() => { const t = ctx.t(); m.x = t; m.y = interp(mp, t); });
+        if (it.guides !== false) {   /* v24: guides:false leaves the bare marker (a v-t graph with shaded area) */
+          g.segment(() => ({ x: m.x, y: w.ymin }), () => ({ x: m.x, y: m.y }), { dotted: true, color: it.color, visible: vis });
+          g.segment(() => ({ x: w.xmin, y: m.y }), () => ({ x: m.x, y: m.y }), { dotted: true, color: it.color, visible: vis }); }
+      }
+      else if (it.kind === 'area' && ctx) {   /* v24 (U12 L2): the area between a traced curve and the t-axis, shaded only up to the scene's cursor;
+                                                  one colour where the curve is above the axis (posColor), another below it (negColor) */
+        const pts = it.pts === 'vt' ? ctx.M.vt : it.pts;
+        areaRuns(pts).forEach(r => g.polygon(() => { const t = Math.min(ctx.t(), r.t1); if (t <= r.t0 + 1e-9) return [];
+          const ring = [{ x: r.t0, y: 0 }, { x: r.t0, y: interp(pts, r.t0) }];
+          pts.forEach(([x, y]) => { if (x > r.t0 + 1e-9 && x < t - 1e-9) ring.push({ x, y }); });
+          ring.push({ x: t, y: interp(pts, t) }, { x: t, y: 0 }); return ring; },
+          { color: r.sg > 0 ? it.posColor : it.negColor, opacity: it.opacity ?? 0.5, visible: vis }));
+      }
       else if (it.kind === 'bearing') g.bearing(P(it.at), it.deg, { r: it.r, from: it.from, label: it.label, labelAt: it.labelAt, muted: it.muted, color: it.color, visible: vis });
     });
     g.redraw();
@@ -1265,5 +1301,5 @@
     }
   };
 
-  window.Lab = { graph, figure, placeAll: el => el.querySelectorAll('.lab-graph').forEach(w => w.__g && w.__g.redraw()), slider, toggle, readout, fitReadout, Frac, linTex, generalTex, presets };
+  window.Lab = { graph, figure, interp, areaRuns, placeAll: el => el.querySelectorAll('.lab-graph').forEach(w => w.__g && w.__g.redraw()), slider, toggle, readout, fitReadout, Frac, linTex, generalTex, presets };
 })();

@@ -800,7 +800,13 @@ function openDeck(push) {
   $('pnav').open = false
   const f = deckFrame()
   f.hidden = false
-  if (f.getAttribute('src') !== L.deck) f.setAttribute('src', L.deck)
+  // The single-file artifact build carries the deck inline (scripts/artifact.mjs), since it has no neighbouring file to load.
+  const inline = window.__DECK_INLINE
+  if (inline) {
+    if (f.srcdoc) f.contentWindow?.focus()
+    else f.srcdoc = inline
+  }
+  else if (f.getAttribute('src') !== L.deck) f.setAttribute('src', L.deck)
   else f.contentWindow?.focus()
   renderMenu()
 }
@@ -810,6 +816,7 @@ function closeDeck() {
   $('page').classList.remove('deck')
   f.hidden = true
   f.removeAttribute('src')
+  f.removeAttribute('srcdoc')
 }
 deckFrame().addEventListener('load', () => { if (L && L.deck) { try { deckFrame().contentWindow.focus() } catch { /* not ready */ } } })
 

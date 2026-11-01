@@ -517,6 +517,32 @@ html:root[data-skin="3b1b"],html:root[data-skin="goldteal"],html:root[data-skin=
 .given li{display:flex;gap:.45em;align-items:baseline;white-space:nowrap}
 .ex.scn .given{max-width:calc(min(30cqw,45cqh)*1.6)}
 .scene-text.sc-sm{font-size:calc(var(--fs-stem)*.78)}
+/* v23 (Ben, 1/11/2026, MAI HL U12 L1): motion scenes. A track strip above a wide s-t graph; the object, strobe dots and trace are cut at the cursor */
+.scene-row.stack{flex-direction:column;--w:min(50cqw,72cqh);width:var(--w);height:auto;gap:max(4px,.8cqh)}
+.scene-row.stack .scene.mstrip{flex:none;width:100%;height:auto}
+.scene-row.stack .scene-graph{flex:none;width:100%;height:auto;display:block}
+.scene-row.stack .lab-graph{width:100%!important;height:auto!important;max-height:none!important;aspect-ratio:var(--asp)!important}
+@container (max-aspect-ratio: 3/4){ .scene-row.stack{--w:min(80cqw,34cqh)} .ex.scn.stk .fig,.ex.scn.stk .given{width:auto;max-width:none} }
+.lab-graph.mask .lab-label{background:var(--ground);padding:.04em .28em;border-radius:.22em}
+.scene-row.stack .scene.mpanels{flex:none;width:100%;height:auto}
+.scene-row.stack.signs{--w:min(50cqw,64cqh)}
+.ex.scn.stk:has(.signs) .fig,.ex.scn.stk:has(.signs) .given{width:min(50cqw,64cqh);max-width:min(50cqw,64cqh)}
+.scene-text.sc-name{color:var(--title);font-style:italic;font-size:calc(var(--fs-stem)*1.1)}
+.scene-text.sc-sign{color:var(--title);font-weight:700}
+.scene-text.sc-ar{font-weight:700;font-size:calc(var(--fs-stem)*1.0)}
+.s-lab .lab.mslab .lab-controls{grid-template-columns:minmax(0,1fr)}
+/* v24 (Ben, 1/11/2026, MAI HL U12 L2): v-t graph with shaded area: the readout under the graph, and the area recap lab */
+.scene-row.stack .area-read{flex:none;font-size:calc(var(--fs-stem)*1.05);min-height:1.4em;line-height:1.4;padding-left:.3em;font-weight:600}
+.s-lab .lab.arlab .lab-controls{grid-template-columns:minmax(0,1fr)}
+.ar-card{border:1px dashed var(--note);border-radius:.5em;padding:.3em .65em;color:var(--note);display:flex;align-items:center}
+.ar-card.on{border-style:solid;color:var(--title)}
+.ar-lock{opacity:.75;font-style:italic}
+.sc-road{stroke:var(--note);opacity:.55} .sc-tickfill{fill:var(--note)} .sc-origin{stroke:var(--title)}
+.scene-text.sc-num{color:var(--note)}
+.ex.scn.stk .given{max-width:min(50cqw,72cqh)}
+.ex.scn.stk .fig{width:min(50cqw,72cqh)}
+.s-stitle .tc-art.wide{height:auto;width:min(86cqw,120cqh);aspect-ratio:auto}
+.s-stitle .tc-art.wide .scene{height:auto;aspect-ratio:inherit}
 /* IA: the notepad gets the wider column */
 .cat-row:has(.pad){grid-template-columns:minmax(0,.82fr) minmax(0,1.18fr)}
 /* IA: what and why as bullets; the experiment as a lab procedure on a notepad (a physical page: same paper in every theme) */
@@ -606,7 +632,7 @@ C.slides.forEach(d => {
       <p class="meta"><strong>${esc(d.code)}</strong><span>·</span>${tagHTML(d.regime)}<span>${esc(d.regimeText)}</span></p>
       <p class="keys">→ / Space next step · ← back · tap right or left third on a phone · S scratch pad · F fullscreen · ? help</p>`);
   } else if (d.type==='sceneTitle'){
-    const s = addSlide('s-stitle', `<div class="tc-kick">${esc(d.kicker||('Scene '+d.scene))}</div><h1>${nb(d.title)}</h1>${d.tagline?`<p class="tc-tag">${nb(d.tagline)}</p>`:''}${d.formula?`<div class="tc-row"><div class="tc-art" role="img" aria-label="${esc(d.alt||'')}"></div><div class="tc-formula">$$${d.formula}$$</div></div>`:`<div class="tc-art" role="img" aria-label="${esc(d.alt||'')}"></div>`}`);
+    const s = addSlide('s-stitle', `<div class="tc-kick">${esc(d.kicker||('Scene '+d.scene))}</div><h1>${nb(d.title)}</h1>${d.tagline?`<p class="tc-tag">${nb(d.tagline)}</p>`:''}${d.formula?`<div class="tc-row"><div class="tc-art" role="img" aria-label="${esc(d.alt||'')}"></div><div class="tc-formula">$$${d.formula}$$</div></div>`:`<div class="tc-art${d.wide?' wide':''}" role="img" aria-label="${esc(d.alt||'')}"></div>`}`);
     s.d = d; s.art = d;
   } else if (d.type==='today'){
     addSlide('s-today', `<div class="eyebrow">Lesson ${C.meta.lesson} · ${esc(C.meta.topicWords)}</div><h2>${esc(d.title)}</h2>
@@ -620,7 +646,7 @@ C.slides.forEach(d => {
     const stemHTML = d.setup ? `<p class="setup-pre">${nb(d.setup.preamble)}</p><div class="decode"><p class="para" data-until="0">${nb(d.setup.para)}</p><ul class="facts" data-step="1">${d.setup.facts.map(factLi).join('')}</ul></div>`
       : `<p>${nb(d.stem)}</p>${d.prompt?`<p class="prompt">${nb(d.prompt)}</p>`:''}${picks}`;
     const s = addSlide('s-example'+(d.setup?' s-setup':''), `<div class="eyebrow">${d.eyebrow ? esc(d.eyebrow) : `Worked Example ${d.n} · ${tagHTML(d.tag)}`}</div><h2>${esc(d.title)}</h2>
-      <div class="ex${sceneG?' scn':''}${d.graph&&d.graph.second?' dual':''}${d.solo?' solo':''}"><div class="stem">${stemHTML}</div>
+      <div class="ex${sceneG?' scn':''}${sceneG&&(sceneG.layout==='stack'||sceneG.layout==='signs')?' stk':''}${d.graph&&d.graph.second?' dual':''}${d.solo?' solo':''}"><div class="stem">${stemHTML}</div>
       <div class="panel work"></div>${d.note?`<p class="note">${nb(d.note)}</p>`:''}<div class="fig">${head}</div></div>`);
     const panel = s.el.querySelector('.panel.work'); let k = 0;
     s.d = d; s.off = d.sceneStart ? 1 : 0;
@@ -671,6 +697,7 @@ slides.forEach(s => { if (!s.figSpec) return;
     const f1 = Lab.figure(h1, sp, () => s.shown - (s.off||0)), f2 = Lab.figure(h2, sp.second, () => s.shown - (s.off||0));
     s.fig = { redraw(){ f1.redraw(); f2.redraw(); } }; return; }
   if (!sp.scene){ s.fig = Lab.figure(figEl, sp, () => s.shown - (s.off||0)); return; }
+  if (sp.scene.layout === 'stack' || sp.scene.layout === 'signs'){ s.fig = Lab.motionSlide(figEl, sp, () => s.shown - (s.off||0)); s.fig.redraw(); return; }   /* v23 */
   /* scene beside the graph: the figure draws into the row's graph host; the scene takes the state of the last reveal shown */
   const host = document.createElement('div'); figEl.appendChild(host); host.style.cssText = 'display:contents';
   const sr = Lab.sceneRow(host, sp.window, sp.scene.kind, {alt: sp.scene.alt});
@@ -678,7 +705,7 @@ slides.forEach(s => { if (!s.figSpec) return;
   const g = Lab.figure(gh, sp, () => s.shown - (s.off||0));
   const stateAt = n => { let st = {}; (sp.scene.states || []).forEach(([k, v]) => { if (k <= n) st = v; }); return st; };
   s.fig = { redraw(){ g.redraw(); sr.draw(stateAt(s.shown - (s.off||0))); } }; s.fig.redraw(); });
-slides.forEach(s => { if (!s.art) return; Lab.sceneArt(s.el.querySelector('.tc-art'), s.art.window, s.art.kind, s.art.state || {}, {alt: s.art.alt}); });
+slides.forEach(s => { if (!s.art) return; Lab.sceneArt(s.el.querySelector('.tc-art'), s.art.window, s.art.kind, s.art.state || {}, {alt: s.art.alt, motion: s.art.motion, color: s.art.color}); });
 slides.forEach(s => { if (s.lab){ const box=document.createElement('div'); box.style.cssText='flex:1;min-width:0';
   s.lab.host.appendChild(box); s.lab.state = Lab.presets[s.lab.preset](box, s.lab.init);
   const head = document.createElement('div'); head.className = 'lab-head'; head.innerHTML = s.lab_head;
@@ -779,10 +806,10 @@ slides.forEach((s, i) => { const d = s.d || {};
   else if (s.el.classList.contains('s-stitle')) BEATS.push({i, n:0, kind:'scene', label:String(d.scene), tip:'Scene '+d.scene+': '+String(d.title).replace(/[$\\{}]/g,''), gap:true});
   else if (d.setup){ const sc = (d.eyebrow||'').split(' · ')[0];
     BEATS.push({i, n:0, kind:'pose', label:'P', tip:sc+': the situation'}); BEATS.push({i, n:1, kind:'step', label:'K', tip:sc+': key facts'}); }
-  else if (s.lab) BEATS.push(d.preset==='catalogue' ? {i, n:0, kind:'pose', label:d.beat||'IA', tip:d.title, big:true} : d.preset==='growthFamily' ? {i, n:0, kind:'scene', label:'R', tip:d.title, gap:true} : {i, n:0, kind:'animate', label:'A', tip:(d.eyebrow||'')+': '+d.title});
+  else if (s.lab) BEATS.push(d.preset==='catalogue' ? {i, n:0, kind:'pose', label:d.beat||'IA', tip:d.title, big:true} : (d.preset==='growthFamily'||d.preset==='motionSigns'||d.preset==='areaLab') ? {i, n:0, kind:'scene', label:'R', tip:d.title, gap:true} : {i, n:0, kind:'animate', label:'A', tip:(d.eyebrow||'')+': '+d.title});
   else { const sc = (d.eyebrow||'').split(' · ')[0];
     if (d.sceneStart){ BEATS.push({i, n:0, kind:'scene', label:String(d.scene), tip:sc, gap:true}); BEATS.push({i, n:1, kind:'pose', label:'Q'+d.q, tip:sc+': question '+d.q}); }
-    else if (!d.cont) BEATS.push({i, n:0, kind:'pose', label:'Q'+d.q, tip:sc+': question '+d.q});
+    else if (!d.cont) BEATS.push({i, n:0, kind:'pose', label:d.beat||('Q'+d.q), tip:sc+': '+(d.beat?d.title:'question '+d.q)});
     let k = s.off||0; (d.blocks||[]).forEach(b => { k++; const w = b.walk||{}; const plain = String(w.cap||'').replace(/[$\\{}]/g,'');
       BEATS.push({i, n:k, kind: w.ans ? 'answer' : 'step', label: w.ans ? 'S' : 'W', tip: sc+': '+plain}); }); } });
 tl.innerHTML = BEATS.map((b, j) => `<button type="button" class="tl-b k-${b.kind}${b.gap?' gap':''}${b.big?' big':''}" data-b="${j}" title="${esc(b.tip).replace(/"/g,'&quot;')}" aria-label="${esc(b.tip).replace(/"/g,'&quot;')}">${b.label}</button>`).join('');
@@ -798,14 +825,16 @@ function go(i, shown, byNext){
   const was = cur;
   cur = Math.max(0, Math.min(slides.length-1, i));
   if (slides[was] && slides[was].lab && slides[was].lab.state && slides[was].lab.state.leave) slides[was].lab.state.leave();
+  if (slides[was] && slides[was].fig && slides[was].fig.stop) slides[was].fig.stop();
   slides.forEach((s,j)=>s.el.classList.toggle('active', j===cur));
   const s = slides[cur]; s.shown = shown==='all' ? s.steps.length : Math.max(minShown(s), shown||0); paintSteps(s); fit(s);
   [...dots.children].forEach((d,j)=>d.classList.toggle('on', j===cur));
   document.documentElement.dataset.slide = cur; document.documentElement.dataset.shown = s.shown;
   paintBar();
-  if (s.lab && s.lab.state && s.lab.state.enter) s.lab.state.enter(!!byNext);   /* autoplay only on arrival by Next */
+  if (s.lab && s.lab.state && s.lab.state.enter) s.lab.state.enter(!!byNext);
+  if (s.fig && s.fig.enter) s.fig.enter(!!byNext);   /* v23: a motion scene runs to its checkpoint on arrival by Next */   /* autoplay only on arrival by Next */
 }
-function next(){ const s=slides[cur]; if (s.shown < s.steps.length){ s.shown++; paintSteps(s); document.documentElement.dataset.shown=s.shown; paintBar(); } else if (cur < slides.length-1) go(cur+1,0,true); }
+function next(){ const s=slides[cur]; if (s.shown < s.steps.length){ s.shown++; paintSteps(s); if (s.fig && s.fig.stepped) s.fig.stepped(); document.documentElement.dataset.shown=s.shown; paintBar(); } else if (cur < slides.length-1) go(cur+1,0,true); }
 function prev(){ const s=slides[cur]; if (s.shown > minShown(s)){ s.shown--; paintSteps(s); document.documentElement.dataset.shown=s.shown; paintBar(); } else if (cur > 0) go(cur-1,'all'); }
 window.Deck = {next, prev, go, count:()=>slides.length, state:()=>({slide:cur, shown:slides[cur].shown, steps:slides[cur].steps.length}), slides};
 

@@ -85,6 +85,37 @@ question slides no longer use `sceneStart`; the generator drops it.
   drawing does ("the phone cannot hold more").
 - **Slider animations** run 1.5 times their v21 speed by default; `meta.animSpeed` overrides (1 = v21 speed).
 
+## Motion scenes (v23, MAI HL U12 L1, 1/11/2026)
+
+A scene kind for kinematics: an object on a track above a wide s-t graph, with strobe dots and a trace that exist only up to the
+cursor. Model: `decks/mai-hl-u12-l01/make_content.py` (copy in `assets/examples/MAI_U12_L1/`); full spec in
+`src/components/motion-track/README.md` of the openers repo.
+
+- Scene kinds `track` (car on a number line, second row for dots made moving backward) and `ride` (a rider on a ground profile drawn
+  only as far as they have gone). `graph.scene = {kind, layout: "stack", color, sec, from, motion: {pts, dot, ...}, states}`;
+  graph items `trace` and `marker` with `"pts": "motion"`; `sceneTitle` takes `motion`, `color`, `wide: true`.
+- **Checkpoints**: each question slide animates from `scene.from` to `states[0].t` on arrival by Next and stops; Next reveals the
+  answer; a later state with a larger `t` animates when reached by Next; Back and jumps show the finished state. `state.read`
+  (`ts`, `t`, `none`) keeps `s` off screen until its reveal.
+- Budget: a question with three reveals does not fit (probe `--G` 0.71); split it with `cont` (the generator's `split`), trim notes,
+  drop repeated prompts. The stack layout is `min(50cqw, 76cqh)` wide; keep the strip at 250 (`track`) or 290 (`ride`) units high.
+- **Read the motion** (v2, same day): `scene.layout: "signs"` puts three stacked panels (graph and sign diagram of s, v and a, with their zeros) under a track strip that also draws a velocity arrow and a pull (acceleration) arrow on the car. The case needs `motion.vpts`, `apts`, `smax`, `vmax`, `amax`, `T`, `segs` and `zeros`; the generator's `case()` builds all of it from one sympy expression. State keys: `show` (1 to 3 panels), `full` (draw the whole curve, not just to the cursor), `cursor`, `arrows`, `read`. The car faces right while moving right and flips to face left while moving left.
+- **Recap lab** `{"type": "lab", "preset": "motionSigns", "init": {"cases": [...], "color": "orange"}}`: case buttons, a time slider with Play, and four readouts (position side, direction, pull, and whether v and a agree). Timeline letter R. Give each case its own `vunit` and `aunit` in `m\\,s^{-1}` form (math mode).
+- Signs slides use `--w` of `min(50cqw, 64cqh)`; the stack layout `min(50cqw, 72cqh)`. A `beat` key on an example sets its timeline letter (D, M).
+- **Labels stay put** (Ben, 1/11/2026): `window.labelMask: true` stops the placer moving point labels; they keep their anchor and a ground-coloured backing, so a curve passes behind them. Anchor labels inside the graph (an edge label overhangs and triggers the emergency shrink). Also set `aspectPortrait` equal to `aspect`: graphs are built once at load, and a tall or hidden frame reports portrait.
+- `s` means position (displacement from the start or from O) in every scene; say so when the ride never reverses (distance = displacement).
+- Wording follows the Haese chapter on kinematics (displacement relative to the origin O, instantaneously at rest, chord, tangent).
+
+## v-t graphs with shaded area (v24, MAI HL U12 L2, 1/11/2026)
+
+The motion scenes can show a **v-t graph** (no s-t graph) with the area to the t-axis shaded live. Model: `decks/mai-hl-u12-l02/make_content.py` (copy in `assets/examples/MAI_U12_L2/`); spec in `src/components/area-under-velocity/README.md` of the openers repo.
+
+- `scene.motion` carries `pts` (s), `vt` and `area` (cumulative signed area), all from sympy. Graph items `trace`, `marker` (`guides: false`) and `area` (`posColor`, `negColor` roles) take `"pts": "vt"`.
+- State `{t, hide, read, areaFrom}`: `hide: true` keeps only the number line (or flat ground) until the answer reveal; `areaFrom` is where the readout under the graph starts counting (`area so far = +9`, then `area since t = 3 = -9`).
+- Question titles must not give the answer ("Position, distance, displacement", not "Back at O").
+- `window.xtickBottom: true` puts the t numbers under the frame when the curve dips below the axis (a tick number under a stroke is otherwise hidden).
+- Recap lab `areaLab`: two cursors (snap 0.5), `v` / `|v|` toggle, exact `F` and `G` tables, three cards that unlock with the toggle. The checker drags each handle left by about one t unit, so no handle may start at its limit, and every toggle must change a readout.
+
 ## Internal assessment tie-ins (Ben, 30/10/2026)
 
 Every time a deck is planned, ask whether the lesson's topic could seed an IB MAI Internal Assessment
