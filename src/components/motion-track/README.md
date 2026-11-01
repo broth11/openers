@@ -34,6 +34,12 @@ A scene for the deck kit (`skill/openers-slide-deck/assets/`, deck kit v23) that
 
 - Labels on the s-t graph do not move (`window.labelMask`): each keeps its anchor on a ground-coloured backing and the curve passes behind it. Set `aspectPortrait` equal to `aspect` so the graph does not depend on window orientation.
 
+## Read the motion (signs layout) and the recap lab
+
+- `scene.layout = "signs"`: the track strip draws a velocity arrow (blue) and the pull, which is the acceleration (red), each pointing the way its sign points, with `v = 0` or `a = 0` marked by a dot. Below it, three stacked panels show `s`, `v` and `a` against `t`, each with its sign diagram (`+`, `-` or `0` bands, zeros marked and labelled), cut at the cursor unless `full`.
+- U12 L1 uses it after Q4 for a differentiate slide and three replay segments (slowing down then turning, speeding up then passing O, what each zero tells you). It ends with the recap lab `motionSigns`: Toy car, Michael's ride, a cubic (Haese Example 5, where `a = 0`) and steady speed (`a = 0` throughout).
+- The car faces the way it last moved: right while `v > 0`, flipped to face left while `v < 0`.
+
 ## Pieces
 
 - `scenekit.js`: `Lab.motionSlide`, scene kinds `track` and `ride`, `motionArt` (title cards).

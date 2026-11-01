@@ -199,6 +199,8 @@ def resolve_colours(content, hexes):
     for s in content['slides']:
         if s.get('type') == 'sceneTitle' and s.get('color') in ROLES:   # v23
             s['color'] = hexes[s['color']]
+        if s.get('type') == 'lab' and (s.get('init') or {}).get('color') in ROLES:
+            s['init']['color'] = hexes[s['init']['color']]
     for s in content['slides']:
         if s.get('type') == 'lab' and deck:   # v6: a preset may colour bound symbols in its readouts
             s.setdefault('init', {}).setdefault('t2c', {k: hexes[v] for k, v in deck.items()})

@@ -32,7 +32,7 @@ Everything the kit can already do. Read this before building a new opener, and a
 | Solid of revolution | Paired SVG profiles and shaded discs, washers, cavities, partial turns and orbit | U11 L10/L11 | `src/components/solid-of-revolution/README.md` |
 | Context stage | A drawn, animated scene beside the graph on a shared vertical scale (mall crowd, jelly-bean jars, lamp and light meter with the square-spread diagram, cooling coffee with thermometer, typing laptop with wpm gauge, pH strip) | U5 L2, U5 L3 | `src/components/context-stage/README.md` |
 | Growth family | Exponential `ka^x+c`, `ke^(rx)+c` and logarithmic `a+b ln x` with asymptote, initial value, half-life or doubling time, and the inverse reflected in `y = x`: recap cards | U5 L3 | `src/components/growth-family/README.md` |
-| Motion track | A stacked motion scene above a wide s-t graph: a car on a number line (strobe dots, a second row for the way back) or a rider on a hill drawn only as far as they have ridden; trace, marker and dots on the graph are cut at the cursor; each question autoplays to a checkpoint and stops, Next reveals the answer; Back and jumps show the finished state. Deck kit v23 (`Lab.motionSlide`, scenes `track` and `ride`, graph items `trace` and `marker`) | U12 L1 | `src/components/motion-track/README.md` |
+| Motion track | A stacked motion scene above a wide s-t graph: a car on a number line (strobe dots, a second row for the way back) or a rider on a hill drawn only as far as they have ridden; trace, marker and dots on the graph are cut at the cursor; each question autoplays to a checkpoint and stops, Next reveals the answer; Back and jumps show the finished state. Deck kit v23 (`Lab.motionSlide`, scenes `track` and `ride`, graph items `trace` and `marker`; layout `signs` with velocity and pull arrows and stacked sign diagrams of s, v and a; recap lab `motionSigns`) | U12 L1 | `src/components/motion-track/README.md` |
 | Polynomial explorer | Degree 2 to 4, factored or standard form, draggable roots, repeated roots, end-behaviour arrows, turning points, recap cards | U5 L2 | `src/components/polynomial/README.md` |
 | Power family | `y = kx^n` for positive and negative n: doubling markers, ratio and product tests, asymptotes, recap cards | U5 L2 | `src/components/power-family/README.md` |
 
@@ -45,7 +45,7 @@ Everything the kit can already do. Read this before building a new opener, and a
 | MAI HL U11 L10 | Discs and stretches | three.js + SVG | Solid of revolution, Strips |
 | MAI HL U11 L11 | A hemisphere bowl | three.js + SVG | Solid of revolution, Strips |
 | MAI HL U5 L3 | Exponential and logarithmic models, log scales (deck lesson since 30 October 2026: `public/mai-hl/u05-l03-exponential-and-logarithmic-models.html`; the walk-through version is in `_archive/`) | Deck | Scenes ported from Context stage and Growth family |
-| MAI HL U12 L1 | The language of motion (deck lesson, 1 November 2026: `public/mai-hl/u12-l01-the-language-of-motion.html`) | Deck | Motion track |
+| MAI HL U12 L1 | The language of motion: two scenes, replay through s, v and a, recap (deck lesson, 1 November 2026: `public/mai-hl/u12-l01-the-language-of-motion.html`) | Deck | Motion track |
 | MAI HL U5 L2 | Cubic fitting, direct and inverse variation (legacy stepped) | SVG | Context stage, Polynomial explorer, Power family |
 
 ## Wanted next (from the syllabus survey, 2026-10-25)

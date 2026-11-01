@@ -509,16 +509,23 @@ html:root[data-skin="3b1b"],html:root[data-skin="goldteal"],html:root[data-skin=
 .ex.scn .given{max-width:calc(min(30cqw,45cqh)*1.6)}
 .scene-text.sc-sm{font-size:calc(var(--fs-stem)*.78)}
 /* v23 (Ben, 1/11/2026, MAI HL U12 L1): motion scenes. A track strip above a wide s-t graph; the object, strobe dots and trace are cut at the cursor */
-.scene-row.stack{flex-direction:column;--w:min(50cqw,76cqh);width:var(--w);height:auto;gap:max(4px,.8cqh)}
+.scene-row.stack{flex-direction:column;--w:min(50cqw,72cqh);width:var(--w);height:auto;gap:max(4px,.8cqh)}
 .scene-row.stack .scene.mstrip{flex:none;width:100%;height:auto}
 .scene-row.stack .scene-graph{flex:none;width:100%;height:auto;display:block}
 .scene-row.stack .lab-graph{width:100%!important;height:auto!important;max-height:none!important;aspect-ratio:var(--asp)!important}
 @container (max-aspect-ratio: 3/4){ .scene-row.stack{--w:min(80cqw,34cqh)} .ex.scn.stk .fig,.ex.scn.stk .given{width:auto;max-width:none} }
 .lab-graph.mask .lab-label{background:var(--ground);padding:.04em .28em;border-radius:.22em}
+.scene-row.stack .scene.mpanels{flex:none;width:100%;height:auto}
+.scene-row.stack.signs{--w:min(50cqw,64cqh)}
+.ex.scn.stk:has(.signs) .fig,.ex.scn.stk:has(.signs) .given{width:min(50cqw,64cqh);max-width:min(50cqw,64cqh)}
+.scene-text.sc-name{color:var(--title);font-style:italic;font-size:calc(var(--fs-stem)*1.1)}
+.scene-text.sc-sign{color:var(--title);font-weight:700}
+.scene-text.sc-ar{font-weight:700;font-size:calc(var(--fs-stem)*1.0)}
+.s-lab .lab.mslab .lab-controls{grid-template-columns:minmax(0,1fr)}
 .sc-road{stroke:var(--note);opacity:.55} .sc-tickfill{fill:var(--note)} .sc-origin{stroke:var(--title)}
 .scene-text.sc-num{color:var(--note)}
-.ex.scn.stk .given{max-width:min(50cqw,76cqh)}
-.ex.scn.stk .fig{width:min(50cqw,76cqh)}
+.ex.scn.stk .given{max-width:min(50cqw,72cqh)}
+.ex.scn.stk .fig{width:min(50cqw,72cqh)}
 .s-stitle .tc-art.wide{height:auto;width:min(86cqw,120cqh);aspect-ratio:auto}
 .s-stitle .tc-art.wide .scene{height:auto;aspect-ratio:inherit}
 /* IA: the notepad gets the wider column */
@@ -624,7 +631,7 @@ C.slides.forEach(d => {
     const stemHTML = d.setup ? `<p class="setup-pre">${nb(d.setup.preamble)}</p><div class="decode"><p class="para" data-until="0">${nb(d.setup.para)}</p><ul class="facts" data-step="1">${d.setup.facts.map(factLi).join('')}</ul></div>`
       : `<p>${nb(d.stem)}</p>${d.prompt?`<p class="prompt">${nb(d.prompt)}</p>`:''}${picks}`;
     const s = addSlide('s-example'+(d.setup?' s-setup':''), `<div class="eyebrow">${d.eyebrow ? esc(d.eyebrow) : `Worked Example ${d.n} · ${tagHTML(d.tag)}`}</div><h2>${esc(d.title)}</h2>
-      <div class="ex${sceneG?' scn':''}${sceneG&&sceneG.layout==='stack'?' stk':''}"><div class="stem">${stemHTML}</div>
+      <div class="ex${sceneG?' scn':''}${sceneG&&(sceneG.layout==='stack'||sceneG.layout==='signs')?' stk':''}"><div class="stem">${stemHTML}</div>
       <div class="panel work"></div>${d.note?`<p class="note">${nb(d.note)}</p>`:''}<div class="fig">${head}</div></div>`);
     const panel = s.el.querySelector('.panel.work'); let k = 0;
     s.d = d; s.off = d.sceneStart ? 1 : 0;
@@ -670,7 +677,7 @@ renderMathInElement(root, Object.assign({delimiters:DELIMS}, KOPTS));
 slides.forEach(s => { if (!s.figSpec) return;
   const sp = s.figSpec, figEl = s.el.querySelector('.fig');
   if (!sp.scene){ s.fig = Lab.figure(figEl, sp, () => s.shown - (s.off||0)); return; }
-  if (sp.scene.layout === 'stack'){ s.fig = Lab.motionSlide(figEl, sp, () => s.shown - (s.off||0)); s.fig.redraw(); return; }   /* v23 */
+  if (sp.scene.layout === 'stack' || sp.scene.layout === 'signs'){ s.fig = Lab.motionSlide(figEl, sp, () => s.shown - (s.off||0)); s.fig.redraw(); return; }   /* v23 */
   /* scene beside the graph: the figure draws into the row's graph host; the scene takes the state of the last reveal shown */
   const host = document.createElement('div'); figEl.appendChild(host); host.style.cssText = 'display:contents';
   const sr = Lab.sceneRow(host, sp.window, sp.scene.kind, {alt: sp.scene.alt});
@@ -773,10 +780,10 @@ slides.forEach((s, i) => { const d = s.d || {};
   else if (s.el.classList.contains('s-stitle')) BEATS.push({i, n:0, kind:'scene', label:String(d.scene), tip:'Scene '+d.scene+': '+String(d.title).replace(/[$\\{}]/g,''), gap:true});
   else if (d.setup){ const sc = (d.eyebrow||'').split(' · ')[0];
     BEATS.push({i, n:0, kind:'pose', label:'P', tip:sc+': the situation'}); BEATS.push({i, n:1, kind:'step', label:'K', tip:sc+': key facts'}); }
-  else if (s.lab) BEATS.push(d.preset==='catalogue' ? {i, n:0, kind:'pose', label:d.beat||'IA', tip:d.title, big:true} : d.preset==='growthFamily' ? {i, n:0, kind:'scene', label:'R', tip:d.title, gap:true} : {i, n:0, kind:'animate', label:'A', tip:(d.eyebrow||'')+': '+d.title});
+  else if (s.lab) BEATS.push(d.preset==='catalogue' ? {i, n:0, kind:'pose', label:d.beat||'IA', tip:d.title, big:true} : (d.preset==='growthFamily'||d.preset==='motionSigns') ? {i, n:0, kind:'scene', label:'R', tip:d.title, gap:true} : {i, n:0, kind:'animate', label:'A', tip:(d.eyebrow||'')+': '+d.title});
   else { const sc = (d.eyebrow||'').split(' · ')[0];
     if (d.sceneStart){ BEATS.push({i, n:0, kind:'scene', label:String(d.scene), tip:sc, gap:true}); BEATS.push({i, n:1, kind:'pose', label:'Q'+d.q, tip:sc+': question '+d.q}); }
-    else if (!d.cont) BEATS.push({i, n:0, kind:'pose', label:'Q'+d.q, tip:sc+': question '+d.q});
+    else if (!d.cont) BEATS.push({i, n:0, kind:'pose', label:d.beat||('Q'+d.q), tip:sc+': '+(d.beat?d.title:'question '+d.q)});
     let k = s.off||0; (d.blocks||[]).forEach(b => { k++; const w = b.walk||{}; const plain = String(w.cap||'').replace(/[$\\{}]/g,'');
       BEATS.push({i, n:k, kind: w.ans ? 'answer' : 'step', label: w.ans ? 'S' : 'W', tip: sc+': '+plain}); }); } });
 tl.innerHTML = BEATS.map((b, j) => `<button type="button" class="tl-b k-${b.kind}${b.gap?' gap':''}${b.big?' big':''}" data-b="${j}" title="${esc(b.tip).replace(/"/g,'&quot;')}" aria-label="${esc(b.tip).replace(/"/g,'&quot;')}">${b.label}</button>`).join('');

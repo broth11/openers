@@ -257,7 +257,7 @@ def main():
                         fails.append(f"stability: {tag} lab slide {li+1}: {wd['el']} moved {wd['d']:.1f}px (slider {wd['slider']} = {wd['value']}; {r['states']} states, {r['n']} boxes)")
             for li in lab_slides:
                 pg.evaluate(f'Deck.go({li},0)'); pg.wait_for_timeout(50)
-                if pg.evaluate("!document.querySelector('.slide.active .lab-svg')"):    # catalogue lab: choose every case in turn
+                if pg.evaluate("!!document.querySelector('.slide.active .cat-btn')"):    # catalogue lab: choose every case in turn
                     cb = pg.locator('.slide.active .cat-btn')
                     for k in range(cb.count()):
                         cb.nth(k).click(); pg.wait_for_timeout(30)
@@ -277,7 +277,7 @@ def main():
                     return after
                 cur = base
                 handles = pg.locator('.slide.active .lab-handle')
-                gw = pg.evaluate("document.querySelector('.slide.active .lab-svg').getBoundingClientRect().width")
+                gw = pg.evaluate("(document.querySelector('.slide.active .lab-svg')||document.querySelector('.slide.active .scene-svg')).getBoundingClientRect().width")
                 unit = gw / 16
                 for k in range(handles.count()):
                     bb = handles.nth(k).bounding_box()

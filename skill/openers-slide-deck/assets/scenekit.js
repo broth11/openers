@@ -482,23 +482,62 @@
      (arrival by Next, or a reveal whose state has a later t); Back and jumps show the finished state without replay. */
   const MOTION = {};
   const ip = window.Lab.interp;
-  const strip = (kind, M) => (kind === 'ride' ? 290 : 250);
-  function motionRow(el, win, kind, sc) {
-    const W = 1000, H = strip(kind, sc.motion);
-    const row = document.createElement('div'); row.className = 'scene-row stack'; el.appendChild(row);
-    row.style.setProperty('--asp', String(win.aspect || 1.9));
-    const st = document.createElement('div'); st.className = 'scene mstrip'; st.style.aspectRatio = W + ' / ' + H; row.appendChild(st);
-    const svg = mk('svg', { viewBox: `0 0 ${W} ${H}`, class: 'scene-svg', role: 'img', 'aria-label': sc.alt || kind }, st);
-    const labs = document.createElement('div'); labs.className = 'scene-labels'; st.appendChild(labs);
-    const gh = document.createElement('div'); gh.className = 'scene-graph'; row.appendChild(gh);
-    let grp = mk('g', {}, svg);
-    const api = () => ({ W, H, el: (t, a, p) => mk(t, a, p || grp),
+  const strip = (kind, M) => (kind === 'ride' ? 290 : (M && M.vpts ? 326 : 250));
+  const PH = 450, PANEL = 148;   /* the stacked sign-diagram panels (viewBox 1000 x 420) */
+  function textApi(labs, W, H, grpGet) {
+    return { W, H, el: (t, a, p) => mk(t, a, p || grpGet()),
       text(x, y, html, cls, anchor) { const d = document.createElement('div'); d.className = 'scene-text ' + (cls || '');
         d.style.left = (x / W * 100) + '%'; d.style.top = (y / H * 100) + '%';
         d.style.transform = { w: 'translate(0,-50%)', e: 'translate(-100%,-50%)', c: 'translate(-50%,-50%)', n: 'translate(-50%,0)', s: 'translate(-50%,-100%)' }[anchor || 'w'];
-        d.innerHTML = prose(html); labs.appendChild(d); return d; } });
-    function draw(state) { grp.remove(); grp = mk('g', {}, svg); labs.innerHTML = ''; MOTION[kind](api(), state || {}, sc.motion, sc.color || HANDLE_C); }
+        d.innerHTML = prose(html); labs.appendChild(d); return d; } };
+  }
+  function motionRow(el, win, kind, sc) {
+    const W = 1000, signs = sc.layout === 'signs';
+    const row = document.createElement('div'); row.className = 'scene-row stack'; el.appendChild(row);
+    row.style.setProperty('--asp', String(win.aspect || 1.9));
+    if (signs) row.classList.add('signs');
+    const st = document.createElement('div'); st.className = 'scene mstrip'; row.appendChild(st);
+    const svg = mk('svg', { viewBox: '0 0 1000 100', class: 'scene-svg', role: 'img', 'aria-label': sc.alt || kind }, st);
+    const labs = document.createElement('div'); labs.className = 'scene-labels'; st.appendChild(labs);
+    let grp = mk('g', {}, svg), gh = null, psvg, plabs, pgrp;
+    const fitStrip = () => { const H = strip(kind, sc.motion); st.style.aspectRatio = W + ' / ' + H; svg.setAttribute('viewBox', `0 0 ${W} ${H}`); return H; };
+    fitStrip();
+    if (signs) {   /* the three stacked panels under the strip: one svg, text laid over it */
+      const pn = document.createElement('div'); pn.className = 'scene mpanels'; pn.style.aspectRatio = W + ' / ' + PH; row.appendChild(pn);
+      psvg = mk('svg', { viewBox: `0 0 ${W} ${PH}`, class: 'scene-svg', role: 'img', 'aria-label': 'Graphs and sign diagrams of s, v and a' }, pn);
+      plabs = document.createElement('div'); plabs.className = 'scene-labels'; pn.appendChild(plabs);
+      pgrp = mk('g', {}, psvg);
+    } else { gh = document.createElement('div'); gh.className = 'scene-graph'; row.appendChild(gh); }
+    function draw(state) {
+      const H = fitStrip();
+      grp.remove(); grp = mk('g', {}, svg); labs.innerHTML = '';
+      MOTION[kind](textApi(labs, W, H, () => grp), state || {}, sc.motion, sc.color || HANDLE_C);
+      if (signs) { pgrp.remove(); pgrp = mk('g', {}, psvg); plabs.innerHTML = ''; drawPanels(textApi(plabs, W, PH, () => pgrp), sc.motion, state || {}, sc.color || HANDLE_C); }
+    }
     return { row, draw, gh };
+  }
+  /* the stacked panels: s, v and a against t, each with its sign diagram; cut at the cursor unless state.full */
+  function drawPanels(a, M, s, C) {
+    const t = s.t || 0, show = s.show || 3, full = !!s.full, T = M.T, X = u => 100 + u / T * 870, lim = full ? T : t;
+    const tabs = [['s', M.pts, M.smax], ['v', M.vpts, M.vmax], ['a', M.apts, M.amax]];
+    for (let i = 0; i < show; i++) {
+      const [k, pts, mx] = tabs[i], top = 6 + i * PANEL, cy = top + 40, hh = 37, sy = top + 88, sh = 34, Yf = v => cy - v / (mx * 1.08) * hh;
+      a.text(16, cy, `$${k}$`, 'sc-name', 'w');
+      a.el('line', { x1: 100, x2: 975, y1: cy, y2: cy, class: 'sc-tick', 'stroke-width': 3 });
+      a.text(990, cy, '$t$', 'sc-num', 'e');
+      const ps = [];
+      for (const [u, v] of pts) { if (u <= lim + 1e-9) ps.push(`${X(u).toFixed(1)},${Yf(v).toFixed(1)}`); else { ps.push(`${X(lim).toFixed(1)},${Yf(ip(pts, lim)).toFixed(1)}`); break; } }
+      if (ps.length > 1) a.el('polyline', { points: ps.join(' '), fill: 'none', stroke: 'var(--title)', 'stroke-width': 5, 'stroke-linejoin': 'round' });
+      for (const [t0, t1, sg] of M.segs[k]) { const e = Math.min(t1, lim); if (e <= t0 + 1e-9) continue;
+        const fill = sg === '+' ? 'var(--sc-curve)' : sg === '-' ? 'var(--sc-red)' : 'var(--note)';
+        a.el('rect', { x: X(t0), y: sy, width: X(e) - X(t0), height: sh, fill, 'fill-opacity': .38, stroke: fill, 'stroke-width': 2 });
+        if (X(e) - X(t0) > 40) a.text((X(t0) + X(e)) / 2, sy + sh / 2, sg === '+' ? '$+$' : sg === '-' ? '$-$' : '$0$', 'sc-sign', 'c'); }
+      (M.zeros[k] || []).forEach(z => { if (z > lim + 1e-9) return;
+        a.el('line', { x1: X(z), x2: X(z), y1: sy - 6, y2: sy + sh + 6, stroke: C, 'stroke-width': 5 });
+        a.text(X(z), sy + sh + 24, `$${num(z, 2)}$`, 'sc-num', 'c'); });
+      if (s.cursor !== false) a.el('circle', { cx: X(Math.min(t, T)), cy: Yf(ip(pts, t)), r: 9, fill: C });
+    }
+    if (s.cursor !== false) a.el('line', { x1: X(Math.min(t, T)), x2: X(Math.min(t, T)), y1: 4, y2: 6 + (show - 1) * PANEL + 126, stroke: C, 'stroke-width': 3, 'stroke-dasharray': '2 8', 'stroke-linecap': 'round' });
   }
   /* readout row: t and s on one line (s only when the state allows it) */
   function motionRead(a, s, M, C, y) {
@@ -509,15 +548,16 @@
   }
   const dirAt = (pts, t) => { const d = ip(pts, t) - ip(pts, Math.max(0, t - 0.01)); return t < 0.011 ? 1 : (Math.abs(d) < 1e-9 ? 0 : Math.sign(d)); };
   MOTION.track = (a, s, M, C) => {
-    const t = s.t || 0, y0 = 168, yr = 130, X = v => 50 + (v - M.xmin) / (M.xmax - M.xmin) * 900;
+    const arrows = !!M.vpts && !s.bare && s.arrows !== false, big = !!M.vpts;
+    const t = s.t || 0, y0 = big ? 250 : 168, yr = big ? 212 : 130, X = v => 50 + (v - M.xmin) / (M.xmax - M.xmin) * 900, step = M.step || 1;
     const pos = ip(M.pts, t), mk_ = a.el;
     mk_('line', { x1: 30, x2: 970, y1: yr, y2: yr, class: 'sc-road', 'stroke-width': 8, 'stroke-linecap': 'round' });
     mk_('line', { x1: 30, x2: 962, y1: y0, y2: y0, class: 'sc-tick', 'stroke-width': 4 });
     mk_('polygon', { points: `976,${y0} 958,${y0 - 9} 958,${y0 + 9}`, class: 'sc-tickfill' });
-    for (let v = Math.ceil(M.xmin); v <= M.xmax + 1e-9; v++) {
-      const o = v === 0, lab = v % (M.lab || 1) === 0 || o;
+    for (let v = Math.ceil(M.xmin / step - 1e-9) * step; v <= M.xmax + 1e-9; v += step) {
+      const o = Math.abs(v) < 1e-9, lab = o || Math.abs(v % (M.lab || 1)) < 1e-9;
       mk_('line', { x1: X(v), x2: X(v), y1: y0 - (o ? 16 : 8), y2: y0 + (o ? 16 : 8), class: o ? 'sc-origin' : 'sc-tick', 'stroke-width': o ? 6 : 3 });
-      if (lab) a.text(X(v), y0 + 56, o ? '$\\mathbf{O}$' : `$${v}$`, o ? 'sc-unit' : 'sc-num', 'c');
+      if (lab) a.text(X(v), y0 + 56, o ? '$\\mathbf{O}$' : `$${Math.round(v)}$`, o ? 'sc-unit' : 'sc-num', 'c');
     }
     if (!s.bare) {
       /* strobe dots and the traced line: forward motion on the number line, backward motion one row below it */
@@ -529,12 +569,25 @@
         mk_('circle', { cx: X(ip(M.pts, tk)), cy: rowY(k ? dirAt(M.pts, tk) : 1), r: 11, fill: C }); }
       mk_('line', { x1: X(pos), x2: X(pos), y1: yr + 6, y2: y0 - 12, stroke: C, 'stroke-width': 4, 'stroke-dasharray': '2 9', 'stroke-linecap': 'round' });
     }
-    /* the car: faces the way it last moved */
-    const dir = s.bare ? 1 : (dirAt(M.pts, t) || s.last || 1);
+    /* the car: it faces right while moving right and is flipped to face left while moving left */
+    const dir = s.bare ? 1 : (dirAt(M.pts, t) || 1);
     const g = mk_('g', { transform: `translate(${X(pos)},${yr}) scale(${dir},1)` });
-    mk_('path', { d: 'M -52 -16 L -52 -36 Q -52 -44 -44 -44 L -26 -44 L -14 -64 Q -10 -70 -2 -70 L 22 -70 Q 30 -70 34 -64 L 44 -44 L 46 -44 Q 54 -44 54 -36 L 54 -16 Z', fill: '#F2F4F7', stroke: '#55636F', 'stroke-width': 4, 'stroke-linejoin': 'round' }, g);
-    mk_('path', { d: 'M -12 -46 L -3 -61 L 20 -61 L 29 -46 Z', fill: '#9AC4E0', stroke: '#55636F', 'stroke-width': 3 }, g);
-    [-30, 30].forEach(x => { mk_('circle', { cx: x, cy: -14, r: 15, fill: '#2B3640', stroke: '#9AA8B4', 'stroke-width': 3 }, g); mk_('circle', { cx: x, cy: -14, r: 5, fill: '#9AA8B4' }, g); });
+    mk_('path', { d: 'M -58 -16 L -58 -36 Q -58 -44 -50 -44 L -32 -44 L -20 -64 Q -16 -70 -8 -70 L 14 -70 Q 22 -70 26 -64 L 38 -46 L 50 -42 Q 60 -40 60 -30 L 60 -16 Z', fill: '#F2F4F7', stroke: '#55636F', 'stroke-width': 4, 'stroke-linejoin': 'round' }, g);
+    mk_('path', { d: 'M -16 -46 L -6 -62 L 14 -62 L 24 -46 Z', fill: '#9AC4E0', stroke: '#55636F', 'stroke-width': 3 }, g);
+    mk_('rect', { x: 50, y: -36, width: 10, height: 9, rx: 3, fill: '#F5D547' }, g);
+    mk_('rect', { x: -58, y: -38, width: 7, height: 10, rx: 3, fill: '#CF5044' }, g);
+    [-32, 32].forEach(x => { mk_('circle', { cx: x, cy: -14, r: 15, fill: '#2B3640', stroke: '#9AA8B4', 'stroke-width': 3 }, g); mk_('circle', { cx: x, cy: -14, r: 5, fill: '#9AA8B4' }, g); });
+    if (arrows) {   /* velocity above, and the rubber band (acceleration) below it: each points the way its sign points */
+      const px = X(pos), one = (y, val, mx, col, name) => {
+        const L = val / mx * 120, sg = Math.sign(L);
+        if (Math.abs(L) < 5) { const right = px < 700; mk_('circle', { cx: px, cy: y, r: 7, fill: col }); a.text(px + (right ? 18 : -18), y, `$${name}=0$`, 'sc-ar', right ? 'w' : 'e').style.color = col; return; }
+        mk_('line', { x1: px, y1: y, x2: px + L - sg * 14, y2: y, stroke: col, 'stroke-width': 9, 'stroke-linecap': 'round' });
+        mk_('polygon', { points: `${px + L},${y} ${px + L - sg * 26},${y - 15} ${px + L - sg * 26},${y + 15}`, fill: col });
+        a.text(px - sg * 16, y, `$${name}$`, 'sc-ar', sg > 0 ? 'e' : 'w').style.color = col;
+      };
+      one(66, ip(M.vpts, t), M.vmax, 'var(--sc-curve)', 'v');
+      one(112, ip(M.apts, t), M.amax, 'var(--sc-red)', 'a');
+    }
     motionRead(a, s, M, C, 28);
   };
   MOTION.ride = (a, s, M, C) => {
@@ -580,7 +633,7 @@
     const host = document.createElement('div'); host.style.cssText = 'display:contents'; figEl.appendChild(host);
     const sr = motionRow(host, sp.window, sc.kind, sc);
     let curT = 0, raf = 0, lastN = 0, prevN = 0;
-    const g = window.Lab.figure(sr.gh, sp, shownFn, { t: () => curT, M });
+    const g = sr.gh ? window.Lab.figure(sr.gh, sp, shownFn, { t: () => curT, M }) : { redraw() {} };
     const stateAt = n => { let st = {}; (sc.states || []).forEach(([k, v]) => { if (k <= n) st = v; }); return st; };
     const paint = (t, st) => { curT = t; g.redraw(); sr.draw(Object.assign({}, st, { t })); };
     const stop = () => { if (raf) cancelAnimationFrame(raf); raf = 0; };
@@ -596,6 +649,47 @@
       enter(byNext) { const st = stateAt(shownFn()); if (byNext && sc.from != null && sc.from < (st.t || 0)) run(sc.from, st.t, st); },
       stepped() { const a = stateAt(prevN).t || 0, b = stateAt(lastN).t || 0; if (lastN === prevN + 1 && b > a) run(a, b, stateAt(lastN)); } };
   }
+  /* recap lab (U12 L1): pick a motion, scrub or play it, and read it through s, v and a (graphs, sign diagrams, arrows on the car) */
+  function motionSignsLab(container, init) {
+    container.classList.add('lab', 'scenelab', 'mslab');
+    const left = document.createElement('div'); left.className = 'lab-left';
+    const right = document.createElement('div'); right.className = 'lab-controls';
+    container.appendChild(left); container.appendChild(right);
+    const cases = init.cases; let ci = 0, v = 0, pl = null;
+    const sc = { kind: 'track', layout: 'signs', alt: init.alt, color: init.color || HANDLE_C, motion: cases[0] };
+    const sr = motionRow(left, { aspect: 2 }, 'track', sc);
+    const grp = title => { const g = document.createElement('div'); g.className = 'lab-group';
+      if (title) { const h = document.createElement('div'); h.className = 'lab-group-title'; h.innerHTML = title; g.appendChild(h); } right.appendChild(g); return g; };
+    const C = () => cases[ci];
+    const gp = grp('');
+    window.Lab.toggle(gp, { options: cases.map(c => c.name), value: cases[0].name, onChange: nm => { ci = cases.findIndex(c => c.name === nm); sc.motion = C();
+      if (pl) pl.stop(); po.max = C().T; po.seconds = C().seconds; sl.input.max = C().T; v = 0; sl.input.value = 0; showT(0); refresh(); } });
+    const gt = grp('');
+    const fmt = x => `${fx(x, 2)}\\ \\text{${C().tunit}}`;
+    const showT = x => { const out = sl.input.parentNode.querySelector('output'); if (out) out.innerHTML = math(fmt(x)); };
+    const sl = window.Lab.slider(gt, { min: 0, max: cases[0].T, step: 0.05, value: 0, label: 't', format: fmt,
+      onChange: x => { v = x; if (pl && pl.playing()) pl.stop(); refresh(); } });
+    ['pointerdown', 'keydown'].forEach(ev => sl.input.addEventListener(ev, () => pl && pl.stop()));
+    const po = { min: 0, max: cases[0].T, seconds: cases[0].seconds, get: () => v, set: x => { v = x; sl.input.value = x; showT(x); refresh(); } };
+    pl = player(gt, po);
+    const gr = grp('Reading the motion');
+    const val = k => ip(C()[k === 's' ? 'pts' : k + 'pts'], v), tex = x => { if (Math.abs(x) < 5e-4) return '0'; let r = fx(x, Math.abs(x) >= 100 ? 0 : 2); if (r.includes('.')) r = r.replace(/0+$/, '').replace(/\.$/, ''); return r; };
+    const eps = k => 0.012 * C()[k + 'max'];
+    const rs = window.Lab.readout(gr, () => { const x = val('s'); return `s=${tex(x)}\\ \\mathrm{${C().unit}}\\ \\ \\text{${Math.abs(x) < 0.5 * eps('s') ? 'at O' : x > 0 ? 'right of O' : 'left of O'}}`; });
+    const rv = window.Lab.readout(gr, () => { const x = val('v'); return `v=${tex(x)}\\ \\mathrm{${C().vunit}}\\ \\ \\text{${Math.abs(x) < eps('v') ? 'at rest' : x > 0 ? 'moving right' : 'moving left'}}`; });
+    const ra = window.Lab.readout(gr, () => { const x = val('a'); return `a=${tex(x)}\\ \\mathrm{${C().aunit}}\\ \\ \\text{${Math.abs(x) < eps('a') ? 'no pull' : x > 0 ? 'pulls right' : 'pulls left'}}`; });
+    const rt = window.Lab.readout(gr, () => { const x = val('v'), y = val('a');
+      if (Math.abs(x) < eps('v')) return `t=${fx(v, 1)}:\\ \\text{at rest: can turn round}`;
+      if (Math.abs(y) < eps('a')) return `t=${fx(v, 1)}:\\ \\text{no pull: steady speed}`;
+      return x * y > 0 ? `t=${fx(v, 1)}:\\ \\text{v, a agree: speeding up}` : `t=${fx(v, 1)}:\\ \\text{v, a disagree: slowing down}`; });
+    const readouts = [rs, rv, ra, rt];
+    function refresh() { sr.draw({ t: v, read: 'ts', arrows: true, show: 3, full: true }); readouts.forEach(r => r.update()); }
+    refresh();
+    const state = { controls: right, readouts, refresh, enter() { if (pl) pl.stop(); }, leave() { if (pl) pl.stop(); } };
+    container.__lab = state;
+    return state;
+  }
+  window.Lab.presets.motionSigns = motionSignsLab;
   window.Lab.motionSlide = motionSlide;
   window.Lab.sceneRow = sceneRow;
   window.Lab.sceneArt = sceneArt;
