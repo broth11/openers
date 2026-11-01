@@ -3,3 +3,4 @@ dist/
 dist-artifact/
 qa/out/
 .DS_Store
+shots/
