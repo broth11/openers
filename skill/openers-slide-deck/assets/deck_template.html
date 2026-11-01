@@ -522,6 +522,12 @@ html:root[data-skin="3b1b"],html:root[data-skin="goldteal"],html:root[data-skin=
 .scene-text.sc-sign{color:var(--title);font-weight:700}
 .scene-text.sc-ar{font-weight:700;font-size:calc(var(--fs-stem)*1.0)}
 .s-lab .lab.mslab .lab-controls{grid-template-columns:minmax(0,1fr)}
+/* v24 (Ben, 1/11/2026, MAI HL U12 L2): v-t graph with shaded area: the readout under the graph, and the area recap lab */
+.scene-row.stack .area-read{flex:none;font-size:calc(var(--fs-stem)*1.05);min-height:1.4em;line-height:1.4;padding-left:.3em;font-weight:600}
+.s-lab .lab.arlab .lab-controls{grid-template-columns:minmax(0,1fr)}
+.ar-card{border:1px dashed var(--note);border-radius:.5em;padding:.3em .65em;color:var(--note);display:flex;align-items:center}
+.ar-card.on{border-style:solid;color:var(--title)}
+.ar-lock{opacity:.75;font-style:italic}
 .sc-road{stroke:var(--note);opacity:.55} .sc-tickfill{fill:var(--note)} .sc-origin{stroke:var(--title)}
 .scene-text.sc-num{color:var(--note)}
 .ex.scn.stk .given{max-width:min(50cqw,72cqh)}
@@ -780,7 +786,7 @@ slides.forEach((s, i) => { const d = s.d || {};
   else if (s.el.classList.contains('s-stitle')) BEATS.push({i, n:0, kind:'scene', label:String(d.scene), tip:'Scene '+d.scene+': '+String(d.title).replace(/[$\\{}]/g,''), gap:true});
   else if (d.setup){ const sc = (d.eyebrow||'').split(' · ')[0];
     BEATS.push({i, n:0, kind:'pose', label:'P', tip:sc+': the situation'}); BEATS.push({i, n:1, kind:'step', label:'K', tip:sc+': key facts'}); }
-  else if (s.lab) BEATS.push(d.preset==='catalogue' ? {i, n:0, kind:'pose', label:d.beat||'IA', tip:d.title, big:true} : (d.preset==='growthFamily'||d.preset==='motionSigns') ? {i, n:0, kind:'scene', label:'R', tip:d.title, gap:true} : {i, n:0, kind:'animate', label:'A', tip:(d.eyebrow||'')+': '+d.title});
+  else if (s.lab) BEATS.push(d.preset==='catalogue' ? {i, n:0, kind:'pose', label:d.beat||'IA', tip:d.title, big:true} : (d.preset==='growthFamily'||d.preset==='motionSigns'||d.preset==='areaLab') ? {i, n:0, kind:'scene', label:'R', tip:d.title, gap:true} : {i, n:0, kind:'animate', label:'A', tip:(d.eyebrow||'')+': '+d.title});
   else { const sc = (d.eyebrow||'').split(' · ')[0];
     if (d.sceneStart){ BEATS.push({i, n:0, kind:'scene', label:String(d.scene), tip:sc, gap:true}); BEATS.push({i, n:1, kind:'pose', label:'Q'+d.q, tip:sc+': question '+d.q}); }
     else if (!d.cont) BEATS.push({i, n:0, kind:'pose', label:d.beat||('Q'+d.q), tip:sc+': '+(d.beat?d.title:'question '+d.q)});

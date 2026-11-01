@@ -559,7 +559,7 @@
       mk_('line', { x1: X(v), x2: X(v), y1: y0 - (o ? 16 : 8), y2: y0 + (o ? 16 : 8), class: o ? 'sc-origin' : 'sc-tick', 'stroke-width': o ? 6 : 3 });
       if (lab) a.text(X(v), y0 + 56, o ? '$\\mathbf{O}$' : `$${Math.round(v)}$`, o ? 'sc-unit' : 'sc-num', 'c');
     }
-    if (!s.bare) {
+    if (!s.bare && !s.hide) {   /* v24: s.hide keeps the number line and hides the car, its dots and its trace until the reveal */
       /* strobe dots and the traced line: forward motion on the number line, backward motion one row below it */
       const rowY = d => (d < 0 ? y0 + 26 : y0), tr = [];
       for (let u = 0; u <= t + 1e-9; u += 0.02) { const q = Math.min(u, t); tr.push(`${X(ip(M.pts, q)).toFixed(1)},${rowY(dirAt(M.pts, q))}`); if (q >= t) break; }
@@ -570,6 +570,7 @@
       mk_('line', { x1: X(pos), x2: X(pos), y1: yr + 6, y2: y0 - 12, stroke: C, 'stroke-width': 4, 'stroke-dasharray': '2 9', 'stroke-linecap': 'round' });
     }
     /* the car: it faces right while moving right and is flipped to face left while moving left */
+    if (!s.hide) {
     const dir = s.bare ? 1 : (dirAt(M.pts, t) || 1);
     const g = mk_('g', { transform: `translate(${X(pos)},${yr}) scale(${dir},1)` });
     mk_('path', { d: 'M -58 -16 L -58 -36 Q -58 -44 -50 -44 L -32 -44 L -20 -64 Q -16 -70 -8 -70 L 14 -70 Q 22 -70 26 -64 L 38 -46 L 50 -42 Q 60 -40 60 -30 L 60 -16 Z', fill: '#F2F4F7', stroke: '#55636F', 'stroke-width': 4, 'stroke-linejoin': 'round' }, g);
@@ -577,6 +578,7 @@
     mk_('rect', { x: 50, y: -36, width: 10, height: 9, rx: 3, fill: '#F5D547' }, g);
     mk_('rect', { x: -58, y: -38, width: 7, height: 10, rx: 3, fill: '#CF5044' }, g);
     [-32, 32].forEach(x => { mk_('circle', { cx: x, cy: -14, r: 15, fill: '#2B3640', stroke: '#9AA8B4', 'stroke-width': 3 }, g); mk_('circle', { cx: x, cy: -14, r: 5, fill: '#9AA8B4' }, g); });
+    }
     if (arrows) {   /* velocity above, and the rubber band (acceleration) below it: each points the way its sign points */
       const px = X(pos), one = (y, val, mx, col, name) => {
         const L = val / mx * 120, sg = Math.sign(L);
@@ -595,7 +597,7 @@
     const H = M.hill, hx = H.map(r => [r[0], r[1]]), hy = H.map(r => [r[0], r[2]]);
     const P = q => [ip(hx, q), ip(hy, q)];
     let ang = 0, px, py;
-    if (s.bare) { px = 320; py = 232; mk_('rect', { x: 0, y: py, width: 1000, height: base - py, fill: '#8B7355' }); mk_('line', { x1: 0, x2: 1000, y1: py, y2: py, stroke: '#6FA05A', 'stroke-width': 9 }); }
+    if (s.bare || s.hide) { px = 320; py = 232; mk_('rect', { x: 0, y: py, width: 1000, height: base - py, fill: '#8B7355' }); mk_('line', { x1: 0, x2: 1000, y1: py, y2: py, stroke: '#6FA05A', 'stroke-width': 9 }); }
     else {
       const pts = H.filter(r => r[0] <= d + 1e-9).map(r => [r[1], r[2]]), end = P(d);
       if (!pts.length || pts[pts.length - 1][0] < end[0] - 1e-9) pts.push(end);
@@ -608,12 +610,14 @@
       [px, py] = end; const back = P(Math.max(0, d - 90)); ang = Math.atan2(py - back[1], px - back[0]) * 180 / Math.PI; if (d < 90) ang = Math.atan2(P(90)[1] - back[1], P(90)[0] - back[0]) * 180 / Math.PI;
       if (s.mark != null) { const [mx, my] = P(ip(M.pts, s.mark)); mk_('circle', { cx: mx, cy: my - 2, r: 22, fill: 'none', stroke: 'var(--bl)', 'stroke-width': 6 }); a.text(mx - 34, my - 2, '$\\text{steepest}$', 'sc-mk', 'e'); }
     }
+    if (!s.hide) {   /* v24: hidden until the reveal */
     const g = mk_('g', { transform: `translate(${px.toFixed(1)},${(py - 6).toFixed(1)}) rotate(${ang.toFixed(1)})` });
     [-26, 26].forEach(x => mk_('circle', { cx: x, cy: -16, r: 16, fill: 'none', stroke: 'var(--title)', 'stroke-width': 4 }, g));
     mk_('polyline', { points: '-26,-16 -6,-16 6,-40 22,-40 26,-16', fill: 'none', stroke: 'var(--title)', 'stroke-width': 4, 'stroke-linejoin': 'round' }, g);
     mk_('line', { x1: 6, y1: -40, x2: -6, y2: -16, stroke: 'var(--title)', 'stroke-width': 4 }, g);
     mk_('polyline', { points: '-6,-16 -10,-52 6,-68', fill: 'none', stroke: C, 'stroke-width': 7, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, g);
     mk_('circle', { cx: 10, cy: -82, r: 11, fill: C }, g);
+    }
     motionRead(a, s, M, C, 28);
   };
   function motionArt(el, kind, state, opts) {
@@ -634,8 +638,15 @@
     const sr = motionRow(host, sp.window, sc.kind, sc);
     let curT = 0, raf = 0, lastN = 0, prevN = 0;
     const g = sr.gh ? window.Lab.figure(sr.gh, sp, shownFn, { t: () => curT, M }) : { redraw() {} };
+    /* v24 (U12 L2): a v-t graph with shaded area. The readout under the graph gives the area since state.areaFrom (default 0), live with the cursor. */
+    const ai = (sp.items || []).find(i => i.kind === 'area'), ar = ai && document.createElement('div');
+    if (ar) { ar.className = 'area-read'; if (sp.window.xtickBottom) ar.style.marginTop = '1.2em'; sr.row.appendChild(ar); }
+    const areaText = (t, st) => { if (!ar) return; ar.style.visibility = st.read === 'none' ? 'hidden' : '';
+      const a0 = st.areaFrom || 0, v = ip(M.area, t) - ip(M.area, a0), z = Math.abs(v) < 5e-3, whole = Math.abs(v - Math.round(v)) < 0.005 || Math.abs(v) >= 100;
+      ar.innerHTML = math((a0 ? `\\text{area since } t=${a0}` : '\\text{area so far}') + ' = ' + (z || num(Math.abs(v), whole ? 0 : 1) === '0' ? '0' : (v > 0 ? '+' : '-') + num(Math.abs(v), whole ? 0 : 1)));
+      ar.style.color = z ? '' : (v > 0 ? ai.posColor : ai.negColor); };
     const stateAt = n => { let st = {}; (sc.states || []).forEach(([k, v]) => { if (k <= n) st = v; }); return st; };
-    const paint = (t, st) => { curT = t; g.redraw(); sr.draw(Object.assign({}, st, { t })); };
+    const paint = (t, st) => { curT = t; g.redraw(); sr.draw(Object.assign({}, st, { t })); areaText(t, st); };
     const stop = () => { if (raf) cancelAnimationFrame(raf); raf = 0; };
     function run(from, to, st) {
       stop(); const dur = Math.abs(to - from) * (sc.sec || 1) / (window.LAB_SPEED || 1);
@@ -690,6 +701,50 @@
     return state;
   }
   window.Lab.presets.motionSigns = motionSignsLab;
+
+  /* recap lab (U12 L2): drag t1 and t2 along the t-axis (snap 0.5), switch between v and |v|, read the signed area and the total area.
+     init = {window, T, vt: [[t, v], ...], F: [[n, d], ...] and G: [[n, d], ...] (signed area and area under |v| from 0 to t = k / 2, exact),
+             posColor, negColor, start: [t1, t2], cards: [..3 strings..]} */
+  function areaLab(container, init) {
+    container.classList.add('lab', 'scenelab', 'arlab');
+    const left = document.createElement('div'); left.className = 'lab-left';
+    const right = document.createElement('div'); right.className = 'lab-controls';
+    container.appendChild(left); container.appendChild(right);
+    const L = window.Lab, g = L.graph(left, init.window), vt = init.vt, T = init.T, Fr = L.Frac;
+    let abs = false, seen = { v: true, abs: false };
+    const Y = x => (abs ? Math.abs(ip(vt, x)) : ip(vt, x)), runs = L.areaRuns(vt);
+    g.path(() => vt.filter(p => p[0] >= 0).map(p => [p[0], Y(p[0])]), { color: '#8A98A6' });
+    runs.forEach(r => g.polygon(() => { const lo = Math.max(r.t0, A.x), hi = Math.min(r.t1, B.x); if (hi <= lo + 1e-9) return [];
+      const ring = [{ x: lo, y: 0 }, { x: lo, y: Y(lo) }]; vt.forEach(([x]) => { if (x > lo + 1e-9 && x < hi - 1e-9) ring.push({ x, y: Y(x) }); });
+      ring.push({ x: hi, y: Y(hi) }, { x: hi, y: 0 }); return ring; }, { color: r.sg > 0 ? init.posColor : init.negColor, opacity: 0.5 }));
+    const h = () => 0;
+    const A = g.point({ x: init.start[0], y: 0 }, { drag: true, snap: 0.5, name: 't1', onMove: p => { p.y = h(); p.x = Math.max(0, Math.min(B.x - 0.5, p.x)); refresh(); } });
+    const B = g.point({ x: init.start[1], y: 0 }, { drag: true, snap: 0.5, name: 't2', onMove: p => { p.y = h(); p.x = Math.max(A.x + 0.5, Math.min(T, p.x)); refresh(); } });
+    g.segment(() => ({ x: A.x, y: 0 }), () => ({ x: A.x, y: Y(A.x) }), { dashed: true });
+    g.segment(() => ({ x: B.x, y: 0 }), () => ({ x: B.x, y: Y(B.x) }), { dashed: true });
+    g.label(() => A.x, 0, 't_1', { anchor: 'sw' }); g.label(() => B.x, 0, 't_2', { anchor: 'se' });
+    const grp = title => { const d = document.createElement('div'); d.className = 'lab-group';
+      if (title) { const q = document.createElement('div'); q.className = 'lab-group-title'; q.innerHTML = title; d.appendChild(q); } right.appendChild(d); return d; };
+    const ga = grp('Area between the cursors');
+    L.toggle(ga, { options: ['v', '|v|'], value: 'v', onChange: o => { abs = o === '|v|'; seen[abs ? 'abs' : 'v'] = true; refresh(); } });
+    const k = x => Math.round(x * 2), sg = (arr, i) => new Fr(arr[i][0], arr[i][1]);
+    const dec = f => { const v = +f; return (Math.abs(v - Math.round(v)) < 1e-9 ? String(Math.round(v)) : v.toFixed(2).replace(/0+$/, '')).replace('-', '−'); };
+    const show = f => (f.d === 1 ? dec(f) : f.tex() + '\\approx ' + dec(f));
+    const rt = L.readout(ga, () => `\\text{showing }${abs ? '|v|' : 'v'}:\\quad t_1=${A.x},\\ t_2=${B.x}`);
+    const rs = L.readout(ga, () => `\\text{signed area}=${show(sg(init.F, k(B.x)).sub(sg(init.F, k(A.x))))}`);
+    const ru = L.readout(ga, () => `\\text{total area}=${show(sg(init.G, k(B.x)).sub(sg(init.G, k(A.x))))}`);
+    const gc = grp('');
+    const cards = init.cards.map(txt => { const c = document.createElement('div'); c.className = 'ar-card'; gc.appendChild(c); return [c, txt]; });
+    const paintCards = () => { const open = [seen.v, seen.abs, seen.v && seen.abs];
+      cards.forEach(([c, txt], i) => { c.classList.toggle('on', open[i]); c.innerHTML = open[i] ? prose(txt) : '<span class="ar-lock">' + ['Switch to v', 'Switch to |v|', 'Use both'][i] + '</span>'; }); };
+    const readouts = [rt, rs, ru];
+    function refresh() { g.redraw(); readouts.forEach(r => r.update()); paintCards(); }
+    refresh();
+    const state = { g, controls: right, readouts, refresh, enter() {}, leave() {} };
+    container.__lab = state;
+    return state;
+  }
+  window.Lab.presets.areaLab = areaLab;
   window.Lab.motionSlide = motionSlide;
   window.Lab.sceneRow = sceneRow;
   window.Lab.sceneArt = sceneArt;

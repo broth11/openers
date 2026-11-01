@@ -106,6 +106,16 @@ cursor. Model: `decks/mai-hl-u12-l01/make_content.py` (copy in `assets/examples/
 - `s` means position (displacement from the start or from O) in every scene; say so when the ride never reverses (distance = displacement).
 - Wording follows the Haese chapter on kinematics (displacement relative to the origin O, instantaneously at rest, chord, tangent).
 
+## v-t graphs with shaded area (v24, MAI HL U12 L2, 1/11/2026)
+
+The motion scenes can show a **v-t graph** (no s-t graph) with the area to the t-axis shaded live. Model: `decks/mai-hl-u12-l02/make_content.py` (copy in `assets/examples/MAI_U12_L2/`); spec in `src/components/area-under-velocity/README.md` of the openers repo.
+
+- `scene.motion` carries `pts` (s), `vt` and `area` (cumulative signed area), all from sympy. Graph items `trace`, `marker` (`guides: false`) and `area` (`posColor`, `negColor` roles) take `"pts": "vt"`.
+- State `{t, hide, read, areaFrom}`: `hide: true` keeps only the number line (or flat ground) until the answer reveal; `areaFrom` is where the readout under the graph starts counting (`area so far = +9`, then `area since t = 3 = -9`).
+- Question titles must not give the answer ("Position, distance, displacement", not "Back at O").
+- `window.xtickBottom: true` puts the t numbers under the frame when the curve dips below the axis (a tick number under a stroke is otherwise hidden).
+- Recap lab `areaLab`: two cursors (snap 0.5), `v` / `|v|` toggle, exact `F` and `G` tables, three cards that unlock with the toggle. The checker drags each handle left by about one t unit, so no handle may start at its limit, and every toggle must change a readout.
+
 ## Internal assessment tie-ins (Ben, 30/10/2026)
 
 Every time a deck is planned, ask whether the lesson's topic could seed an IB MAI Internal Assessment

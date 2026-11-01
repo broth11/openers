@@ -175,7 +175,7 @@
     /* v11: o.xticks / o.yticks = [[value, tex], ...] replace the numeric ticks (multiples of π) */
     const tickTex = (x, y, t, a) => { tick(x, y, '', a); labels.lastChild.innerHTML = tex(t); };
     if (o.xticks) o.xticks.forEach(([v, t]) => { if (!near(v, 0) && v > xmin + 1e-9 && v < xmax - 1e-9) tickTex(v, 0, t, 'tx'); });
-    else for (let x = Math.ceil(Math.max(xmin, o.xtickFrom ?? xmin) / xt) * xt; x <= xmax; x += xt) if (!near(x, 0) && !near(x, xmin) && !near(x, xmax)) tick(x, 0, num(x), 'tx');
+    else for (let x = Math.ceil(Math.max(xmin, o.xtickFrom ?? xmin) / xt) * xt; x <= xmax; x += xt) if (!near(x, 0) && !near(x, xmin) && !near(x, xmax)) tick(x, o.xtickBottom ? ymin : 0, num(x), 'tx');   /* v24: xtickBottom puts the t numbers under the frame, clear of a curve that dips below the axis */
     if (o.yticks) o.yticks.forEach(([v, t]) => { if (!near(v, 0) && v > ymin + 1e-9 && v < ymax - 1e-9) tickTex(0, v, t, 'ty'); });
     else for (let y = Math.ceil(Math.max(ymin, o.ytickFrom ?? ymin) / yt) * yt; y <= ymax; y += yt) if (!near(y, 0) && !near(y, ymin) && !near(y, ymax)) tick(0, y, num(y), 'ty');
     if (o.plain) labels.querySelectorAll('.lab-tick').forEach(e => e.remove());
@@ -412,6 +412,13 @@
   const interp = (pts, x) => { if (x <= pts[0][0]) return pts[0][1];
     for (let i = 1; i < pts.length; i++) if (x <= pts[i][0]) { const [x0, y0] = pts[i - 1], [x1, y1] = pts[i]; return y0 + (y1 - y0) * (x - x0) / (x1 - x0); }
     return pts[pts.length - 1][1]; };
+  /* v24: [[t0, t1, +1 | -1], ...] runs of one sign in a sorted table [[t, y], ...]; a sign change is split at the crossing */
+  const areaRuns = pts => { const runs = [], eps = 1e-9;
+    const push = (t0, t1, sg) => { if (t1 - t0 < eps || !sg) return; const l = runs[runs.length - 1];
+      if (l && l.sg === sg && Math.abs(l.t1 - t0) < eps) l.t1 = t1; else runs.push({ t0, t1, sg }); };
+    for (let i = 1; i < pts.length; i++) { const [xa, ya] = pts[i - 1], [xb, yb] = pts[i], sa = Math.abs(ya) < eps ? 0 : Math.sign(ya), sb = Math.abs(yb) < eps ? 0 : Math.sign(yb);
+      if (sa * sb < 0) { const xc = xa + (xb - xa) * ya / (ya - yb); push(xa, xc, sa); push(xc, xb, sb); } else push(xa, xb, sa || sb); }
+    return runs; };
   function figure(el, spec, shownFn, ctx) {
     const g = graph(el, spec.window);
     const P = a => ({ x: a[0], y: a[1] });
@@ -432,16 +439,26 @@
       else if (it.kind === 'north') g.north(P(it.at), { len: it.len, visible: vis });
       else if (it.kind === 'arc') g.arc(P(it.at), it.from, it.to, { r: it.r, color: it.answer ? HANDLE : it.color, visible: vis });   /* v13 */
       else if (it.kind === 'trace' && ctx) {   /* v23: a curve drawn only up to the scene's current time, with a dot per it.dots time units */
-        const T = () => ctx.t(), pts = it.pts === 'motion' ? ctx.M.pts : it.pts;   /* 'motion': the scene's own table */
+        const T = () => ctx.t(), pts = it.pts === 'motion' ? ctx.M.pts : it.pts === 'vt' ? ctx.M.vt : it.pts;   /* 'motion': the scene's own table (v24: 'vt', its v-t table) */
         g.path(() => { const t = T(), out = []; for (let i = 0; i < pts.length; i++) { if (pts[i][0] <= t + 1e-9) out.push(pts[i]); else { if (i > 0) out.push([t, interp(pts, t)]); break; } } return out; }, o);
         if (it.dots) for (let k = 0, n = Math.floor(pts[pts.length - 1][0] / it.dots + 1e-9); k <= n; k++) { const x = k * it.dots;
           g.point({ x, y: interp(pts, x) }, { color: it.dotColor, visible: () => vis() && x <= T() + 1e-9 }); }
       }
       else if (it.kind === 'marker' && ctx) {   /* v23: the moving marker on a traced curve, with dotted guides to the axes */
-        const m = g.point({ x: 0, y: 0 }, { color: it.color, visible: vis }), w = spec.window, mp = it.pts === 'motion' ? ctx.M.pts : it.pts;
+        const m = g.point({ x: 0, y: 0 }, { color: it.color, visible: vis }), w = spec.window, mp = it.pts === 'motion' ? ctx.M.pts : it.pts === 'vt' ? ctx.M.vt : it.pts;
         upd.push(() => { const t = ctx.t(); m.x = t; m.y = interp(mp, t); });
-        g.segment(() => ({ x: m.x, y: w.ymin }), () => ({ x: m.x, y: m.y }), { dotted: true, color: it.color, visible: vis });
-        g.segment(() => ({ x: w.xmin, y: m.y }), () => ({ x: m.x, y: m.y }), { dotted: true, color: it.color, visible: vis });
+        if (it.guides !== false) {   /* v24: guides:false leaves the bare marker (a v-t graph with shaded area) */
+          g.segment(() => ({ x: m.x, y: w.ymin }), () => ({ x: m.x, y: m.y }), { dotted: true, color: it.color, visible: vis });
+          g.segment(() => ({ x: w.xmin, y: m.y }), () => ({ x: m.x, y: m.y }), { dotted: true, color: it.color, visible: vis }); }
+      }
+      else if (it.kind === 'area' && ctx) {   /* v24 (U12 L2): the area between a traced curve and the t-axis, shaded only up to the scene's cursor;
+                                                  one colour where the curve is above the axis (posColor), another below it (negColor) */
+        const pts = it.pts === 'vt' ? ctx.M.vt : it.pts;
+        areaRuns(pts).forEach(r => g.polygon(() => { const t = Math.min(ctx.t(), r.t1); if (t <= r.t0 + 1e-9) return [];
+          const ring = [{ x: r.t0, y: 0 }, { x: r.t0, y: interp(pts, r.t0) }];
+          pts.forEach(([x, y]) => { if (x > r.t0 + 1e-9 && x < t - 1e-9) ring.push({ x, y }); });
+          ring.push({ x: t, y: interp(pts, t) }, { x: t, y: 0 }); return ring; },
+          { color: r.sg > 0 ? it.posColor : it.negColor, opacity: it.opacity ?? 0.5, visible: vis }));
       }
       else if (it.kind === 'bearing') g.bearing(P(it.at), it.deg, { r: it.r, from: it.from, label: it.label, labelAt: it.labelAt, muted: it.muted, color: it.color, visible: vis });
     });
@@ -1284,5 +1301,5 @@
     }
   };
 
-  window.Lab = { graph, figure, interp, placeAll: el => el.querySelectorAll('.lab-graph').forEach(w => w.__g && w.__g.redraw()), slider, toggle, readout, fitReadout, Frac, linTex, generalTex, presets };
+  window.Lab = { graph, figure, interp, areaRuns, placeAll: el => el.querySelectorAll('.lab-graph').forEach(w => w.__g && w.__g.redraw()), slider, toggle, readout, fitReadout, Frac, linTex, generalTex, presets };
 })();
