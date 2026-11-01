@@ -227,6 +227,17 @@ out.extend(split(q(1, 3, 'Total distance and position',
                    'The signed areas add to the displacement. The sizes of the areas add to the distance.', ans=True)],
              graph(1, [[0, state(8, True, 't', 6)], [2, state(8, False, 'ts', 6)]], frm=6, mark=6)), 2, 'Add the areas. What are the displacement and the distance in total?'))
 
+# scene 1 wrap-up: the whole trip again with the car shown (right = area above the axis, left = area below)
+assert V1.subs(t, 3) == 0 and V1.subs(t, 1) > 0 and V1.subs(t, 5) < 0
+out.append({'type': 'example', 'scene': 1, 'eyebrow': f'{NAME[1]} · Wrap-up', 'title': 'Direction and the sign of the area', 'beat': 'R1',
+            'stem': 'Watch the whole trip again, this time with the car shown. Look at which way it moves and which side of the axis the area is on.',
+            'blocks': [walk('The car moves right from $t=0$ to $t=3$', ['v>0\\quad\\text{and}\\quad\\text{area}>0'], 'The graph is above the $t$-axis, the shaded area is positive, and $s$ increases.'),
+                       walk('The car moves left from $t=3$ to $t=8$', ['v<0\\quad\\text{and}\\quad\\text{area}<0'], 'At $t=3$ the graph crosses the axis and the car turns round. Below the axis the area is negative, and $s$ decreases.')],
+            'graph': graph(1, [[0, state(3, False, 'ts')], [1, state(3, False, 'ts')], [2, state(8, False, 'ts')]], frm=0)})
+# the area readout counts from t=0 here, so it is the signed area all the way (+9 at t=3, -16 at t=8)
+for it in out[-1]['graph']['scene']['states']:
+    it[1]['areaFrom'] = 0
+
 # ================================================================ scene 2: Michael's ride
 out.append(title_card(2, "Michael's Ride"))
 out.append(setup(2, 'A ride described by his velocity',
