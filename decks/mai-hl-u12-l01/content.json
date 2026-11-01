@@ -98,7 +98,8 @@
      "xname": "t",
      "yname": "s",
      "xtickFrom": 0,
-     "aspect": 2.2
+     "aspect": 2.2,
+     "aspectPortrait": 2.2
     },
     "scene": {
      "kind": "track",
@@ -524,7 +525,8 @@
      "xname": "t",
      "yname": "s",
      "xtickFrom": 0,
-     "aspect": 2.2
+     "aspect": 2.2,
+     "aspectPortrait": 2.2
     },
     "scene": {
      "kind": "track",
@@ -944,7 +946,8 @@
      "xname": "t",
      "yname": "s",
      "xtickFrom": 0,
-     "aspect": 2.2
+     "aspect": 2.2,
+     "aspectPortrait": 2.2
     },
     "scene": {
      "kind": "track",
@@ -1355,7 +1358,8 @@
      "xname": "t",
      "yname": "s",
      "xtickFrom": 0,
-     "aspect": 2.2
+     "aspect": 2.2,
+     "aspectPortrait": 2.2
     },
     "scene": {
      "kind": "track",
@@ -1831,7 +1835,8 @@
      "xname": "t",
      "yname": "s",
      "xtickFrom": 0,
-     "aspect": 2.2
+     "aspect": 2.2,
+     "aspectPortrait": 2.2
     },
     "scene": {
      "kind": "track",
@@ -2417,7 +2422,8 @@
      "xname": "t",
      "yname": "s",
      "xtickFrom": 0,
-     "aspect": 2.2
+     "aspect": 2.2,
+     "aspectPortrait": 2.2
     },
     "scene": {
      "kind": "track",
@@ -2987,7 +2993,8 @@
      "xname": "t",
      "yname": "s",
      "xtickFrom": 0,
-     "aspect": 2.2
+     "aspect": 2.2,
+     "aspectPortrait": 2.2
     },
     "scene": {
      "kind": "track",
@@ -3580,7 +3587,8 @@
      "xname": "t",
      "yname": "s",
      "xtickFrom": 0,
-     "aspect": 2.2
+     "aspect": 2.2,
+     "aspectPortrait": 2.2
     },
     "scene": {
      "kind": "track",
@@ -4223,7 +4231,8 @@
      "xname": "t",
      "yname": "s",
      "xtickFrom": 0,
-     "aspect": 2.7
+     "aspect": 2.7,
+     "aspectPortrait": 2.7
     },
     "scene": {
      "kind": "ride",
@@ -7755,7 +7764,8 @@
      "xname": "t",
      "yname": "s",
      "xtickFrom": 0,
-     "aspect": 2.7
+     "aspect": 2.7,
+     "aspectPortrait": 2.7
     },
     "scene": {
      "kind": "ride",
@@ -11301,7 +11311,8 @@
      "xname": "t",
      "yname": "s",
      "xtickFrom": 0,
-     "aspect": 2.7
+     "aspect": 2.7,
+     "aspectPortrait": 2.7
     },
     "scene": {
      "kind": "ride",
@@ -14862,7 +14873,8 @@
      "xname": "t",
      "yname": "s",
      "xtickFrom": 0,
-     "aspect": 2.7
+     "aspect": 2.7,
+     "aspectPortrait": 2.7
     },
     "scene": {
      "kind": "ride",
@@ -18404,7 +18416,8 @@
      "xname": "t",
      "yname": "s",
      "xtickFrom": 0,
-     "aspect": 2.7
+     "aspect": 2.7,
+     "aspectPortrait": 2.7
     },
     "scene": {
      "kind": "ride",

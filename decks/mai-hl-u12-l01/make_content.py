@@ -64,9 +64,9 @@ M2 = {'pts': table(S2, 6, 0.05), 'dot': 1, 'xmin': -1, 'xmax': 10, 'lab': 1, 'un
 M3 = {'pts': table(S3, 19, 0.05), 'hill': HILL, 'dot': 1, 'unit': 'm', 'tunit': 'min', 'sdp': 0}
 STUB = {'pts': [[0, 0], [1, 1]], 'hill': [[0, 50, 260], [1, 950, 260]], 'dot': 1, 'unit': 'm', 'tunit': 's'}   # title cards draw no motion
 
-W1 = {'xmin': -0.5, 'xmax': 4.6, 'ymin': -6, 'ymax': 10, 'gridx': 1, 'gridy': 2, 'xtick': 1, 'ytick': 2, 'xname': 't', 'yname': 's', 'xtickFrom': 0, 'aspect': 2.2}
-W2 = {'xmin': -0.5, 'xmax': 6.6, 'ymin': -2, 'ymax': 11, 'gridx': 1, 'gridy': 2, 'xtick': 1, 'ytick': 2, 'xname': 't', 'yname': 's', 'xtickFrom': 0, 'aspect': 2.2}
-W3 = {'xmin': -1.5, 'xmax': 20, 'ymin': -250, 'ymax': 3000, 'gridx': 5, 'gridy': 500, 'xtick': 5, 'ytick': 500, 'xname': 't', 'yname': 's', 'xtickFrom': 0, 'aspect': 2.7}
+W1 = {'xmin': -0.5, 'xmax': 4.6, 'ymin': -6, 'ymax': 10, 'gridx': 1, 'gridy': 2, 'xtick': 1, 'ytick': 2, 'xname': 't', 'yname': 's', 'xtickFrom': 0, 'aspect': 2.2, 'aspectPortrait': 2.2}
+W2 = {'xmin': -0.5, 'xmax': 6.6, 'ymin': -2, 'ymax': 11, 'gridx': 1, 'gridy': 2, 'xtick': 1, 'ytick': 2, 'xname': 't', 'yname': 's', 'xtickFrom': 0, 'aspect': 2.2, 'aspectPortrait': 2.2}
+W3 = {'xmin': -1.5, 'xmax': 20, 'ymin': -250, 'ymax': 3000, 'gridx': 5, 'gridy': 500, 'xtick': 5, 'ytick': 500, 'xname': 't', 'yname': 's', 'xtickFrom': 0, 'aspect': 2.7, 'aspectPortrait': 2.7}
 
 # ---------------------------------------------------------------- facts
 F = {
