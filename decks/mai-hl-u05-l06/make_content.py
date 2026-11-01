@@ -144,7 +144,9 @@ def question(n, q, name, title, stem, blocks, window, items, given=None, choices
     d = {'type': 'example', 'scene': n, 'q': q, 'eyebrow': f'{name} · Question {q}', 'title': title, 'stem': stem,
          'blocks': blocks, 'graph': {'window': dict(window, aspect=1.4), 'items': items}}
     if prompt: d['prompt'] = prompt
-    if second: d['graph']['second'] = {'window': dict(second[0], aspect=3.0), 'items': second[1]}; d['graph']['window']['aspect'] = 3.0
+    if second:
+        room = lambda w: dict(w, ymin=round(w['ymin'] - 0.09 * (w['ymax'] - w['ymin']), 3), aspect=3.2)   # space under the axis for the tick labels
+        d['graph']['window'] = room(d['graph']['window']); d['graph']['second'] = {'window': room(second[0]), 'items': second[1]}
     if choices: d.update(choices=choices, correct=correct, pickStep=1)
     if cont: d['cont'] = True
     if solo: d['solo'] = True
@@ -234,9 +236,12 @@ RXf = [float(v) for v in rx]; RYf = [float(v) for v in ry]
 A3, B3 = lsrl(RXf, RYf)
 WRK = {'xmin': -1, 'xmax': 9.5, 'ymin': -1, 'ymax': 9.5, 'gridx': 1, 'gridy': 1, 'xtick': 1, 'ytick': 1, 'xname': 'ranked hours', 'yname': 'ranked time', 'xtickFrom': 0, 'ytickFrom': 0}
 BL = '\\quad'
-T4 = lambda rh, rt: ('\\begin{array}{r|cccccccc}\\text{ranked hours}&' + '&'.join(rh) + '\\\\[-0.12em] \\text{hours}&2&3&5&6&8&9&11&14\\\\[-0.12em] \\hline '
-                     '\\text{time}&0.12&0.31&0.52&0.52&0.68&0.74&0.80&0.83\\\\[-0.12em] \\text{ranked time}&' + '&'.join(rt) + '\\end{array}')
-TBL = '$' + T4([BL] * 8, [BL] * 8) + '$'
+Y = lambda t: '\\htmlClass{ansc}{' + t + '}'
+def T4(rh=None, rt=None):
+    top = ('\\begin{array}{r|cccccccc}' + (Y('\\text{ranked hours}') + '&' + '&'.join(Y(v) for v in rh) + '\\\\[-0.12em] ' if rh else '')
+           + '\\text{hours}&2&3&5&6&8&9&11&14\\\\[-0.12em] \\hline ' + '\\text{time}&0.12&0.31&0.52&0.52&0.68&0.74&0.80&0.83')
+    return top + (('\\\\[-0.12em] ' + Y('\\text{ranked time}') + '&' + '&'.join(Y(v) for v in rt)) if rt else '') + '\\end{array}'
+TBL = '$' + T4() + '$'
 T2 = '\\begin{array}{r|cccccccc}\\text{ranked hours}&1&2&3&4&5&6&7&8\\\\ \\text{ranked time}&1&2&\\mathbf{3.5}&\\mathbf{3.5}&5&6&7&8\\end{array}'
 question(3, 1, N3, 'Rank by hand', 'Rank $h$ and $t$, smallest first. What rank do the two tied athletes get?',
          [walk(None, [T4(['1', '2', '3', '4', '5', '6', '7', '8'], ['1', '2', '\\mathbf{3.5}', '\\mathbf{3.5}', '5', '6', '7', '8'])],

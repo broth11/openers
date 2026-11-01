@@ -2594,7 +2594,7 @@
     {
      "walk": {
       "tex": [
-       "\\begin{array}{r|cccccccc}\\text{ranked hours}&1&2&3&4&5&6&7&8\\\\[-0.12em] \\text{hours}&2&3&5&6&8&9&11&14\\\\[-0.12em] \\hline \\text{time}&0.12&0.31&0.52&0.52&0.68&0.74&0.80&0.83\\\\[-0.12em] \\text{ranked time}&1&2&\\mathbf{3.5}&\\mathbf{3.5}&5&6&7&8\\end{array}"
+       "\\begin{array}{r|cccccccc}\\htmlClass{ansc}{\\text{ranked hours}}&\\htmlClass{ansc}{1}&\\htmlClass{ansc}{2}&\\htmlClass{ansc}{3}&\\htmlClass{ansc}{4}&\\htmlClass{ansc}{5}&\\htmlClass{ansc}{6}&\\htmlClass{ansc}{7}&\\htmlClass{ansc}{8}\\\\[-0.12em] \\text{hours}&2&3&5&6&8&9&11&14\\\\[-0.12em] \\hline \\text{time}&0.12&0.31&0.52&0.52&0.68&0.74&0.80&0.83\\\\[-0.12em] \\htmlClass{ansc}{\\text{ranked time}}&\\htmlClass{ansc}{1}&\\htmlClass{ansc}{2}&\\htmlClass{ansc}{\\mathbf{3.5}}&\\htmlClass{ansc}{\\mathbf{3.5}}&\\htmlClass{ansc}{5}&\\htmlClass{ansc}{6}&\\htmlClass{ansc}{7}&\\htmlClass{ansc}{8}\\end{array}"
       ]
      }
     },
@@ -2717,7 +2717,7 @@
      }
     ]
    },
-   "prompt": "$\\begin{array}{r|cccccccc}\\text{ranked hours}&\\quad&\\quad&\\quad&\\quad&\\quad&\\quad&\\quad&\\quad\\\\[-0.12em] \\text{hours}&2&3&5&6&8&9&11&14\\\\[-0.12em] \\hline \\text{time}&0.12&0.31&0.52&0.52&0.68&0.74&0.80&0.83\\\\[-0.12em] \\text{ranked time}&\\quad&\\quad&\\quad&\\quad&\\quad&\\quad&\\quad&\\quad\\end{array}$",
+   "prompt": "$\\begin{array}{r|cccccccc}\\text{hours}&2&3&5&6&8&9&11&14\\\\[-0.12em] \\hline \\text{time}&0.12&0.31&0.52&0.52&0.68&0.74&0.80&0.83\\end{array}$",
    "solo": true
   },
   {
@@ -2739,7 +2739,7 @@
     "window": {
      "xmin": -2,
      "xmax": 16,
-     "ymin": -0.12,
+     "ymin": -0.221,
      "ymax": 1.0,
      "gridx": 2,
      "gridy": 0.1,
@@ -2767,7 +2767,7 @@
        "0.8"
       ]
      ],
-     "aspect": 3.0
+     "aspect": 3.2
     },
     "items": [
      {
@@ -2847,7 +2847,7 @@
      "window": {
       "xmin": -1,
       "xmax": 9.5,
-      "ymin": -1,
+      "ymin": -1.945,
       "ymax": 9.5,
       "gridx": 1,
       "gridy": 1,
@@ -2857,7 +2857,7 @@
       "yname": "ranked time",
       "xtickFrom": 0,
       "ytickFrom": 0,
-      "aspect": 3.0
+      "aspect": 3.2
      },
      "items": [
       {
@@ -3378,7 +3378,7 @@
     "window": {
      "xmin": -2,
      "xmax": 16,
-     "ymin": -0.12,
+     "ymin": -0.221,
      "ymax": 1.0,
      "gridx": 2,
      "gridy": 0.1,
@@ -3406,7 +3406,7 @@
        "0.8"
       ]
      ],
-     "aspect": 3.0
+     "aspect": 3.2
     },
     "items": [
      {
@@ -3511,7 +3511,7 @@
      "window": {
       "xmin": -1,
       "xmax": 9.5,
-      "ymin": -1,
+      "ymin": -1.945,
       "ymax": 9.5,
       "gridx": 1,
       "gridy": 1,
@@ -3521,7 +3521,7 @@
       "yname": "ranked time",
       "xtickFrom": 0,
       "ytickFrom": 0,
-      "aspect": 3.0
+      "aspect": 3.2
      },
      "items": [
       {
@@ -4200,7 +4200,7 @@
     "window": {
      "xmin": -4,
      "xmax": 36,
-     "ymin": -20,
+     "ymin": -35.3,
      "ymax": 150,
      "gridx": 5,
      "gridy": 25,
@@ -4210,7 +4210,7 @@
      "yname": "ice creams (I)",
      "xtickFrom": 0,
      "ytickFrom": 0,
-     "aspect": 3.0
+     "aspect": 3.2
     },
     "items": [
      {
@@ -4351,7 +4351,7 @@
      "window": {
       "xmin": -4,
       "xmax": 36,
-      "ymin": -6,
+      "ymin": -11.04,
       "ymax": 50,
       "gridx": 5,
       "gridy": 5,
@@ -4361,7 +4361,7 @@
       "yname": "sunburn (S)",
       "xtickFrom": 0,
       "ytickFrom": 0,
-      "aspect": 3.0
+      "aspect": 3.2
      },
      "items": [
       {

@@ -176,7 +176,8 @@ h2 .dim{color:var(--note);font-weight:600}
 }
 
 /* v23 (Ben, 1/11/2026): two graphs stacked on an example slide (graph.second); a tagline under a scene title */
-.ex.dual .fig{justify-content:center;gap:max(6px,1.2cqh)}
+.ex.dual .fig{justify-content:center;gap:max(22px,3.6cqh)}
+.katex .ansc{color:var(--bl)}
 .ex.solo{grid-template-columns:minmax(0,1fr)!important;grid-template-areas:"stem" "work" "note"!important}
 .ex.solo .fig{display:none}
 @container (max-aspect-ratio: 3/4){ .ex.dual .fig .lab-graph{width:min(94cqw,66cqh)} }
@@ -750,11 +751,17 @@ function fit(s){
     if (free > 0){ const cap = s.el.clientHeight * 0.05, add = Math.min(free / (n + 1), cap);
       ctl.style.gap = (parseFloat(getComputedStyle(ctl).rowGap) + add) + 'px';
       head.style.marginBottom = (parseFloat(getComputedStyle(head).marginBottom) + add) + 'px'; }
+    /* v23: never let the title block run into the first control group (a wrapped title, or fonts that arrive late) */
+    ctl.style.marginTop = '';
+    const clash = head.getBoundingClientRect().bottom + 14 - ctl.getBoundingClientRect().top;
+    if (clash > 0) ctl.style.marginTop = clash + 'px';
   }
   Lab.placeAll(s.el);
 }
 const refit = () => { slides.forEach(t => fit(t)); fitAll(); slides.forEach(t => fit(t)); fit(slides[cur]); };
 window.addEventListener('resize', refit);
+if (window.ResizeObserver) slides.forEach(t => { const h = t.el.querySelector('.s-lab .lab-head, .lab-head'); if (!h) return; let last = h.offsetHeight;
+  new ResizeObserver(() => { if (Math.abs(h.offsetHeight - last) > 1){ last = h.offsetHeight; fit(t); } }).observe(h); });
 /* load every embedded face up front (KaTeX loads its delimiter faces lazily otherwise, which moves labels after placement) */
 if (document.fonts && document.fonts.load){
   const faces = ['KaTeX_Main','KaTeX_Math','KaTeX_AMS','KaTeX_Size1','KaTeX_Size2','KaTeX_Size3','KaTeX_Size4','STIX Two Math','STIX Two Text'];

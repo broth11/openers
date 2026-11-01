@@ -219,3 +219,4 @@ U5 L3 deck: checker PASS at nine sizes.
 - Two graphs on one example slide: `graph.second = {window, items}` stacks a second graph under the first (give both windows `aspect` about 3.0; both share the slide's reveal steps). The stem never goes `wide` on such a slide. Phones shrink the text (a warning, not a failure).
 - `solo: true` on an example hides the graph so a wide table can use the full width (the 8-column rank tables).
 - `tagline` on a `sceneTitle` adds an italic line under the title. The title-card art keeps its axis names above the axis so they stay inside the art box.
+- Stacked graphs get a clear gap (`.ex.dual .fig`) and the generator adds room under each axis for the tick labels. A lab's title block is kept 14px clear of the first control group by a guard in `fit()` plus a ResizeObserver, so a wrapped title never runs into READINGS or DATA. `\htmlClass{ansc}{...}` in a walk's TeX colours that part in the answer yellow.
