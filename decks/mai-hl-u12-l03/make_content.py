@@ -173,10 +173,11 @@ out.append(q(1, 2, 'Which car is ahead?',
               walk('The gap', ['28-16&=12\\ \\text{m}'], 'Car B is $12$ m ahead: the extra $3\\ \\text{m s}^{-1}$ for $4$ s is the rectangle $3\\times 4=12$.', ans=True)],
              graph(1, [[0, st(4, show=2, shade=['v'])], [1, st(4, show=2, shade=['v'], areas=['v'])], [2, st(4, show=3, shade=['v'], areas=['v'], vals=['s'], hide=False, read='ts')]])))
 out.append(q(1, 3, 'A third car',
-             'Car C has the same acceleration and the same starting velocity as car B, but it starts $5$ m to the right of $O$. Where is car C at $t=4$?',
-             [walk('Use car B\'s velocity graph', ['\\text{area}&=28'], 'Car C has the same $v$-$t$ graph as car B, so it travels the same $28$ m.'),
-              walk('Add the starting position', ['s_C(4)&=5+28=33\\ \\text{m}'], 'The area only tells us how far the car moves. We also need to know where it started.', ans=True)],
-             graph(1, [[0, st(4, show=2, shade=['v'])], [1, st(4, show=2, shade=['v'], areas=['v'])], [2, st(4, show=2, shade=['v'], areas=['v'])]])))
+             'Car C also has $a=2$. Its velocity is $5\\ \\text{m s}^{-1}$ at $t=1$, and it is at $15$ m at $t=2$. Where is car C at $t=4$?',
+             [walk('Integrate to find $v$', ['v&=2t+C', '5&=2+C\\ \\Rightarrow\\ C=3'], None),
+              walk('Integrate again to find $s$', ['s&=t^{2}+3t+D', '15&=4+6+D\\ \\Rightarrow\\ D=5'], None),
+              walk('Use $t=4$', ['s(4)&=16+12+5=33\\ \\text{m}'], 'Car C has car B\'s velocity graph, shifted $5$ m along.', ans=True)],
+             graph(1, [[k, st(4, show=1, shade=['a'], areas=['a'], hide=True)] for k in range(4)])))
 
 # ================================================================ scene 2: the fading push
 out.append(title_card(2, 'The Fading Push'))
@@ -206,11 +207,13 @@ out.append(q(2, 6, 'How far by 12 seconds?',
              choices=['More than 48 m', 'Exactly 48 m', 'Less than 48 m'], correct=2, pick=2))
 
 # ================================================================ recap lab
-out.append({'type': 'lab', 'preset': 'ladderLab', 'eyebrow': 'Recap · From acceleration back to position', 'title': 'Acceleration and the start',
-            'init': {'T': 6, 'u': {'min': -6, 'max': 6, 'step': 1, 'start': 3}, 'a': {'min': -4, 'max': 4, 'step': 0.5, 'start': -2}, 't0': 3,
+out.append({'type': 'lab', 'preset': 'ladderLab', 'eyebrow': 'Recap · Constants', 'title': 'Find C and D',
+            'init': {'T': 6, 'a': 2, 't0': 3,
+                     'modes': {'start': {'t1': 0, 't2': 0, 'v': 3, 's': 5}, 'known': {'t1': 1, 't2': 2, 'v': 5, 's': 15}},
+                     'v': {'min': -6, 'max': 8, 'step': 1}, 's': {'min': -10, 'max': 30, 'step': 1},
                      'alt': 'A toy car on a number line above the graphs of acceleration, velocity and position against time',
                      'color': ORANGE, 'colors': {'a': RED, 'v': 'blue', 's': ORANGE, 'pos': TEAL, 'neg': PINK},
-                     'cards': ['A larger $a$ tilts the $v$-$t$ graph more.', 'A different start lifts the $v$-$t$ graph.', '$a$ and the start decide the motion.']}})
+                     'prompt': 'Which graph moves with $C$? With $D$?'}})
 
 meta = {'cohort': 'MAI', 'cohortLabel': 'MAI HL', 'lesson': 3, 'topic': 'FromAccelerationBackToPosition', 'topicWords': 'From acceleration back to position',
         'file': 'mai-hl-u12-l03-from-acceleration-back-to-position.html', 'artifactTitle': 'MAI HL U12 L3 From Acceleration Back to Position',

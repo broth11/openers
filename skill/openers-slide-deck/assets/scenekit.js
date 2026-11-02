@@ -823,59 +823,65 @@
   }
   window.Lab.presets.areaLab = areaLab;
 
-  /* recap lab (U12 L3): a constant acceleration a and a starting velocity u (sliders), a time slider with Play. The track, the a-t, v-t and s-t panels
-     (areas shaded live) and the working v(t), s(t) written with the chosen numbers. No formula is named: the numbers do the talking.
-     init = {T, u: {min, max, step, start}, a: {min, max, step, start}, t0, color, colors: {a, v, s, pos, neg}, cards: [..3 strings..]} */
+  /* recap lab (U12 L3): a(t) is fixed. Two known values (v and s at chosen times) are set with sliders, and the working finds the constants of
+     integration C and D, then s(t). A toggle moves the known values from t = 0 to t = t1 and t = t2. The a-t, v-t and s-t panels follow.
+     init = {T, a, t0, modes: {start: {t1, t2, v, s}, known: {t1, t2, v, s}}, v: {min, max, step}, s: {min, max, step}, colors: {a, v, s, pos, neg}, prompt} */
   function ladderLab(container, init) {
     container.classList.add('lab', 'scenelab', 'mslab', 'llab');
     const left = document.createElement('div'); left.className = 'lab-left';
     const right = document.createElement('div'); right.className = 'lab-controls';
     container.appendChild(left); container.appendChild(right);
-    const L = window.Lab, T = init.T || 6, K = init.colors;
-    let u = init.u.start, ac = init.a.start, v = init.t0 == null ? 3 : init.t0, pl = null, moved = { u: false, a: false };
+    const L = window.Lab, T = init.T || 6, K = init.colors, ac = init.a;
+    let mode = 'start', vk = init.modes.start.v, sk = init.modes.start.s, v = init.t0 == null ? 3 : init.t0, pl = null, moved = { v: false, s: false };
     const trim = x => String(+(+x).toFixed(3)), minus = s => s.replace(/-/g, '−');
-    const niceCeil = x => { if (x <= 0) return 0; const p = Math.pow(10, Math.floor(Math.log10(x))), m = x / p; return (m <= 1 ? 1 : m <= 2 ? 2 : m <= 5 ? 5 : 10) * p; };
+    const md = () => init.modes[mode];
+    const consts = () => { const m = md(), C = vk - ac * m.t1, D = sk - (ac * m.t2 * m.t2 / 2 + C * m.t2); return { C, D, u: C, s0: D, m }; };
+    const niceCeil = x => { if (x <= 0) return 0; const p = Math.pow(10, Math.floor(Math.log10(x))), q = x / p; return (q <= 1 ? 1 : q <= 2 ? 2 : q <= 5 ? 5 : 10) * p; };
     const range = arr => { const lo = Math.min(0, ...arr), hi = Math.max(0, ...arr); let ymax = hi > 0 ? niceCeil(hi * 1.1) : 0, ymin = lo < 0 ? -niceCeil(-lo * 1.1) : 0; if (ymax - ymin < 1e-9) ymax = 1; return [ymin, ymax]; };
     function build() {
-      const N = Math.round(T / 0.05), ap = [], vp = [], sp = [], aa = [];
-      for (let i = 0; i <= N; i++) { const t = +(i * 0.05).toFixed(2); ap.push([t, ac]); vp.push([t, u + ac * t]); sp.push([t, u * t + ac * t * t / 2]); aa.push([t, ac * t]); }
+      const { u, s0 } = consts(), N = Math.round(T / 0.05), ap = [], vp = [], sp = [], aa = [], da = [];
+      for (let i = 0; i <= N; i++) { const t = +(i * 0.05).toFixed(2); ap.push([t, ac]); vp.push([t, u + ac * t]); sp.push([t, s0 + u * t + ac * t * t / 2]); da.push([t, u * t + ac * t * t / 2]); aa.push([t, ac * t]); }
       const ser = (pts, area, col) => ({ pts, area, color: col, posColor: K.pos, negColor: K.neg });
-      const ra = range(ap.map(p => p[1])), rv = range(vp.map(p => p[1])), rs = range(sp.map(p => p[1]));
-      const lo = Math.min(0, ...sp.map(p => p[1])), hi = Math.max(0, ...sp.map(p => p[1])), span = Math.max(hi - lo, 1);
+      const ra = range(ap.map(q => q[1])), rv = range(vp.map(q => q[1])), rs = range(sp.map(q => q[1]));
+      const lo = Math.min(0, ...sp.map(q => q[1])), hi = Math.max(0, ...sp.map(q => q[1])), span = Math.max(hi - lo, 1);
       const lo2 = lo - span * 0.08, hi2 = hi + span * 0.08, step = [1, 2, 5, 10, 20, 50, 100].find(q => (hi2 - lo2) / q <= 10);
       return { T, ts: 1, pts: sp, dot: 1, unit: 'm', tunit: 's', sdp: 1, xmin: Math.floor(lo2 / step) * step, xmax: Math.ceil(hi2 / step) * step, lab: step, step: step < 2 ? 1 : step / 2,
         panels: { a: { ymin: ra[0], ymax: ra[1], dp: 1, dname: '\\Delta v', series: [ser(ap, aa, K.a)] },
-                  v: { ymin: rv[0], ymax: rv[1], dp: 1, dname: '\\Delta s', series: [ser(vp, sp, K.v)] },
+                  v: { ymin: rv[0], ymax: rv[1], dp: 1, dname: '\\Delta s', series: [ser(vp, da, K.v)] },
                   s: { ymin: rs[0], ymax: rs[1], dp: 1, series: [{ pts: sp, color: K.s }] } } };
     }
     const sc = { kind: 'track', layout: 'ladder', alt: init.alt, color: init.color || HANDLE_C, motion: build() };
     const sr = motionRow(left, { aspect: 2 }, 'track', sc);
     const grp = title => { const g = document.createElement('div'); g.className = 'lab-group';
       if (title) { const h = document.createElement('div'); h.className = 'lab-group-title'; h.innerHTML = title; g.appendChild(h); } right.appendChild(g); return g; };
-    const gs = grp('The start');
+    const gs = grp('Known values at');
     const rebuild = () => { sc.motion = build(); refresh(); };
-    const su = L.slider(gs, { min: init.u.min, max: init.u.max, step: init.u.step, value: u, label: 'v(0)', format: x => `${trim(x)}`, onChange: x => { u = x; moved.u = true; rebuild(); } });
-    const sa = L.slider(gs, { min: init.a.min, max: init.a.max, step: init.a.step, value: ac, label: 'a', format: x => `${trim(x)}`, onChange: x => { ac = x; moved.a = true; rebuild(); } });
-    const gt = grp('');
+    const names = () => (mode === 'start' ? ['v(0)', 's(0)'] : ['v(' + md().t1 + ')', 's(' + md().t2 + ')']);
+    L.toggle(gs, { options: ['t = 0', 't = ' + init.modes.known.t1 + ', ' + init.modes.known.t2], value: 't = 0', onChange: o => {
+      mode = o === 't = 0' ? 'start' : 'known'; vk = md().v; sk = md().s; sv.input.value = vk; ss.input.value = sk;
+      sv.set(vk); ss.set(sk); labs(); } });
+    const sv = L.slider(gs, { min: init.v.min, max: init.v.max, step: init.v.step, value: vk, label: 'v', format: x => `${trim(x)}`, onChange: x => { vk = x; moved.v = true; rebuild(); } });
+    const ss = L.slider(gs, { min: init.s.min, max: init.s.max, step: init.s.step, value: sk, label: 's', format: x => `${trim(x)}`, onChange: x => { sk = x; moved.s = true; rebuild(); } });
+    const labs = () => { const [a, b] = names(); sv.input.parentNode.querySelector('label').innerHTML = math(a); ss.input.parentNode.querySelector('label').innerHTML = math(b); };
     const showT = x => { const out = st.input.parentNode.querySelector('output'); if (out) out.innerHTML = math(`${fx(x, 2)}\\ \\text{s}`); };
-    const st = L.slider(gt, { min: 0, max: T, step: 0.05, value: v, label: 't', format: x => `${fx(x, 2)}\\ \\text{s}`, onChange: x => { v = x; if (pl && pl.playing()) pl.stop(); refresh(); } });
+    const st = L.slider(gs, { min: 0, max: T, step: 0.05, value: v, label: 't', format: x => `${fx(x, 2)}\\ \\text{s}`, onChange: x => { v = x; if (pl && pl.playing()) pl.stop(); refresh(); } });
     ['pointerdown', 'keydown'].forEach(ev => st.input.addEventListener(ev, () => pl && pl.stop()));
     const po = { min: 0, max: T, seconds: 6, get: () => v, set: x => { v = x; st.input.value = x; showT(x); refresh(); } };
-    pl = player(gt, po);
+    pl = player(gs, po);
     const gr = grp('The working');
     const term = (c, p) => { if (Math.abs(c) < 1e-9) return ''; const ab = Math.abs(c); return (c < 0 ? '-' : '+') + (ab === 1 && p ? '' : trim(ab)) + p; };
     const poly = cs => minus((term(cs[0], '') + term(cs[1], 't') + term(cs[2], 't^{2}')).replace(/^\+/, '') || '0');
-    const rv = L.readout(gr, () => `a=${minus(trim(ac))}\\ \\Rightarrow\\ v(t)=${poly([u, ac, 0])}`);
-    const rs = L.readout(gr, () => `s(t)=${poly([0, u, ac / 2])}\\quad(s(0)=0)`);
-    const rt = L.readout(gr, () => { const vv = u + ac * v, ss = u * v + ac * v * v / 2, w = Math.abs(vv) < 0.05 ? 'at rest' : vv > 0 ? 'moving right' : 'moving left';
-      return minus(`v=${trim(+vv.toFixed(2))}\\ (\\text{${w}}),\\ s=${trim(+ss.toFixed(2))}`); });
+    const aT = () => (ac === 1 ? '' : trim(ac));
+    const r1 = document.createElement('div'); r1.className = 'lab-fixed'; r1.innerHTML = math(`v=\\int ${trim(ac)}\\,dt=${aT()}t+C`); gr.appendChild(r1);
+    const r2 = L.readout(gr, () => { const { C, m } = consts(); return minus(`v(${m.t1})=${trim(vk)}:\\ ${trim(vk)}=${trim(ac * m.t1)}+C\\ \\Rightarrow\\ C=${trim(C)}`); });
+    const r3 = L.readout(gr, () => { const { C } = consts(); return minus(`s=\\int(${poly([C, ac, 0])})\\,dt=${poly([0, C, ac / 2])}+D`); });
+    const r4 = L.readout(gr, () => { const { C, D, m } = consts(); return minus(`s(${m.t2})=${trim(sk)}:\\ ${trim(sk)}=${trim(ac * m.t2 * m.t2 / 2 + C * m.t2)}+D\\ \\Rightarrow\\ D=${trim(D)}`); });
+    const r5 = L.readout(gr, () => { const { C, D } = consts(); const tt = fx(v, 2).replace(/\.?0+$/, ''); return minus(`s=${poly([D, C, ac / 2])}:\\ s(${tt})=${trim(+(D + C * v + ac * v * v / 2).toFixed(2))}`); });
     const gc = grp('');
-    const cards = init.cards.map(txt => { const c = document.createElement('div'); c.className = 'ar-card'; gc.appendChild(c); return [c, txt]; });
-    const paintCards = () => { const open = [moved.a, moved.u, moved.a && moved.u];
-      cards.forEach(([c, txt], i) => { c.classList.toggle('on', open[i]); c.innerHTML = open[i] ? '<span>' + prose(txt) + '</span>' : '<span class="ar-lock">' + ['Move a', 'Move v(0)', 'Move both'][i] + '</span>'; }); };
-    const readouts = [rv, rs, rt];
-    function refresh() { sr.draw({ t: v, read: 'ts', show: 3, shade: ['a', 'v'], areas: ['a', 'v'], vals: ['a', 'v', 's'] }); readouts.forEach(r => r.update()); paintCards(); }
-    refresh();
+    const card = document.createElement('div'); card.className = 'ar-card on'; gc.appendChild(card); card.innerHTML = '<span>' + prose(init.prompt) + '</span>';
+    const readouts = [r2, r3, r4, r5];   /* r1 is the same for every slider position */
+    function refresh() { sr.draw({ t: v, read: 'ts', show: 3, shade: ['a', 'v'], areas: ['a', 'v'], vals: ['a', 'v', 's'] }); readouts.forEach(r => r.update()); }
+    labs(); refresh();
     const state = { controls: right, readouts, refresh, enter() { if (pl) pl.stop(); }, leave() { if (pl) pl.stop(); } };
     container.__lab = state;
     return state;

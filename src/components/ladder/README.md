@@ -11,7 +11,7 @@ An addition to the Motion track (deck kit v25, `skill/openers-slide-deck/assets/
 
 ## Recap lab `ladderLab`
 
-`{"type": "lab", "preset": "ladderLab", "init": {"T", "u", "a", "t0", "colors", "cards", "alt"}}`. Sliders for v(0) and a, a t slider with Play and Loop, a three-line working panel (`v(t)`, `s(t)`, the values at t), and three cards that unlock when a, v(0) and both have moved. Nothing in the controls changes size when a slider moves.
+`{"type": "lab", "preset": "ladderLab", "init": {"T", "a", "t0", "modes", "v", "s", "colors", "prompt", "alt"}}`. The acceleration is fixed. Two sliders set known values of v and s, and a toggle moves them from `t = 0` to `t = t1` and `t = t2` (`modes: {start: {t1, t2, v, s}, known: {...}}`). The working panel finds the constants of integration: `v = ∫ a dt = 2t + C`, `v(t1) = vk: vk = a t1 + C ⇒ C = ...`, `s = ∫ (v) dt = ... + D`, `s(t2) = sk: ... ⇒ D = ...`, then `s(t)` and its value at the t slider. The three graphs follow C and D. A single prompt card asks which graph moves with C and with D. The ladder uses about 57 % of the width so it fills the height; the first working line is a static `.lab-fixed` (it never changes, so the checker's "readout must change" rule skips it).
 
 ## Pieces
 

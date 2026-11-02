@@ -122,7 +122,7 @@ Motion scenes can stack **a-t, v-t and s-t** graphs on one cursor (`layout: 'lad
 
 - Panel and state keys are in the README. Colour roles in `motion.cars`, `motion.panels` and the lab `colors` resolve through `--sc-<role>` variables in the template, so the picker recolours run-time SVG (a hex in scene code will fail the contrast check).
 - Keep lab control columns short: the `ladderLab` right side is a two-column grid, cards have a fixed height, so the stability check passes.
-- Do not teach constant-acceleration formulas as a list: the working shows v from integrating a, then s from integrating v.
+- Do not teach constant-acceleration formulas as a list: the working integrates a, finds C from a known v, integrates again, finds D from a known s.
 
 ## Internal assessment tie-ins (Ben, 30/10/2026)
 

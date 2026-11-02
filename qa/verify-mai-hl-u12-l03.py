@@ -25,7 +25,14 @@ ok(sp.integrate(a1, (t, 0, 4)) == 8, 'Q1: area under a-t from 0 to 4 is 8 for bo
 ok(vA.subs(t, 4) == 8 and vB.subs(t, 4) == 11, 'Q1: vA(4) = 8, vB(4) = 11')
 ok(sA.subs(t, 4) == 16 and sB.subs(t, 4) == 28, 'Q2: sA(4) = 16, sB(4) = 28')
 ok(sB.subs(t, 4) - sA.subs(t, 4) == 12, 'Q2: car B is 12 m ahead')
-ok(sB.subs(t, 4) + 5 == 33, 'Q3: car C (starts 5 m right, velocity of B) is at 33 m')
+C, D = sp.symbols('C D')
+vC = 2 * t + C
+Cv = sp.solve(sp.Eq(vC.subs(t, 1), 5), C)[0]
+ok(Cv == 3, 'Q3: v = 2t + C, v(1) = 5 gives C = 3')
+sC = sp.integrate(vC.subs(C, Cv), t) + D
+Dv = sp.solve(sp.Eq(sC.subs(t, 2), 15), D)[0]
+ok(sp.expand(sC.subs(D, Dv) - (t**2 + 3 * t + 5)) == 0 and Dv == 5, 'Q3: s = t^2 + 3t + D, s(2) = 15 gives D = 5')
+ok(sC.subs(D, Dv).subs(t, 4) == 33 == 16 + 12 + 5, 'Q3: car C is at s(4) = 33 m, and its velocity is car B\'s')
 
 # ---- Scene 2, a = 2e^(-t/2), from rest at the origin, T = 12 ----
 a2 = 2 * sp.exp(-t / 2)
@@ -43,5 +50,12 @@ u, a = sp.symbols('u a')
 vr = sp.integrate(a, t) + u
 sr = sp.integrate(vr, t)
 ok(sp.expand(sr - (u * t + a * t**2 / 2)) == 0, 'Recap: s = ut + at^2/2 follows from integrating twice')
-ok((vr.subs({u: 3, a: -2})).subs(t, 3) == -3 and sr.subs({u: 3, a: -2, t: 3}) == 0, 'Recap start (u = 3, a = -2, t = 3): v = -3, s = 0')
+# the lab has a = 2 fixed and two known values: (v(0), s(0)) = (3, 5), or (v(1), s(2)) = (5, 15); both give C = 3, D = 5
+for (t1, vk, t2, sk) in ((0, 3, 0, 5), (1, 5, 2, 15)):
+    Cl = vk - 2 * t1
+    Dl = sk - (t2**2 + Cl * t2)
+    ok((Cl, Dl) == (3, 5), f'Recap known at t = {t1}, {t2}: C = 3, D = 5')
+ok(sp.integrate(2 * t + 3, t).subs(t, 3) + 5 == 23, 'Recap start: s(3) = 9 + 9 + 5 = 23, v(3) = 9')
+# every slider combination the lab allows gives exact integers for C and D
+ok(all(isinstance(vk - 2 * t1, int) for vk in range(-6, 9) for t1 in (0, 1)), 'Recap: C is an integer for every slider value')
 print('all checks passed')
