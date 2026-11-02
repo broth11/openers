@@ -156,7 +156,7 @@ out = [{'type': 'title', 'eyebrow': 'IB Mathematics: Applications and Interpreta
 # ================================================================ scene 1: two cars, one a-t graph
 out.append(title_card(1, 'Two Cars, One Push'))
 out.append(setup(1, 'One acceleration, two cars',
-                 'Two toy cars sit side by side at the origin $O$. They get exactly the same push: the same acceleration. The lanes show the cars, and the graphs below show $a$, $v$ and $s$ against $t$.',
+                 'Two toy cars sit at the origin $O$. They get exactly the same push: the same acceleration. The graphs show $a$, $v$ and $s$ against $t$.',
                  'Both cars are at $O$ at $t=0$. Car A starts from rest, and car B starts with a velocity of $3\\ \\text{m s}^{-1}$. '
                  'Both have an acceleration of $a=2\\ \\text{m s}^{-2}$ for $0\\le t\\le 4$ seconds, so there is only one $a$-$t$ graph. The area under each graph is shaded as time runs.',
                  ['o1', 'a1', 'b1', 'acc1'], st(0, hide=False, show=1, read='none'), st(0, hide=False, show=2, read='none')))

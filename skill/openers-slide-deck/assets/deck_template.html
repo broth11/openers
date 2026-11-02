@@ -548,6 +548,15 @@ html:root[data-skin="3b1b"],html:root[data-skin="goldteal"],html:root[data-skin=
 .scene-text.sc-num{color:var(--note)}
 .ex.scn.stk .given{max-width:min(50cqw,72cqh)}
 .ex.scn.stk .fig{width:min(50cqw,72cqh)}
+/* v25 (Ben, 2/11/2026): ladder slides give the whole right side to the three graphs; the title block and its rule stay in the left column */
+@container (min-aspect-ratio: 3/4){
+  .slide.s-ladder.active,.slide.s-ladder.measure:not(.active){display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto auto auto minmax(0,1fr);column-gap:var(--b3);row-gap:var(--b2);align-content:start}
+  .slide.s-ladder .eyebrow{grid-area:1/1} .slide.s-ladder h2{grid-area:2/1}
+  .slide.s-ladder .ex{display:contents}
+  .slide.s-ladder .ex .stem{grid-area:3/1} .slide.s-ladder .ex .panel.work{grid-area:4/1} .slide.s-ladder .ex .note{grid-area:5/1;align-self:start}
+  .slide.s-ladder .ex.scn.stk .fig{grid-area:1/2/-1/3;align-self:stretch;width:min(46cqw,100cqh);max-width:none}
+  .slide.s-ladder .scene-row.stack{--w:min(46cqw,100cqh)}
+}
 .s-stitle .tc-art.wide{height:auto;width:min(86cqw,120cqh);aspect-ratio:auto}
 .s-stitle .tc-art.wide .scene{height:auto;aspect-ratio:inherit}
 /* IA: the notepad gets the wider column */
@@ -652,7 +661,7 @@ C.slides.forEach(d => {
     const head = d.graph && d.graph.given ? `<ul class="given">${d.graph.given.map(factLi).join('')}</ul>` : (sceneG&&d.graph.heading?`<p class="scene-head">${nb(d.graph.heading)}</p>`:'');
     const stemHTML = d.setup ? `<p class="setup-pre">${nb(d.setup.preamble)}</p><div class="decode"><p class="para" data-until="0">${nb(d.setup.para)}</p><ul class="facts" data-step="1">${d.setup.facts.map(factLi).join('')}</ul></div>`
       : `<p>${nb(d.stem)}</p>${d.prompt?`<p class="prompt">${nb(d.prompt)}</p>`:''}${picks}`;
-    const s = addSlide('s-example'+(d.setup?' s-setup':''), `<div class="eyebrow">${d.eyebrow ? esc(d.eyebrow) : `Worked Example ${d.n} · ${tagHTML(d.tag)}`}</div><h2>${esc(d.title)}</h2>
+    const s = addSlide('s-example'+(d.setup?' s-setup':'')+(sceneG&&sceneG.layout==='ladder'?' s-ladder':''), `<div class="eyebrow">${d.eyebrow ? esc(d.eyebrow) : `Worked Example ${d.n} · ${tagHTML(d.tag)}`}</div><h2>${esc(d.title)}</h2>
       <div class="ex${sceneG?' scn':''}${sceneG&&(sceneG.layout==='stack'||sceneG.layout==='signs'||sceneG.layout==='ladder')?' stk':''}${d.graph&&d.graph.second?' dual':''}${d.solo?' solo':''}"><div class="stem">${stemHTML}</div>
       <div class="panel work"></div>${d.note?`<p class="note">${nb(d.note)}</p>`:''}<div class="fig">${head}</div></div>`);
     const panel = s.el.querySelector('.panel.work'); let k = 0;
@@ -727,9 +736,9 @@ function paintSteps(s){ s.steps.forEach((els,i)=>els.forEach(e=>e.classList.togg
   s.el.querySelectorAll('.pick[data-on]').forEach(p=>{ const n=+p.dataset.on; p.classList.toggle('on', n>0 && s.shown>=n+(s.off||0)); }); }
 function overSlide(s){
   const r = s.el.getBoundingClientRect();
-  if ([...s.el.children].some(c => c.getBoundingClientRect().bottom > r.bottom - 2 || c.scrollWidth > c.clientWidth + 2 || c.scrollHeight > c.clientHeight + 2)) return true;
+  if ([...s.el.children].flatMap(c => getComputedStyle(c).display === 'contents' ? [...c.children] : [c]).some(c => c.getBoundingClientRect().bottom > r.bottom - 2 || c.scrollWidth > c.clientWidth + 2 || c.scrollHeight > c.clientHeight + 2)) return true;
   const ex = s.el.querySelector('.ex');
-  if (ex){ const er = ex.getBoundingClientRect();
+  if (ex && getComputedStyle(ex).display !== 'contents'){ const er = ex.getBoundingClientRect();
     if (ex.scrollHeight > ex.clientHeight + 2 || [...ex.children].some(c => !c.classList.contains('fig') && c.getBoundingClientRect().bottom > er.bottom - 2)) return true; }
   const ctl = s.el.querySelector('.lab-controls');
   if (ctl && (ctl.getBoundingClientRect().bottom > r.bottom - 2 || ctl.scrollWidth > ctl.clientWidth + 2)) return true;

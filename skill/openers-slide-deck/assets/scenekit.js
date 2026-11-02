@@ -493,7 +493,7 @@
         d.innerHTML = prose(html); labs.appendChild(d); return d; } };
   }
   function motionRow(el, win, kind, sc) {
-    const ladder = sc.layout === 'ladder', W = 1000, signs = sc.layout === 'signs' || ladder, ph = ladder ? 440 : PH;   /* v25: the ladder shares the signs frame */
+    const ladder = sc.layout === 'ladder', W = 1000, signs = sc.layout === 'signs' || ladder, ph = ladder ? 510 : PH;   /* v25: the ladder shares the signs frame */
     const row = document.createElement('div'); row.className = 'scene-row stack'; el.appendChild(row);
     row.style.setProperty('--asp', String(win.aspect || 1.9));
     if (signs) row.classList.add('signs');
@@ -546,7 +546,7 @@
        series: [{pts, area (cumulative area table), color, posColor, negColor, sub, opacity}]}}.
      state: t, show (1 to 3 panels), shade (panel names), areas (panels whose area readout shows), vals (panels whose value shows), refs (panels whose
      dashed reference lines show: P.refs = [{y, label}]), areaFrom. P.yticks lists the y-axis labels (default: ymax, and ymin when negative). */
-  const LAD_H = 138;
+  const LAD_H = 161;
   function drawLadder(a, M, s, C) {
     const T = M.T, t = Math.min(s.t || 0, T), X = u => 100 + u / T * 870, show = s.show || 3, shade = s.shade || [], areas = s.areas || [], vals = s.vals || [];
     const names = ['a', 'v', 's'], runs = window.Lab.areaRuns;

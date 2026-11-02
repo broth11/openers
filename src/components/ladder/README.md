@@ -16,7 +16,7 @@ An addition to the Motion track (deck kit v25, `skill/openers-slide-deck/assets/
 ## Pieces
 
 - `scenekit.js`: `drawLadder`, `MOTION.lanes`, the `ladderLab` preset.
-- `deck_template.html`: `ladder` in the stack detection, `--sc-<role>` variables, `.llab` layout (two columns).
+- `deck_template.html`: `ladder` in the stack detection, `--sc-<role>` variables, `.llab` layout (two columns), `.s-ladder` slides (title block in the left column, ladder full height on the right).
 - `build_deck.py`: `role_var` resolves roles in `motion.cars`, `motion.panels` and the lab colours.
 
 ## Checks (U12 L3, 2 November 2026)
