@@ -116,6 +116,14 @@ The motion scenes can show a **v-t graph** (no s-t graph) with the area to the t
 - `window.xtickBottom: true` puts the t numbers under the frame when the curve dips below the axis (a tick number under a stroke is otherwise hidden).
 - Recap lab `areaLab`: two cursors (snap 0.5), `v` / `|v|` toggle, exact `F` and `G` tables, three cards that unlock with the toggle. The checker drags each handle left by about one t unit, so no handle may start at its limit, and every toggle must change a readout.
 
+## The a, v, s ladder (v25, MAI HL U12 L3, 2/11/2026)
+
+Motion scenes can stack **a-t, v-t and s-t** graphs on one cursor (`layout: 'ladder'`), shading the area under a (change in v) and under v (change in s), and a `lanes` kind draws two cars on two roads. Model: `decks/mai-hl-u12-l03/make_content.py` (copy in `assets/examples/MAI_U12_L3/`); spec in `src/components/ladder/README.md`.
+
+- Panel and state keys are in the README. Colour roles in `motion.cars`, `motion.panels` and the lab `colors` resolve through `--sc-<role>` variables in the template, so the picker recolours run-time SVG (a hex in scene code will fail the contrast check).
+- Keep lab control columns short: the `ladderLab` right side is a two-column grid, cards have a fixed height, so the stability check passes.
+- Do not teach constant-acceleration formulas as a list: the working shows v from integrating a, then s from integrating v.
+
 ## Internal assessment tie-ins (Ben, 30/10/2026)
 
 Every time a deck is planned, ask whether the lesson's topic could seed an IB MAI Internal Assessment

@@ -191,6 +191,7 @@ def resolve_colours(content, hexes):
     for b in list(deck.values()):
         assert b in ROLES, f'meta.t2c: unknown role {b!r} (roles: {ROLES}; yellow is the answer, never a role)'
     assert len(deck) <= 3, 'at most three bound symbols per deck'
+    role_var = lambda r: 'var(--sc-%s)' % ('curve' if r == 'blue' else r)   # v25: run-time scenes use the theme's CSS variable, so the picker recolours them
     for s in content['slides']:   # v22: key facts (setup slides, given lists) carry a role; the page gets its hex
         for f in (s.get('setup') or {}).get('facts', []) + (s.get('graph') or {}).get('given', []):
             if f.get('c'):
@@ -205,6 +206,20 @@ def resolve_colours(content, hexes):
             for key in ('posColor', 'negColor'):
                 if (s.get('init') or {}).get(key) in ROLES:
                     s['init'][key] = hexes[s['init'][key]]
+        if s.get('type') == 'lab' and (s.get('init') or {}).get('colors'):   # v25: ladderLab series colours
+            s['init']['colors'] = {k: role_var(v) if v in ROLES else v for k, v in s['init']['colors'].items()}
+    for s in content['slides']:   # v25: ladder panels and lanes cars carry role names; the page gets hex
+        for m in (s.get('motion'), ((s.get('graph') or {}).get('scene') or {}).get('motion')):
+            if not m:
+                continue
+            for car in m.get('cars', []):
+                if car.get('color') in ROLES:
+                    car['color'] = role_var(car['color'])
+            for P in (m.get('panels') or {}).values():
+                for ser in P.get('series', []):
+                    for key in ('color', 'posColor', 'negColor'):
+                        if ser.get(key) in ROLES:
+                            ser[key] = role_var(ser[key])
     for s in content['slides']:
         if s.get('type') == 'lab' and deck:   # v6: a preset may colour bound symbols in its readouts
             s.setdefault('init', {}).setdefault('t2c', {k: hexes[v] for k, v in deck.items()})

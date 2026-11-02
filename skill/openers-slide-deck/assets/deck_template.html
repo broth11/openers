@@ -354,6 +354,12 @@ html:root[data-skin="3b1b"]{--sc-curve:#58C4DD;--sc-red:#FC6255}
 html:root[data-skin="goldteal"]{--sc-curve:#5CD0B3;--sc-red:#FC6255}
 html:root[data-skin="bluebrown"]{--sc-curve:#58C4DD;--sc-red:#FC6255}
 html:root[data-skin="greengrey"]{--sc-curve:#58C4DD;--sc-red:#FC6255}
+/* v25 (U12 L3): every role as a variable, so scenes drawn at run time (cars, ladder curves) follow the picker's theme */
+:root{--sc-teal:#49A88F;--sc-pink:#94424F;--sc-green:#699C52;--sc-grey:#55636F;--sc-orange:#FF862F;--sc-brown:#8B5A2B;--sc-indigo:#3B5BDB;}
+html:root[data-skin="3b1b"]{--sc-teal:#5CD0B3;--sc-pink:#D147BD;--sc-green:#83C167;--sc-grey:#BBBBBB;--sc-orange:#FF862F;--sc-brown:#CD853F;--sc-indigo:#5C7CFA;}
+html:root[data-skin="goldteal"]{--sc-teal:#5CD0B3;--sc-pink:#D147BD;--sc-green:#83C167;--sc-grey:#BBBBBB;--sc-orange:#FF862F;--sc-brown:#CD853F;--sc-indigo:#5C7CFA;}
+html:root[data-skin="bluebrown"]{--sc-teal:#5CD0B3;--sc-pink:#D147BD;--sc-green:#83C167;--sc-grey:#BBBBBB;--sc-orange:#FF862F;--sc-brown:#CD853F;--sc-indigo:#5C7CFA;}
+html:root[data-skin="greengrey"]{--sc-teal:#5CD0B3;--sc-pink:#D147BD;--sc-green:#83C167;--sc-grey:#BBBBBB;--sc-orange:#FF862F;--sc-brown:#CD853F;--sc-indigo:#5C7CFA;}
 .scene-row{display:flex;position:relative;--h:min(30cqw,45cqh);height:var(--h);width:calc(var(--h)*1.6);flex:none}
 .scene{position:relative;flex:0 0 37.5%;height:100%}
 .scene-svg{position:absolute;inset:0;width:100%;height:100%;display:block;overflow:visible}
@@ -534,6 +540,7 @@ html:root[data-skin="3b1b"],html:root[data-skin="goldteal"],html:root[data-skin=
 /* v24 (Ben, 1/11/2026, MAI HL U12 L2): v-t graph with shaded area: the readout under the graph, and the area recap lab */
 .scene-row.stack .area-read{flex:none;font-size:calc(var(--fs-stem)*1.05);min-height:1.4em;line-height:1.4;padding-left:.3em;font-weight:600}
 .s-lab .lab.arlab .lab-controls{grid-template-columns:minmax(0,1fr)}
+.s-lab .lab.llab .lab-controls{display:grid!important;align-items:start;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;column-gap:max(14px,2.4cqw)} .s-lab .lab.llab .lab-group{grid-column:auto!important} .s-lab .lab.llab .ar-card{height:calc(var(--fs-stem)*2.5)}
 .ar-card{border:1px dashed var(--note);border-radius:.5em;padding:.3em .65em;color:var(--note);display:flex;align-items:center}
 .ar-card.on{border-style:solid;color:var(--title)}
 .ar-lock{opacity:.75;font-style:italic}
@@ -646,7 +653,7 @@ C.slides.forEach(d => {
     const stemHTML = d.setup ? `<p class="setup-pre">${nb(d.setup.preamble)}</p><div class="decode"><p class="para" data-until="0">${nb(d.setup.para)}</p><ul class="facts" data-step="1">${d.setup.facts.map(factLi).join('')}</ul></div>`
       : `<p>${nb(d.stem)}</p>${d.prompt?`<p class="prompt">${nb(d.prompt)}</p>`:''}${picks}`;
     const s = addSlide('s-example'+(d.setup?' s-setup':''), `<div class="eyebrow">${d.eyebrow ? esc(d.eyebrow) : `Worked Example ${d.n} · ${tagHTML(d.tag)}`}</div><h2>${esc(d.title)}</h2>
-      <div class="ex${sceneG?' scn':''}${sceneG&&(sceneG.layout==='stack'||sceneG.layout==='signs')?' stk':''}${d.graph&&d.graph.second?' dual':''}${d.solo?' solo':''}"><div class="stem">${stemHTML}</div>
+      <div class="ex${sceneG?' scn':''}${sceneG&&(sceneG.layout==='stack'||sceneG.layout==='signs'||sceneG.layout==='ladder')?' stk':''}${d.graph&&d.graph.second?' dual':''}${d.solo?' solo':''}"><div class="stem">${stemHTML}</div>
       <div class="panel work"></div>${d.note?`<p class="note">${nb(d.note)}</p>`:''}<div class="fig">${head}</div></div>`);
     const panel = s.el.querySelector('.panel.work'); let k = 0;
     s.d = d; s.off = d.sceneStart ? 1 : 0;
@@ -697,7 +704,7 @@ slides.forEach(s => { if (!s.figSpec) return;
     const f1 = Lab.figure(h1, sp, () => s.shown - (s.off||0)), f2 = Lab.figure(h2, sp.second, () => s.shown - (s.off||0));
     s.fig = { redraw(){ f1.redraw(); f2.redraw(); } }; return; }
   if (!sp.scene){ s.fig = Lab.figure(figEl, sp, () => s.shown - (s.off||0)); return; }
-  if (sp.scene.layout === 'stack' || sp.scene.layout === 'signs'){ s.fig = Lab.motionSlide(figEl, sp, () => s.shown - (s.off||0)); s.fig.redraw(); return; }   /* v23 */
+  if (sp.scene.layout === 'stack' || sp.scene.layout === 'signs' || sp.scene.layout === 'ladder'){ s.fig = Lab.motionSlide(figEl, sp, () => s.shown - (s.off||0)); s.fig.redraw(); return; }   /* v23 */
   /* scene beside the graph: the figure draws into the row's graph host; the scene takes the state of the last reveal shown */
   const host = document.createElement('div'); figEl.appendChild(host); host.style.cssText = 'display:contents';
   const sr = Lab.sceneRow(host, sp.window, sp.scene.kind, {alt: sp.scene.alt});
@@ -806,7 +813,7 @@ slides.forEach((s, i) => { const d = s.d || {};
   else if (s.el.classList.contains('s-stitle')) BEATS.push({i, n:0, kind:'scene', label:String(d.scene), tip:'Scene '+d.scene+': '+String(d.title).replace(/[$\\{}]/g,''), gap:true});
   else if (d.setup){ const sc = (d.eyebrow||'').split(' · ')[0];
     BEATS.push({i, n:0, kind:'pose', label:'P', tip:sc+': the situation'}); BEATS.push({i, n:1, kind:'step', label:'K', tip:sc+': key facts'}); }
-  else if (s.lab) BEATS.push(d.preset==='catalogue' ? {i, n:0, kind:'pose', label:d.beat||'IA', tip:d.title, big:true} : (d.preset==='growthFamily'||d.preset==='motionSigns'||d.preset==='areaLab') ? {i, n:0, kind:'scene', label:'R', tip:d.title, gap:true} : {i, n:0, kind:'animate', label:'A', tip:(d.eyebrow||'')+': '+d.title});
+  else if (s.lab) BEATS.push(d.preset==='catalogue' ? {i, n:0, kind:'pose', label:d.beat||'IA', tip:d.title, big:true} : (d.preset==='growthFamily'||d.preset==='motionSigns'||d.preset==='areaLab'||d.preset==='ladderLab') ? {i, n:0, kind:'scene', label:'R', tip:d.title, gap:true} : {i, n:0, kind:'animate', label:'A', tip:(d.eyebrow||'')+': '+d.title});
   else { const sc = (d.eyebrow||'').split(' · ')[0];
     if (d.sceneStart){ BEATS.push({i, n:0, kind:'scene', label:String(d.scene), tip:sc, gap:true}); BEATS.push({i, n:1, kind:'pose', label:'Q'+d.q, tip:sc+': question '+d.q}); }
     else if (!d.cont) BEATS.push({i, n:0, kind:'pose', label:d.beat||('Q'+d.q), tip:sc+': '+(d.beat?d.title:'question '+d.q)});
