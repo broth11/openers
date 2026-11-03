@@ -1,4 +1,10 @@
-"""MAI HL U5 L4 Logistic models, v2 (Ben, 31/10/2026).
+"""MAI HL U5 L4 Logistic models, v3 (Ben, 3/11/2026): five scenes.
+
+v3 (after teaching it): the doubling idea reaches "not feasible" in one scene (follow it forward to 160 %), the real
+readings arrive in one go (scene 2), the logistic is met in scene 3 as before, and the last scene is just the
+explore lab and the IA card (no questions).
+
+v2 (31/10/2026):
 
 Starts from the published v1 content (c0.json, colours turned back into roles) and adds:
   - a title card before each scene (big title, the phone drawing large)
@@ -23,6 +29,10 @@ assert abs(float(k) - 0.381) < 5e-4
 assert sp.simplify(L.subs(t, 0) - 5) == 0 and abs(float(L.subs(t, 2)) - 10) < 1e-9
 E = lambda x: 5 * 2 ** (x / 2)
 assert E(0) == 5 and E(2) == 10
+assert [E(x) for x in (4, 6, 8, 10)] == [20, 40, 80, 160]
+# the real readings of scene 2 are the logistic model, rounded to whole percent
+READ = [(4, 19), (6, 32), (8, 47), (10, 60), (12, 69)]
+assert all(round(float(L.subs(t, x))) == y for x, y in READ), [float(L.subs(t, x)) for x, _ in READ]
 
 # ---- windows ----
 W_OLD = S[1]['graph']['window']
@@ -46,12 +56,13 @@ F = {
     'k':    {'html': 'Growth rate <b>$k\\approx 0.38$</b>: how steep', 'c': 'blue', 'shape': 'cv'},
     'lim':  {'html': 'Limit <b>$L=80$</b>: where it levels off', 'c': 'green', 'shape': 'ln'},
     'st':   {'html': 'Start <b>$5\\%$</b>: the level at $t=0$', 'c': 'pink'},
+    'rd':   {'html': 'Later readings: <b>$19\\%$, $32\\%$, $47\\%$, $60\\%$, $69\\%$</b>, at $t=4$ to $12$ in steps of $2$', 'c': 'orange'},
 }
 SHORT = {'p0': '<b>$5\\%$ at $t=0$</b>', 'p2': '<b>$10\\%$ at $t=2$</b>', 'E': '<b>$E(t)=5\\cdot 2^{t/2}$</b>',
          'full': 'full is <b>$100\\%$</b>', 'max': 'at most <b>$100\\%$</b>', 'cap': 'levels off at <b>$80\\%$</b>',
          'L': '<b>$P(t)=\\tfrac{80}{1+15e^{-0.381t}}$</b>', 'k': '<b>$k\\approx 0.38$</b>', 'lim': 'limit <b>$L=80$</b>',
          'Lcap': 'limit <b>$L=80$</b>',
-         'st': 'start <b>$5\\%$</b>'}
+         'st': 'start <b>$5\\%$</b>', 'rd': 'later readings'}
 GIVEN = {1: ['p0', 'p2'], 2: ['E', 'full'], 3: ['p0', 'p2', 'max'], 4: ['p0', 'p2', 'Lcap'], 5: ['L', 'cap'], 6: ['k', 'lim', 'st']}
 
 LEXPR = '80/(1+15*exp(-x*log(Rational(15,7))/2))'
@@ -118,7 +129,7 @@ def fact(key):
     return copy.deepcopy(F[key])
 
 
-def recolour(sl, n):
+def recolour(sl, n, keys=None):
     """the fixed facts in their colours on every question slide; the window re-zoomed from scene 4"""
     g = sl['graph']
     if n >= 4:
@@ -137,7 +148,7 @@ def recolour(sl, n):
         elif it['kind'] == 'segment' and it.get('dotted') and it['from'][1] == -12:   # inflection drop line: to the new floor
             it['from'] = [it['from'][0], g['window']['ymin']]
     g.pop('heading', None)
-    g['given'] = [dict(fact(k), html=SHORT[k]) for k in GIVEN[n]]
+    g['given'] = [dict(fact(k), html=SHORT[k]) for k in (keys or GIVEN[n])]
 
 
 import re
@@ -188,9 +199,9 @@ CHK.pop('cont', None)
 CHK['q'] = 2; CHK['eyebrow'] = 'Meet the logistic · Question 2'; CHK['title'] = 'Check against later readings'
 CHK['stem'] = 'The model used only two readings. Does it agree with the later readings, $32\\%$ at $t=6$ and $60\\%$ at $t=10$?'
 CHK['blocks'] = [
-    {'walk': {'cap': 'At $t=6$', 'tex': ['P(6)&=\\frac{80}{1+15e^{-2.286}}', '&\\approx 31.7\\%\\quad(\\text{reading: }32\\%)']}},
-    {'walk': {'cap': 'At $t=10$', 'tex': ['P(10)&=\\frac{80}{1+15e^{-3.81}}', '&\\approx 60.1\\%\\quad(\\text{reading: }60\\%)'], 'ans': True,
-              'note': 'Built from two readings, the model still matches the later ones.'}}]
+    {'walk': {'cap': 'At $t=6$', 'tex': ['P(6)&=\\frac{80}{1+15e^{-2.286}}\\approx 31.7\\%'], 'note': 'The reading is $32\\%$.'}},
+    {'walk': {'cap': 'At $t=10$', 'tex': ['P(10)&=\\frac{80}{1+15e^{-3.81}}\\approx 60.1\\%'], 'ans': True,
+              'note': 'The reading is $60\\%$. Two readings built the model, and it matches the later ones.'}}]
 CHK['graph']['items'] = [it for it in CHK['graph']['items'] if it['kind'] != 'point'] + [
     P0(), P2(), pt([6, 32], None, 1), pt([10, 60], None, 2)]
 for it in CHK['graph']['items']:
@@ -218,10 +229,77 @@ by_scene = {}
 for sl in S:
     if sl.get('type') == 'example':
         by_scene.setdefault(sl['scene'], []).append(sl)
+OLD = lambda n, q: next(x for x in by_scene[n] if x['q'] == q)    # a v2 question slide by its old scene and question number
 
-for n in range(1, 7):
-    D = SCENES[n]
-    out.append({'type': 'sceneTitle', 'scene': n, 'kicker': f'Scene {n} of 6', 'title': D['title'],
+# ---- v3 scene 1: the doubling idea, and why it cannot go on (old scenes 1 and 2, folded) ----
+FWD = copy.deepcopy(OLD(2, 2))                                     # "Ten years on": the window, the phone and the red curve
+FWD.update({'q': 2, 'title': 'Follow it forward', 'stem': 'Follow the model forward. What does it predict after $4$, $6$, $8$ and $10$ years?',
+            'blocks': [{'walk': {'cap': 'Each two years doubles it', 'tex': ['E(4)&=5\\cdot 2^{2}=20', 'E(6)&=5\\cdot 2^{3}=40'], 'ans': True}},
+                       {'walk': {'cap': 'And on', 'tex': ['E(8)&=5\\cdot 2^{4}=80', 'E(10)&=5\\cdot 2^{5}=160'], 'ans': True,
+                                 'note': 'That is more than all of the residents. A market share cannot exceed $100\\%$ of the population.'}}]})
+FWD.pop('choices', None); FWD.pop('correct', None); FWD.pop('pickStep', None); FWD.pop('cont', None)
+FWD['graph']['items'] = [pt([0, 5], 'pink'), pt([2, 10], 'indigo'), hseg(100, 16.5, 'brown'), fn('5*2**(x/2)', [0, 10.4], 'red'),
+                         {'kind': 'point', 'at': [4, 20], 'step': 1}, {'kind': 'point', 'at': [6, 40], 'step': 1},
+                         {'kind': 'point', 'at': [8, 80], 'step': 2}, {'kind': 'point', 'at': [10, 160], 'step': 2}]
+FWD['graph']['scene']['states'] = [[0, {'t': 2, 'P': 10, 'dp': 0, 'Pn': 'E', 'G': 10}], [1, {'t': 6, 'P': 40, 'dp': 0, 'Pn': 'E', 'G': 40}],
+                                   [2, {'t': 10, 'P': 160, 'dp': 0, 'Pn': 'E', 'G': 160}]]
+Q1D = OLD(1, 1)                                                    # "A model that doubles": the full line is on from the start
+Q1D['graph']['items'].append(hseg(100, 16.5, 'brown'))
+Q3D = OLD(2, 3)                                                    # "The calculation or the assumption?"
+Q3D['q'] = 3
+
+# ---- v3 scene 2: what really happened, all the readings in one go (old scene 3, folded into one question) ----
+PHONE_ALT = 'A phone that fills with adoption beside the graph of adoption against time'
+BASE_ITEMS = lambda: [pt([0, 5], 'pink'), pt([2, 10], 'indigo'), hseg(100, 16.5, 'brown'), fn('5*2**(x/2)', [0, 10.4], 'grey')] + [pt([x, y], 'orange') for x, y in READ]
+RDS = [pt([x, y], 'orange', 1) for x, y in READ]
+REAL1 = {'type': 'example', 'scene': 2, 'q': 1, 'eyebrow': 'What really happened · Question 1', 'title': 'What the readings show',
+         'stem': 'What do the readings show? As more residents adopt, what happens to the pool still available?',
+         'blocks': [{'walk': {'cap': 'The pool shrinks', 'tex': ['\\text{available}&=100-\\text{adopted}'],
+                              'note': 'Every new owner leaves one fewer resident who could still adopt, so new adopters get harder to find.'}},
+                    {'walk': {'cap': 'Rising, but slowing', 'note': 'Adoption keeps rising, but it is slowing down.', 'ans': True}}],
+         'graph': {'window': copy.deepcopy(W_OLD),
+                   'scene': {'kind': 'phone', 'alt': PHONE_ALT,
+                             'states': [[0, {'t': 12, 'P': 69, 'dp': 0, 'Pn': 'A'}], [1, {'P': 69, 'avail': True, 'dp': 0}],
+                                        [2, {'t': 12, 'P': 69, 'dp': 0, 'Pn': 'A'}]]},
+                   'items': BASE_ITEMS()}}
+REAL2 = {'type': 'example', 'scene': 2, 'q': 2, 'eyebrow': 'What really happened · Question 2', 'title': 'Must it reach 100%?',
+         'stem': 'Must the eventual level of adoption be $100\\%$?',
+         'blocks': [{'walk': {'cap': 'A proposed limit', 'tex': ['\\text{saturation level}&=80\\%'], 'ans': True,
+                              'note': 'Suppose adoption levels off at $80\\%$. There is no equation yet, only the behaviour we need: early growth, then slowing towards a ceiling.'}}],
+         'graph': {'window': copy.deepcopy(W_OLD),
+                   'scene': {'kind': 'phone', 'alt': PHONE_ALT,
+                             'states': [[0, {'t': 12, 'P': 69, 'dp': 0, 'Pn': 'A'}], [1, {'t': 12, 'P': 69, 'dp': 0, 'Pn': 'A', 'cap': 80}]]},
+                   'items': BASE_ITEMS() + [hseg(80, 16.5, 'green', 1)]}}
+
+# ---- v3 scene table: five scenes ----
+SC = {
+    1: dict(SCENES[1], head='Smartphones arrive',
+            para='A survey taken at launch, which we call $t=0$, finds that $5\\%$ of residents own a smartphone. '
+                 'A second survey two years later, at $t=2$, finds that $10\\%$ own one. Time $t$ is measured in years. '
+                 'A region cannot have more owners than residents, so a full region is $100\\%$.',
+            facts=['p0', 'p2', 'full', 'tyrs'],
+            items=[P0(1, True), P2(1, True), hseg(100, 16.5, 'brown', 1)]),
+    2: dict(title='What Really Happened', head='The region, followed for longer', art={'P': 69, 'Pn': 'A'},
+            pre='The forecast passed $100\\%$, which cannot happen. So the planners check it against what the region really did.',
+            para='The region was surveyed again as the years went by. The readings, in percent of residents, were $19$ at $t=4$, $32$ at $t=6$, '
+                 '$47$ at $t=8$, $60$ at $t=10$ and $69$ at $t=12$. The first two surveys still stand, a full region is still $100\\%$, '
+                 'and the doubling forecast stays on the graph, faded.',
+            facts=['p0', 'p2', 'rd', 'max', 'Efad'], window=W_OLD,
+            items=[P0(1), P2(1)] + RDS + [hseg(100, 16.5, 'brown', 1), fn('5*2**(x/2)', [0, 10.4], 'grey', 1)],
+            states=[[0, {'t': 2, 'P': 10, 'dp': 0, 'Pn': 'A'}], [1, {'t': 12, 'P': 69, 'dp': 0, 'Pn': 'A'}]]),
+    3: SCENES[4], 4: SCENES[5],
+    5: dict(SCENES[6], title='Explore the Model', head='Three settings on one model',
+            pre='The planners now have a model that fits the region. See what each part of it controls.'),
+}
+NAME = {1: 'A promising start', 2: 'What really happened', 3: 'Meet the logistic', 4: 'Where is it fastest?', 5: 'Explore the model'}
+NSC = len(SC)
+KEEP = {1: [(Q1D, 1, None), (FWD, 1, ['E', 'full']), (Q3D, 1, ['E', 'full'])],           # (slide, old scene for the colours, given keys)
+        2: [(REAL1, None, None), (REAL2, None, None)],
+        3: [(x, 4, None) for x in by_scene[4]], 4: [(x, 5, None) for x in by_scene[5]], 5: []}
+
+for n in range(1, NSC + 1):
+    D = SC[n]
+    out.append({'type': 'sceneTitle', 'scene': n, 'kicker': f'Scene {n} of {NSC}', 'title': D['title'],
                 'kind': 'phone', 'window': ART, 'state': D['art'], **({'formula': D['formula']} if D.get('formula') else {}),
                 'alt': 'The phone from the lesson, drawn large: it fills as residents adopt smartphones'})
     out.append({'type': 'example', 'scene': n, 'eyebrow': NAME[n] + ' · The situation', 'title': D['head'],
@@ -231,14 +309,21 @@ for n in range(1, 7):
                           'scene': {'kind': 'phone', 'alt': 'A phone that fills with adoption beside the graph of adoption against time',
                                     'states': D['states']},
                           'items': D['items']}})
-    if n == 6:
+    if n == 5:
+        lab_logistic['eyebrow'] = 'Explore the model · Explore'
         lab_logistic['init']['window'] = copy.deepcopy(W5)
         out.append(lab_logistic)
-    for sl in by_scene[n]:
+    for sl, old, keys in KEEP[n]:
         sl.pop('sceneStart', None)
-        recolour(sl, n)
+        sl['scene'] = n
+        sl['eyebrow'] = NAME[n] + ' · ' + sl['eyebrow'].split(' · ', 1)[1]
+        if sl is REAL1 or sl is REAL2:
+            sl['graph']['given'] = [dict(fact(k), html=SHORT[k]) for k in ('p0', 'p2', 'rd', 'max')]
+        else:
+            recolour(sl, old, keys)
         out.append(sl)
-    if n == 4:
+    if n == 3:
+        lab_trace['eyebrow'] = 'Meet the logistic · Trace the models'
         lab_trace['init']['window'] = copy.deepcopy(W4)
         out.append(lab_trace)
 
@@ -276,10 +361,10 @@ IA = {
     'Flu in a school': (
         ['The total number of people who have caught flu since the first case'],
         ['Early on, each sick student meets many healthy ones', 'Later, most people have already had it', 'New cases fall away, so the total levels off'],
-        [['Set up the game', ['Give one student a card', 'Everyone else starts without one']],
-         ['Each round', ['Each card holder taps one random classmate', 'They take a card if they have none']],
-         ['Count the card holders after each round'],
-         ['Stop when it levels off; plot count against round']]),
+        [['Set up the game', ['One student holds a card']],
+         ['Each round', ['Card holders tap a random classmate', 'A tapped student takes a card']],
+         ['Count the card holders each round'],
+         ['Plot the count against the round']]),
     'Streaming subscribers': (
         ['The total number of paying subscribers to a new streaming service'],
         ['Word of mouth speeds growth at first', 'Eventually most people who would subscribe already have', 'The total flattens'],
@@ -317,7 +402,7 @@ out.append(catalogue)
 
 c['slides'] = out
 c['meta']['animSpeed'] = 1.5
-c['meta']['source'] = c['meta']['source'] + '; v2 31/10/2026: title cards, setup decode slides, colour-coded facts, zoom from scene 4, IA notepad'
+c['meta']['source'] = c['meta']['source'] + '; v2 31/10/2026: title cards, setup decode slides, colour-coded facts, zoom from scene 4, IA notepad; v3 3/11/2026: five scenes (doubling to not feasible in one scene, the real readings in one go, explore without questions)'
 c['meta']['file'] = 'MAI_HL_U5_L4_Lesson_LogisticModels.html'
 c['meta']['artifactTitle'] = 'MAI HL U5 L4 Logistic Models'
 json.dump(c, open("content.json", "w"), indent=1, ensure_ascii=False)

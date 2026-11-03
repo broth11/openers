@@ -7,7 +7,7 @@
   "topicWords": "Logistic models",
   "file": "MAI_HL_U5_L4_Lesson_LogisticModels.html",
   "artifactTitle": "MAI HL U5 L4 Logistic Models",
-  "source": "scene plan agreed with Ben 29/10/2026 (no u05-l04 module in github broth11/openers yet); v2 31/10/2026: title cards, setup decode slides, colour-coded facts, zoom from scene 4, IA notepad",
+  "source": "scene plan agreed with Ben 29/10/2026 (no u05-l04 module in github broth11/openers yet); v2 31/10/2026: title cards, setup decode slides, colour-coded facts, zoom from scene 4, IA notepad; v3 3/11/2026: five scenes (doubling to not feasible in one scene, the real readings in one go, explore without questions)",
   "largeGraphs": true,
   "animSpeed": 1.5
  },
@@ -24,7 +24,7 @@
   {
    "type": "sceneTitle",
    "scene": 1,
-   "kicker": "Scene 1 of 6",
+   "kicker": "Scene 1 of 5",
    "title": "A Promising Start",
    "kind": "phone",
    "window": {
@@ -47,7 +47,7 @@
    "title": "Smartphones arrive",
    "setup": {
     "preamble": "Smartphones have just gone on sale in a small region. Shops stock them, and the first owners show them off to friends.",
-    "para": "A survey taken at launch, which we call $t=0$, finds that $5\\%$ of residents own a smartphone. A second survey two years later, at $t=2$, finds that $10\\%$ own one. Time $t$ is measured in years.",
+    "para": "A survey taken at launch, which we call $t=0$, finds that $5\\%$ of residents own a smartphone. A second survey two years later, at $t=2$, finds that $10\\%$ own one. Time $t$ is measured in years. A region cannot have more owners than residents, so a full region is $100\\%$.",
     "facts": [
      {
       "html": "<b>$5\\%$ at $t=0$</b>: the survey at launch",
@@ -56,6 +56,11 @@
      {
       "html": "<b>$10\\%$ at $t=2$</b>: two years later",
       "c": "indigo"
+     },
+     {
+      "html": "A full region is <b>$100\\%$</b>",
+      "c": "brown",
+      "shape": "ln"
      },
      {
       "html": "$t$ is measured in years since launch",
@@ -130,6 +135,20 @@
       "label": "(2,\\,10)",
       "anchor": "se",
       "tint": true
+     },
+     {
+      "kind": "segment",
+      "from": [
+       0,
+       100
+      ],
+      "to": [
+       16.5,
+       100
+      ],
+      "step": 1,
+      "dashed": true,
+      "color": "brown"
      }
     ]
    }
@@ -229,6 +248,20 @@
       ],
       "step": 2,
       "color": "red"
+     },
+     {
+      "kind": "segment",
+      "from": [
+       0,
+       100
+      ],
+      "to": [
+       16.5,
+       100
+      ],
+      "step": 0,
+      "dashed": true,
+      "color": "brown"
      }
     ],
     "given": [
@@ -248,25 +281,28 @@
   {
    "type": "example",
    "eyebrow": "A promising start · Question 2",
-   "title": "Four years on",
-   "stem": "Predict: what does the model give after four years?",
-   "choices": [
-    "$15\\%$",
-    "$20\\%$",
-    "$40\\%$"
-   ],
-   "correct": 1,
-   "pickStep": 1,
+   "title": "Follow it forward",
+   "stem": "Follow the model forward. What does it predict after $4$, $6$, $8$ and $10$ years?",
    "blocks": [
     {
      "walk": {
-      "cap": "Two more years doubles it again",
+      "cap": "Each two years doubles it",
       "tex": [
-       "E(4)&=5\\cdot 2^{4/2}",
-       "&=5\\cdot 4=20"
+       "E(4)&=5\\cdot 2^{2}=20",
+       "E(6)&=5\\cdot 2^{3}=40"
       ],
-      "note": "Adding $5$ again would give $15\\%$. Doubling gives $20\\%$.",
       "ans": true
+     }
+    },
+    {
+     "walk": {
+      "cap": "And on",
+      "tex": [
+       "E(8)&=5\\cdot 2^{4}=80",
+       "E(10)&=5\\cdot 2^{5}=160"
+      ],
+      "ans": true,
+      "note": "That is more than all of the residents. A market share cannot exceed $100\\%$ of the population."
      }
     }
    ],
@@ -302,248 +338,6 @@
       [
        1,
        {
-        "t": 4,
-        "P": 20,
-        "dp": 0,
-        "Pn": "E",
-        "G": 20
-       }
-      ]
-     ]
-    },
-    "items": [
-     {
-      "kind": "point",
-      "at": [
-       0,
-       5
-      ],
-      "step": 0,
-      "color": "pink"
-     },
-     {
-      "kind": "point",
-      "at": [
-       2,
-       10
-      ],
-      "step": 0,
-      "color": "indigo"
-     },
-     {
-      "kind": "fn",
-      "expr": "5*2**(x/2)",
-      "domain": [
-       0,
-       10.4
-      ],
-      "step": 0,
-      "color": "red"
-     },
-     {
-      "kind": "point",
-      "at": [
-       4,
-       20
-      ],
-      "step": 1,
-      "label": "(4,\\,20)",
-      "anchor": "se",
-      "answer": true
-     }
-    ],
-    "given": [
-     {
-      "html": "<b>$5\\%$ at $t=0$</b>",
-      "c": "pink"
-     },
-     {
-      "html": "<b>$10\\%$ at $t=2$</b>",
-      "c": "indigo"
-     }
-    ]
-   },
-   "scene": 1,
-   "q": 2
-  },
-  {
-   "type": "sceneTitle",
-   "scene": 2,
-   "kicker": "Scene 2 of 6",
-   "title": "Follow the Model",
-   "kind": "phone",
-   "window": {
-    "xmin": 0,
-    "xmax": 1,
-    "ymin": -14,
-    "ymax": 112
-   },
-   "state": {
-    "P": 80,
-    "Pn": "E",
-    "G": 160
-   },
-   "alt": "The phone from the lesson, drawn large: it fills as residents adopt smartphones"
-  },
-  {
-   "type": "example",
-   "scene": 2,
-   "eyebrow": "Follow the model · The situation",
-   "title": "A forecast for the region",
-   "setup": {
-    "preamble": "The region's planners want to know how many phones to expect. They trust the doubling model from the first scene.",
-    "para": "Their forecast is $E(t)=5\\cdot 2^{t/2}$, the percentage of residents with a smartphone after $t$ years. A region cannot have more owners than residents, so a full region is $100\\%$.",
-    "facts": [
-     {
-      "html": "Forecast <b>$E(t)=5\\cdot 2^{t/2}$</b>",
-      "c": "red",
-      "shape": "cv"
-     },
-     {
-      "html": "A full region is <b>$100\\%$</b>",
-      "c": "brown",
-      "shape": "ln"
-     }
-    ]
-   },
-   "stem": "",
-   "blocks": [],
-   "graph": {
-    "window": {
-     "xmin": -1.8,
-     "xmax": 16.5,
-     "ymin": -14,
-     "ymax": 182,
-     "gridx": 2,
-     "gridy": 20,
-     "xtick": 2,
-     "ytick": 20,
-     "xname": "t",
-     "yname": "A",
-     "xtickFrom": 0,
-     "ytickFrom": 0
-    },
-    "scene": {
-     "kind": "phone",
-     "alt": "A phone that fills with adoption beside the graph of adoption against time",
-     "states": [
-      [
-       0,
-       {
-        "t": 4,
-        "P": 20,
-        "dp": 0,
-        "Pn": "E",
-        "G": 20
-       }
-      ]
-     ]
-    },
-    "items": [
-     {
-      "kind": "point",
-      "at": [
-       0,
-       5
-      ],
-      "step": 0,
-      "color": "pink"
-     },
-     {
-      "kind": "point",
-      "at": [
-       2,
-       10
-      ],
-      "step": 0,
-      "color": "indigo"
-     },
-     {
-      "kind": "fn",
-      "expr": "5*2**(x/2)",
-      "domain": [
-       0,
-       10.4
-      ],
-      "step": 1,
-      "color": "red"
-     },
-     {
-      "kind": "segment",
-      "from": [
-       0,
-       100
-      ],
-      "to": [
-       16.5,
-       100
-      ],
-      "step": 1,
-      "dashed": true,
-      "color": "brown"
-     }
-    ]
-   }
-  },
-  {
-   "type": "example",
-   "eyebrow": "Follow the model · Question 1",
-   "title": "Six years and eight years",
-   "stem": "Follow the model forward. What does it predict after six years? After eight years?",
-   "blocks": [
-    {
-     "walk": {
-      "cap": "After $6$ years",
-      "tex": [
-       "E(6)&=5\\cdot 2^{3}",
-       "&=40"
-      ],
-      "ans": true
-     }
-    },
-    {
-     "walk": {
-      "cap": "After $8$ years",
-      "tex": [
-       "E(8)&=5\\cdot 2^{4}",
-       "&=80"
-      ],
-      "ans": true
-     }
-    }
-   ],
-   "graph": {
-    "window": {
-     "xmin": -1.8,
-     "xmax": 16.5,
-     "ymin": -14,
-     "ymax": 182,
-     "gridx": 2,
-     "gridy": 20,
-     "xtick": 2,
-     "ytick": 20,
-     "xname": "t",
-     "yname": "A",
-     "xtickFrom": 0,
-     "ytickFrom": 0
-    },
-    "scene": {
-     "kind": "phone",
-     "alt": "A phone that fills with adoption beside the graph of adoption against time",
-     "states": [
-      [
-       0,
-       {
-        "t": 4,
-        "P": 20,
-        "dp": 0,
-        "Pn": "E",
-        "G": 20
-       }
-      ],
-      [
-       1,
-       {
         "t": 6,
         "P": 40,
         "dp": 0,
@@ -553,160 +347,6 @@
       ],
       [
        2,
-       {
-        "t": 8,
-        "P": 80,
-        "dp": 0,
-        "Pn": "E",
-        "G": 80
-       }
-      ]
-     ]
-    },
-    "items": [
-     {
-      "kind": "point",
-      "at": [
-       0,
-       5
-      ],
-      "step": 0,
-      "color": "pink"
-     },
-     {
-      "kind": "point",
-      "at": [
-       2,
-       10
-      ],
-      "step": 0,
-      "color": "indigo"
-     },
-     {
-      "kind": "segment",
-      "from": [
-       0,
-       100
-      ],
-      "to": [
-       16.5,
-       100
-      ],
-      "step": 0,
-      "dashed": true,
-      "color": "brown"
-     },
-     {
-      "kind": "fn",
-      "expr": "5*2**(x/2)",
-      "domain": [
-       0,
-       10.4
-      ],
-      "step": 0,
-      "color": "red"
-     },
-     {
-      "kind": "point",
-      "at": [
-       4,
-       20
-      ],
-      "step": 0
-     },
-     {
-      "kind": "point",
-      "at": [
-       6,
-       40
-      ],
-      "step": 1,
-      "label": "(6,\\,40)",
-      "anchor": "nw"
-     },
-     {
-      "kind": "point",
-      "at": [
-       8,
-       80
-      ],
-      "step": 2,
-      "label": "(8,\\,80)",
-      "anchor": "se"
-     }
-    ],
-    "given": [
-     {
-      "html": "<b>$E(t)=5\\cdot 2^{t/2}$</b>",
-      "c": "red",
-      "shape": "cv"
-     },
-     {
-      "html": "full is <b>$100\\%$</b>",
-      "c": "brown",
-      "shape": "ln"
-     }
-    ]
-   },
-   "scene": 2,
-   "q": 1
-  },
-  {
-   "type": "example",
-   "eyebrow": "Follow the model · Question 2",
-   "title": "Ten years on",
-   "stem": "Predict: what does the model give after ten years?",
-   "choices": [
-    "$100\\%$",
-    "$120\\%$",
-    "$160\\%$"
-   ],
-   "correct": 2,
-   "pickStep": 1,
-   "blocks": [
-    {
-     "walk": {
-      "cap": "Two more years doubles it again",
-      "tex": [
-       "E(10)&=5\\cdot 2^{5}",
-       "&=160"
-      ],
-      "note": "That is more than all of the residents. A market share cannot exceed $100\\%$ of the population.",
-      "ans": true
-     }
-    }
-   ],
-   "graph": {
-    "window": {
-     "xmin": -1.8,
-     "xmax": 16.5,
-     "ymin": -14,
-     "ymax": 182,
-     "gridx": 2,
-     "gridy": 20,
-     "xtick": 2,
-     "ytick": 20,
-     "xname": "t",
-     "yname": "A",
-     "xtickFrom": 0,
-     "ytickFrom": 0
-    },
-    "scene": {
-     "kind": "phone",
-     "alt": "A phone that fills with adoption beside the graph of adoption against time",
-     "states": [
-      [
-       0,
-       {
-        "t": 8,
-        "P": 80,
-        "dp": 0,
-        "Pn": "E",
-        "G": 80
-       }
-      ],
-      [
-       1,
        {
         "t": 10,
         "P": 160,
@@ -763,12 +403,26 @@
      {
       "kind": "point",
       "at": [
+       4,
+       20
+      ],
+      "step": 1
+     },
+     {
+      "kind": "point",
+      "at": [
+       6,
+       40
+      ],
+      "step": 1
+     },
+     {
+      "kind": "point",
+      "at": [
        8,
        80
       ],
-      "step": 0,
-      "label": "(8,\\,80)",
-      "anchor": "se"
+      "step": 2
      },
      {
       "kind": "point",
@@ -776,10 +430,7 @@
        10,
        160
       ],
-      "step": 1,
-      "label": "(10,\\,160)",
-      "anchor": "se",
-      "answer": true
+      "step": 2
      }
     ],
     "given": [
@@ -795,12 +446,12 @@
      }
     ]
    },
-   "scene": 2,
+   "scene": 1,
    "q": 2
   },
   {
    "type": "example",
-   "eyebrow": "Follow the model · Question 3",
+   "eyebrow": "A promising start · Question 3",
    "title": "The calculation or the assumption?",
    "stem": "What has failed: the calculation, or our assumption?",
    "choices": [
@@ -891,8 +542,7 @@
        100
       ],
       "step": 0,
-      "dashed": true,
-      "color": "brown"
+      "dashed": true
      },
      {
       "kind": "fn",
@@ -928,14 +578,14 @@
      }
     ]
    },
-   "scene": 2,
+   "scene": 1,
    "q": 3
   },
   {
    "type": "sceneTitle",
-   "scene": 3,
-   "kicker": "Scene 3 of 6",
-   "title": "What Should Happen?",
+   "scene": 2,
+   "kicker": "Scene 2 of 5",
+   "title": "What Really Happened",
    "kind": "phone",
    "window": {
     "xmin": 0,
@@ -951,12 +601,12 @@
   },
   {
    "type": "example",
-   "scene": 3,
-   "eyebrow": "What should happen? · The situation",
+   "scene": 2,
+   "eyebrow": "What really happened · The situation",
    "title": "The region, followed for longer",
    "setup": {
-    "preamble": "The forecast passed $100\\%$, which cannot happen. Before choosing a new formula, think about how adoption really spreads.",
-    "para": "We return to the same region and follow it for longer. What we knew still holds: $5\\%$ owned a phone at launch, $10\\%$ two years later, and never more than $100\\%$ of residents can own one. The doubling forecast stays on the graph, faded.",
+    "preamble": "The forecast passed $100\\%$, which cannot happen. So the planners check it against what the region really did.",
+    "para": "The region was surveyed again as the years went by. The readings, in percent of residents, were $19$ at $t=4$, $32$ at $t=6$, $47$ at $t=8$, $60$ at $t=10$ and $69$ at $t=12$. The first two surveys still stand, a full region is still $100\\%$, and the doubling forecast stays on the graph, faded.",
     "facts": [
      {
       "html": "<b>$5\\%$ at $t=0$</b>: the survey at launch",
@@ -965,6 +615,10 @@
      {
       "html": "<b>$10\\%$ at $t=2$</b>: two years later",
       "c": "indigo"
+     },
+     {
+      "html": "Later readings: <b>$19\\%$, $32\\%$, $47\\%$, $60\\%$, $69\\%$</b>, at $t=4$ to $12$ in steps of $2$",
+      "c": "orange"
      },
      {
       "html": "Never more than <b>$100\\%$</b>",
@@ -1007,6 +661,15 @@
         "dp": 0,
         "Pn": "A"
        }
+      ],
+      [
+       1,
+       {
+        "t": 12,
+        "P": 69,
+        "dp": 0,
+        "Pn": "A"
+       }
       ]
      ]
     },
@@ -1028,6 +691,51 @@
       ],
       "step": 1,
       "color": "indigo"
+     },
+     {
+      "kind": "point",
+      "at": [
+       4,
+       19
+      ],
+      "step": 1,
+      "color": "orange"
+     },
+     {
+      "kind": "point",
+      "at": [
+       6,
+       32
+      ],
+      "step": 1,
+      "color": "orange"
+     },
+     {
+      "kind": "point",
+      "at": [
+       8,
+       47
+      ],
+      "step": 1,
+      "color": "orange"
+     },
+     {
+      "kind": "point",
+      "at": [
+       10,
+       60
+      ],
+      "step": 1,
+      "color": "orange"
+     },
+     {
+      "kind": "point",
+      "at": [
+       12,
+       69
+      ],
+      "step": 1,
+      "color": "orange"
      },
      {
       "kind": "segment",
@@ -1058,9 +766,11 @@
   },
   {
    "type": "example",
-   "eyebrow": "What should happen? · Question 1",
-   "title": "Who is left to adopt?",
-   "stem": "As more residents adopt, what happens to the number still available to adopt? Describe in words how adoption should continue.",
+   "scene": 2,
+   "q": 1,
+   "eyebrow": "What really happened · Question 1",
+   "title": "What the readings show",
+   "stem": "What do the readings show? As more residents adopt, what happens to the pool still available?",
    "blocks": [
     {
      "walk": {
@@ -1070,128 +780,12 @@
       ],
       "note": "Every new owner leaves one fewer resident who could still adopt, so new adopters get harder to find."
      }
-    }
-   ],
-   "graph": {
-    "window": {
-     "xmin": -1.8,
-     "xmax": 16.5,
-     "ymin": -14,
-     "ymax": 182,
-     "gridx": 2,
-     "gridy": 20,
-     "xtick": 2,
-     "ytick": 20,
-     "xname": "t",
-     "yname": "A",
-     "xtickFrom": 0,
-     "ytickFrom": 0
-    },
-    "scene": {
-     "kind": "phone",
-     "alt": "A phone that fills with adoption beside the graph of adoption against time",
-     "states": [
-      [
-       0,
-       {
-        "P": 40,
-        "avail": true,
-        "dp": 0
-       }
-      ]
-     ]
-    },
-    "items": [
-     {
-      "kind": "point",
-      "at": [
-       0,
-       5
-      ],
-      "step": 0,
-      "color": "pink"
-     },
-     {
-      "kind": "point",
-      "at": [
-       2,
-       10
-      ],
-      "step": 0,
-      "color": "indigo"
-     },
-     {
-      "kind": "segment",
-      "from": [
-       0,
-       100
-      ],
-      "to": [
-       16.5,
-       100
-      ],
-      "step": 0,
-      "dashed": true,
-      "color": "brown"
-     },
-     {
-      "kind": "fn",
-      "expr": "5*2**(x/2)",
-      "domain": [
-       0,
-       10.4
-      ],
-      "step": 0,
-      "color": "grey"
-     }
-    ],
-    "given": [
-     {
-      "html": "<b>$5\\%$ at $t=0$</b>",
-      "c": "pink"
-     },
-     {
-      "html": "<b>$10\\%$ at $t=2$</b>",
-      "c": "indigo"
-     },
-     {
-      "html": "at most <b>$100\\%$</b>",
-      "c": "brown",
-      "shape": "ln"
-     }
-    ]
-   },
-   "scene": 3,
-   "q": 1
-  },
-  {
-   "type": "example",
-   "eyebrow": "What should happen? · Question 2",
-   "title": "Later readings",
-   "stem": "More readings arrive from the same region. Describe what they show.",
-   "blocks": [
-    {
-     "walk": {
-      "tex": [
-       "t&=4:\\ 19\\%",
-       "t&=6:\\ 32\\%"
-      ]
-     }
     },
     {
      "walk": {
-      "tex": [
-       "t&=8:\\ 47\\%",
-       "t&=10:\\ 60\\%"
-      ]
-     }
-    },
-    {
-     "walk": {
-      "tex": [
-       "t&=12:\\ 69\\%"
-      ],
-      "note": "Adoption keeps rising, but it is slowing down."
+      "cap": "Rising, but slowing",
+      "note": "Adoption keeps rising, but it is slowing down.",
+      "ans": true
      }
     }
    ],
@@ -1217,8 +811,8 @@
       [
        0,
        {
-        "t": 2,
-        "P": 10,
+        "t": 12,
+        "P": 69,
         "dp": 0,
         "Pn": "A"
        }
@@ -1226,23 +820,13 @@
       [
        1,
        {
-        "t": 6,
-        "P": 32,
-        "dp": 0,
-        "Pn": "A"
+        "P": 69,
+        "avail": true,
+        "dp": 0
        }
       ],
       [
        2,
-       {
-        "t": 10,
-        "P": 60,
-        "dp": 0,
-        "Pn": "A"
-       }
-      ],
-      [
-       3,
        {
         "t": 12,
         "P": 69,
@@ -1301,7 +885,8 @@
        4,
        19
       ],
-      "step": 1
+      "step": 0,
+      "color": "orange"
      },
      {
       "kind": "point",
@@ -1309,7 +894,8 @@
        6,
        32
       ],
-      "step": 1
+      "step": 0,
+      "color": "orange"
      },
      {
       "kind": "point",
@@ -1317,7 +903,8 @@
        8,
        47
       ],
-      "step": 2
+      "step": 0,
+      "color": "orange"
      },
      {
       "kind": "point",
@@ -1325,7 +912,8 @@
        10,
        60
       ],
-      "step": 2
+      "step": 0,
+      "color": "orange"
      },
      {
       "kind": "point",
@@ -1333,7 +921,8 @@
        12,
        69
       ],
-      "step": 3
+      "step": 0,
+      "color": "orange"
      }
     ],
     "given": [
@@ -1346,32 +935,33 @@
       "c": "indigo"
      },
      {
+      "html": "later readings",
+      "c": "orange"
+     },
+     {
       "html": "at most <b>$100\\%$</b>",
       "c": "brown",
       "shape": "ln"
      }
     ]
-   },
-   "scene": 3,
-   "q": 2
+   }
   },
   {
    "type": "example",
-   "eyebrow": "What should happen? · Question 3",
+   "scene": 2,
+   "q": 2,
+   "eyebrow": "What really happened · Question 2",
    "title": "Must it reach 100%?",
    "stem": "Must the eventual level of adoption be $100\\%$?",
    "blocks": [
-    {
-     "text": "Some residents may never adopt due to cost, access, preference."
-    },
     {
      "walk": {
       "cap": "A proposed limit",
       "tex": [
        "\\text{saturation level}&=80\\%"
       ],
-      "note": "Suppose adoption levels off at $80\\%$. There is no equation yet, only the behaviour we need: early growth, then slowing towards a ceiling.",
-      "ans": true
+      "ans": true,
+      "note": "Suppose adoption levels off at $80\\%$. There is no equation yet, only the behaviour we need: early growth, then slowing towards a ceiling."
      }
     }
    ],
@@ -1404,7 +994,7 @@
        }
       ],
       [
-       2,
+       1,
        {
         "t": 12,
         "P": 69,
@@ -1449,20 +1039,6 @@
       "color": "brown"
      },
      {
-      "kind": "segment",
-      "from": [
-       0,
-       80
-      ],
-      "to": [
-       16.5,
-       80
-      ],
-      "step": 2,
-      "dashed": true,
-      "color": "green"
-     },
-     {
       "kind": "fn",
       "expr": "5*2**(x/2)",
       "domain": [
@@ -1478,7 +1054,8 @@
        4,
        19
       ],
-      "step": 0
+      "step": 0,
+      "color": "orange"
      },
      {
       "kind": "point",
@@ -1486,7 +1063,8 @@
        6,
        32
       ],
-      "step": 0
+      "step": 0,
+      "color": "orange"
      },
      {
       "kind": "point",
@@ -1494,7 +1072,8 @@
        8,
        47
       ],
-      "step": 0
+      "step": 0,
+      "color": "orange"
      },
      {
       "kind": "point",
@@ -1502,7 +1081,8 @@
        10,
        60
       ],
-      "step": 0
+      "step": 0,
+      "color": "orange"
      },
      {
       "kind": "point",
@@ -1510,7 +1090,22 @@
        12,
        69
       ],
-      "step": 0
+      "step": 0,
+      "color": "orange"
+     },
+     {
+      "kind": "segment",
+      "from": [
+       0,
+       80
+      ],
+      "to": [
+       16.5,
+       80
+      ],
+      "step": 1,
+      "dashed": true,
+      "color": "green"
      }
     ],
     "given": [
@@ -1523,19 +1118,21 @@
       "c": "indigo"
      },
      {
+      "html": "later readings",
+      "c": "orange"
+     },
+     {
       "html": "at most <b>$100\\%$</b>",
       "c": "brown",
       "shape": "ln"
      }
     ]
-   },
-   "scene": 3,
-   "q": 3
+   }
   },
   {
    "type": "sceneTitle",
-   "scene": 4,
-   "kicker": "Scene 4 of 6",
+   "scene": 3,
+   "kicker": "Scene 3 of 5",
    "title": "Meet the Logistic",
    "kind": "phone",
    "window": {
@@ -1554,7 +1151,7 @@
   },
   {
    "type": "example",
-   "scene": 4,
+   "scene": 3,
    "eyebrow": "Meet the logistic · The situation",
    "title": "A model with a ceiling",
    "setup": {
@@ -1683,7 +1280,7 @@
   },
   {
    "type": "example",
-   "scene": 4,
+   "scene": 3,
    "q": 1,
    "eyebrow": "Meet the logistic · Question 1",
    "title": "Find A and k (1 of 2)",
@@ -1825,7 +1422,7 @@
   },
   {
    "type": "example",
-   "scene": 4,
+   "scene": 3,
    "q": 1,
    "eyebrow": "Meet the logistic · Question 1",
    "title": "Find A and k (2 of 2)",
@@ -1969,20 +1566,19 @@
      "walk": {
       "cap": "At $t=6$",
       "tex": [
-       "P(6)&=\\frac{80}{1+15e^{-2.286}}",
-       "&\\approx 31.7\\%\\quad(\\text{reading: }32\\%)"
-      ]
+       "P(6)&=\\frac{80}{1+15e^{-2.286}}\\approx 31.7\\%"
+      ],
+      "note": "The reading is $32\\%$."
      }
     },
     {
      "walk": {
       "cap": "At $t=10$",
       "tex": [
-       "P(10)&=\\frac{80}{1+15e^{-3.81}}",
-       "&\\approx 60.1\\%\\quad(\\text{reading: }60\\%)"
+       "P(10)&=\\frac{80}{1+15e^{-3.81}}\\approx 60.1\\%"
       ],
       "ans": true,
-      "note": "Built from two readings, the model still matches the later ones."
+      "note": "The reading is $60\\%$. Two readings built the model, and it matches the later ones."
      }
     }
    ],
@@ -2136,7 +1732,7 @@
      }
     ]
    },
-   "scene": 4,
+   "scene": 3,
    "q": 2
   },
   {
@@ -2302,7 +1898,7 @@
      }
     ]
    },
-   "scene": 4,
+   "scene": 3,
    "q": 3
   },
   {
@@ -2332,8 +1928,8 @@
   },
   {
    "type": "sceneTitle",
-   "scene": 5,
-   "kicker": "Scene 5 of 6",
+   "scene": 4,
+   "kicker": "Scene 4 of 5",
    "title": "Where Is It Fastest?",
    "kind": "phone",
    "window": {
@@ -2351,7 +1947,7 @@
   },
   {
    "type": "example",
-   "scene": 5,
+   "scene": 4,
    "eyebrow": "Where is it fastest? · The situation",
    "title": "Planning for the busiest years",
    "setup": {
@@ -2682,7 +2278,7 @@
      }
     ]
    },
-   "scene": 5,
+   "scene": 4,
    "q": 1
   },
   {
@@ -3018,7 +2614,7 @@
      }
     ]
    },
-   "scene": 5,
+   "scene": 4,
    "q": 1,
    "cont": true
   },
@@ -3153,7 +2749,7 @@
      }
     ]
    },
-   "scene": 5,
+   "scene": 4,
    "q": 2
   },
   {
@@ -3309,7 +2905,7 @@
      }
     ]
    },
-   "scene": 5,
+   "scene": 4,
    "q": 2,
    "cont": true
   },
@@ -3507,14 +3103,14 @@
      }
     ]
    },
-   "scene": 5,
+   "scene": 4,
    "q": 3
   },
   {
    "type": "sceneTitle",
-   "scene": 6,
-   "kicker": "Scene 6 of 6",
-   "title": "Explore and Judge",
+   "scene": 5,
+   "kicker": "Scene 5 of 5",
+   "title": "Explore the Model",
    "kind": "phone",
    "window": {
     "xmin": 0,
@@ -3531,11 +3127,11 @@
   },
   {
    "type": "example",
-   "scene": 6,
-   "eyebrow": "Explore and judge · The situation",
+   "scene": 5,
+   "eyebrow": "Explore the model · The situation",
    "title": "Three settings on one model",
    "setup": {
-    "preamble": "The region will soon weigh some proposals. First, see what each part of the model controls.",
+    "preamble": "The planners now have a model that fits the region. See what each part of it controls.",
     "para": "A logistic model of this kind has three settings. The growth rate $k$ sets how quickly adoption rises, the limit $L$ is the level it settles towards, and the start is the percentage at $t=0$. For our region, $k\\approx 0.38$, $L=80$, and the start is $5\\%$.",
     "facts": [
      {
@@ -3649,7 +3245,7 @@
   {
    "type": "lab",
    "preset": "logisticLab",
-   "eyebrow": "Explore and judge · Explore",
+   "eyebrow": "Explore the model · Explore",
    "title": "Change the model",
    "init": {
     "window": {
@@ -3673,425 +3269,6 @@
      "t": 8
     }
    }
-  },
-  {
-   "type": "example",
-   "eyebrow": "Explore and judge · Question 1",
-   "title": "Two proposals for the region",
-   "stem": "The region is considering two different actions. Read both carefully before matching them to a change in the model.",
-   "blocks": [
-    {
-     "walk": {
-      "cap": "Proposal A: a phone subsidy",
-      "note": "The government pays part of the price of every phone. Residents who would have waited buy sooner, and some who could never afford one can now buy."
-     }
-    },
-    {
-     "walk": {
-      "cap": "Proposal B: an earlier launch",
-      "note": "Smartphones reach the region earlier, so adoption has been under way for longer. At $t=0$, more residents already own a phone than the $5\\%$ in our story."
-     }
-    }
-   ],
-   "graph": {
-    "window": {
-     "xmin": -2.4,
-     "xmax": 22,
-     "ymin": -9,
-     "ymax": 120,
-     "gridx": 2,
-     "gridy": 10,
-     "xtick": 4,
-     "ytick": 20,
-     "xname": "t",
-     "yname": "A",
-     "xtickFrom": 0,
-     "ytickFrom": 0
-    },
-    "scene": {
-     "kind": "phone",
-     "alt": "A phone that fills with adoption beside the graph of adoption against time",
-     "states": [
-      [
-       0,
-       {
-        "t": 8,
-        "P": 47,
-        "dp": 0,
-        "Pn": "P",
-        "cap": 80
-       }
-      ]
-     ]
-    },
-    "items": [
-     {
-      "kind": "segment",
-      "from": [
-       0,
-       100
-      ],
-      "to": [
-       22,
-       100
-      ],
-      "step": 0,
-      "dashed": true
-     },
-     {
-      "kind": "segment",
-      "from": [
-       0,
-       80
-      ],
-      "to": [
-       22,
-       80
-      ],
-      "step": 0,
-      "dashed": true,
-      "color": "green"
-     },
-     {
-      "kind": "fn",
-      "expr": "80/(1+15*exp(-0.38*x))",
-      "domain": [
-       0,
-       22
-      ],
-      "step": 0,
-      "color": "blue"
-     }
-    ],
-    "given": [
-     {
-      "html": "<b>$k\\approx 0.38$</b>",
-      "c": "blue",
-      "shape": "cv"
-     },
-     {
-      "html": "limit <b>$L=80$</b>",
-      "c": "green",
-      "shape": "ln"
-     },
-     {
-      "html": "start <b>$5\\%$</b>",
-      "c": "pink"
-     }
-    ]
-   },
-   "scene": 6,
-   "q": 1
-  },
-  {
-   "type": "example",
-   "eyebrow": "Explore and judge · Question 2",
-   "title": "Subsidy or earlier launch?",
-   "stem": "Which change to the model could represent the subsidy? Which could represent the earlier launch?",
-   "blocks": [
-    {
-     "walk": {
-      "cap": "A subsidy: cheaper phones, faster adoption",
-      "tex": [
-       "k&\\text{ increases}"
-      ]
-     }
-    },
-    {
-     "walk": {
-      "cap": "A subsidy: more residents can afford one",
-      "tex": [
-       "\\text{limit}&\\text{ increases}"
-      ]
-     }
-    },
-    {
-     "walk": {
-      "cap": "An earlier launch: the region starts further along",
-      "tex": [
-       "\\text{start}&\\text{ increases}"
-      ]
-     }
-    }
-   ],
-   "graph": {
-    "window": {
-     "xmin": -2.4,
-     "xmax": 22,
-     "ymin": -9,
-     "ymax": 120,
-     "gridx": 2,
-     "gridy": 10,
-     "xtick": 4,
-     "ytick": 20,
-     "xname": "t",
-     "yname": "A",
-     "xtickFrom": 0,
-     "ytickFrom": 0
-    },
-    "scene": {
-     "kind": "phone",
-     "alt": "A phone that fills with adoption beside the graph of adoption against time",
-     "states": [
-      [
-       0,
-       {
-        "t": 8,
-        "P": 47,
-        "dp": 0,
-        "Pn": "P",
-        "cap": 80
-       }
-      ],
-      [
-       1,
-       {
-        "t": 8,
-        "P": 71,
-        "dp": 0,
-        "Pn": "P",
-        "cap": 80
-       }
-      ],
-      [
-       2,
-       {
-        "t": 8,
-        "P": 51,
-        "dp": 0,
-        "Pn": "P",
-        "cap": 95
-       }
-      ],
-      [
-       3,
-       {
-        "t": 8,
-        "P": 70,
-        "dp": 0,
-        "Pn": "P",
-        "cap": 80
-       }
-      ]
-     ]
-    },
-    "items": [
-     {
-      "kind": "segment",
-      "from": [
-       0,
-       100
-      ],
-      "to": [
-       22,
-       100
-      ],
-      "step": 0,
-      "dashed": true
-     },
-     {
-      "kind": "segment",
-      "from": [
-       0,
-       80
-      ],
-      "to": [
-       22,
-       80
-      ],
-      "step": 0,
-      "dashed": true,
-      "color": "green"
-     },
-     {
-      "kind": "fn",
-      "expr": "80/(1+15*exp(-0.38*x))",
-      "domain": [
-       0,
-       22
-      ],
-      "step": 0,
-      "color": "blue"
-     },
-     {
-      "kind": "fn",
-      "expr": "80/(1+15*exp(-0.6*x))",
-      "domain": [
-       0,
-       22
-      ],
-      "step": 1,
-      "until": 1,
-      "color": "red"
-     },
-     {
-      "kind": "fn",
-      "expr": "95/(1+18*exp(-0.38*x))",
-      "domain": [
-       0,
-       22
-      ],
-      "step": 2,
-      "until": 2,
-      "color": "red"
-     },
-     {
-      "kind": "fn",
-      "expr": "80/(1+3*exp(-0.38*x))",
-      "domain": [
-       0,
-       22
-      ],
-      "step": 3,
-      "until": 3,
-      "color": "red"
-     }
-    ],
-    "given": [
-     {
-      "html": "<b>$k\\approx 0.38$</b>",
-      "c": "blue",
-      "shape": "cv"
-     },
-     {
-      "html": "limit <b>$L=80$</b>",
-      "c": "green",
-      "shape": "ln"
-     },
-     {
-      "html": "start <b>$5\\%$</b>",
-      "c": "pink"
-     }
-    ]
-   },
-   "scene": 6,
-   "q": 2
-  },
-  {
-   "type": "example",
-   "eyebrow": "Explore and judge · Question 3",
-   "title": "Why logistic? What could fail?",
-   "stem": "Why is a logistic model more plausible here? What could still make its forecast fail?",
-   "blocks": [
-    {
-     "walk": {
-      "cap": "Why logistic",
-      "tex": [
-       "&\\text{It levels off at a limit}",
-       "&\\text{Growth slows as fewer residents are left}"
-      ]
-     }
-    },
-    {
-     "walk": {
-      "cap": "What could still fail",
-      "tex": [
-       "&\\text{The limit may change}",
-       "&\\text{The growth rate may change}"
-      ],
-      "note": "The $80\\%$ limit and the growth rate are assumptions. Prices or new technology could change them."
-     }
-    }
-   ],
-   "graph": {
-    "window": {
-     "xmin": -2.4,
-     "xmax": 22,
-     "ymin": -9,
-     "ymax": 120,
-     "gridx": 2,
-     "gridy": 10,
-     "xtick": 4,
-     "ytick": 20,
-     "xname": "t",
-     "yname": "A",
-     "xtickFrom": 0,
-     "ytickFrom": 0
-    },
-    "scene": {
-     "kind": "phone",
-     "alt": "A phone that fills with adoption beside the graph of adoption against time",
-     "states": [
-      [
-       0,
-       {
-        "t": 8,
-        "P": 47,
-        "dp": 0,
-        "Pn": "P",
-        "cap": 80
-       }
-      ]
-     ]
-    },
-    "items": [
-     {
-      "kind": "segment",
-      "from": [
-       0,
-       100
-      ],
-      "to": [
-       22,
-       100
-      ],
-      "step": 0,
-      "dashed": true
-     },
-     {
-      "kind": "segment",
-      "from": [
-       0,
-       80
-      ],
-      "to": [
-       22,
-       80
-      ],
-      "step": 0,
-      "dashed": true,
-      "color": "green"
-     },
-     {
-      "kind": "fn",
-      "expr": "80/(1+15*exp(-0.38*x))",
-      "domain": [
-       0,
-       22
-      ],
-      "step": 0,
-      "color": "blue"
-     },
-     {
-      "kind": "fn",
-      "expr": "5*2**(x/2)",
-      "domain": [
-       0,
-       9.4
-      ],
-      "step": 0,
-      "color": "red"
-     }
-    ],
-    "given": [
-     {
-      "html": "<b>$k\\approx 0.38$</b>",
-      "c": "blue",
-      "shape": "cv"
-     },
-     {
-      "html": "limit <b>$L=80$</b>",
-      "c": "green",
-      "shape": "ln"
-     },
-     {
-      "html": "start <b>$5\\%$</b>",
-      "c": "pink"
-     }
-    ]
-   },
-   "scene": 6,
-   "q": 3
   },
   {
    "type": "lab",
@@ -4225,19 +3402,18 @@
        [
         "Set up the game",
         [
-         "Give one student a card",
-         "Everyone else starts without one"
+         "One student holds a card"
         ]
        ],
        [
         "Each round",
         [
-         "Each card holder taps one random classmate",
-         "They take a card if they have none"
+         "Card holders tap a random classmate",
+         "A tapped student takes a card"
         ]
        ],
-       "Count the card holders after each round",
-       "Stop when it levels off; plot count against round"
+       "Count the card holders each round",
+       "Plot the count against the round"
       ]
      },
      {
