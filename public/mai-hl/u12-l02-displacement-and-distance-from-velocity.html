@@ -176,6 +176,15 @@ h2 .dim{color:var(--note);font-weight:600}
   .ex .fig .lab-graph{width:min(88cqw,33cqh)}
 }
 
+/* v23 (Ben, 1/11/2026): two graphs stacked on an example slide (graph.second); a tagline under a scene title */
+.ex.dual .fig{justify-content:center;gap:max(22px,3.6cqh)}
+.katex .ansc{color:var(--bl)}
+.ex.solo{grid-template-columns:minmax(0,1fr)!important;grid-template-areas:"stem" "work" "note"!important}
+.ex.solo .fig{display:none}
+@container (max-aspect-ratio: 3/4){ .ex.dual .fig .lab-graph{width:min(94cqw,66cqh)} }
+.tc-tag{margin:0 0 max(8px,1.6cqh);font-size:calc(var(--fs-stem)*1.15);color:var(--prose);font-style:italic;text-align:center}
+@container (min-aspect-ratio: 3/4){ .lg .ex.dual .fig .lab-graph{width:100%;height:auto} }
+
 /* lab */
 .s-lab .lab{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto 1fr;grid-template-areas:"left head" "left ctl";
   column-gap:max(16px,3.2cqw);row-gap:max(10px,2.2cqh);align-items:start;align-content:start;min-height:0;flex:1}
@@ -480,8 +489,8 @@ html:root[data-skin="3b1b"],html:root[data-skin="goldteal"],html:root[data-skin=
 .tl-b.big{height:max(28px,4.6cqh)}
 .s-stitle{justify-content:center;align-items:center;text-align:center;gap:max(6px,1.4cqh)}
 .s-stitle .tc-kick{font-size:var(--fs-eyebrow);font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--eyebrow)}
-.s-stitle h1{font-size:calc(var(--fs-hero)*1.08);font-weight:600;margin:0;line-height:1.08;color:var(--title)}
-.s-stitle .tc-art{height:min(56cqh,62cqw);aspect-ratio:49/100;max-width:100%;position:relative;margin-top:max(6px,1.2cqh)}
+.s-stitle h1{font-size:calc(var(--fs-hero)*1.08);font-weight:600;margin:0;line-height:1.08;color:var(--title);max-width:100%;text-wrap:balance}
+.s-stitle .tc-art{height:min(50cqh,62cqw);aspect-ratio:49/100;max-width:100%;position:relative;margin-top:max(6px,1.2cqh)}
 .s-stitle .tc-row{display:flex;align-items:center;justify-content:center;gap:max(24px,6cqw);flex-wrap:wrap}
 .s-stitle .tc-row .tc-art{height:min(50cqh,56cqw)}
 .s-stitle .tc-formula{font-size:var(--fs-hero);color:var(--title)}
@@ -2149,6 +2158,7 @@ html:root[data-skin="greengrey"] .s-turn .turn .c{color:#83C167}</style>
     const W = 600, H = 1000;
     const sc = document.createElement('div'); sc.className = 'scene'; el.appendChild(sc);
     if (kind === 'phone') { phoneArt(sc, state || {}, opts); return { el: sc }; }
+    if (kind === 'scatter') { scatterArt(sc, state || {}, opts); return { el: sc }; }
     const svg = mk('svg', { viewBox: `0 0 ${W} ${H}`, preserveAspectRatio: 'none', class: 'scene-svg', role: 'img', 'aria-label': opts.alt || kind }, sc);
     const labs = document.createElement('div'); labs.className = 'scene-labels'; sc.appendChild(labs);
     const Y = v => (win.ymax - v) / (win.ymax - win.ymin) * H;
@@ -2882,7 +2892,129 @@ html:root[data-skin="greengrey"] .s-turn .turn .c{color:#83C167}</style>
     select(0);
     return { enter() {}, leave() {} };
   }
+  /* ---------- MAI HL U5 L6: scatter title-card art and the scatter lab (Ben, 31/10/2026, v2) ----------
+     scatterArt: a square drawing of the scene's own graph (state.win = the graph window, state.pts in data units,
+       state.cols optional, state.xname / state.yname the axis names as TeX).
+     scatterLab: one lab for every correlation scene.
+       init.window                 graph window (xname / yname name the variables of the story)
+       init.sets  [{name, pts:[[x,y]..]}]  datasets; a toggle switches between them. A set with {x, noise, ymean, ysd}
+                                    is an r-set: its points are rebuilt so that Pearson's r equals the slider exactly
+       init.start                  name of the set shown first
+       init.rslider {min,max,step,start,seconds,auto}   slider for r (r-sets only), autoplays once on arrival by Next
+       init.fit                    draw the least-squares line of the points shown
+       init.extra  {at:[x,y], on:bool, toggle:bool}   one more draggable point (an outlier)
+       init.dragIndex              the index of one data point that becomes draggable (an athlete)
+       init.rs                     show r_s as well as r (ranks average ties)
+       init.cards                  show the four recap cards */
+  function scatterArt(sc, s, opts) {
+    const W = 1000, w = s.win || { xmin: 0, xmax: 1, ymin: 0, ymax: 1 };
+    const host = sc.parentNode; host.style.aspectRatio = '1 / 1'; host.style.height = 'min(50cqh, 60cqw)';
+    const svg = mk('svg', { viewBox: `0 0 ${W} ${W}`, class: 'scene-svg', role: 'img', 'aria-label': opts.alt || 'scatter diagram' }, sc);
+    const labs = document.createElement('div'); labs.className = 'scene-labels'; sc.appendChild(labs);
+    const X = x => 40 + (x - w.xmin) / (w.xmax - w.xmin) * (W - 80), Y = y => W - 40 - (y - w.ymin) / (w.ymax - w.ymin) * (W - 80);
+    const ax = Math.max(X(0), X(w.xmin)), ay = Math.min(Y(0), Y(w.ymin));
+    mk('line', { x1: ax, y1: ay, x2: W - 20, y2: ay, class: 'sc-tick', 'stroke-width': 8, 'stroke-linecap': 'round' }, svg);
+    mk('line', { x1: ax, y1: ay, x2: ax, y2: 20, class: 'sc-tick', 'stroke-width': 8, 'stroke-linecap': 'round' }, svg);
+    (s.pts || []).forEach((p, i) => mk('circle', { cx: X(p[0]), cy: Y(p[1]), r: 24, fill: (s.cols && s.cols[i]) || CURVE_C }, svg));
+    const lab = (x, y, t, anchor) => { const d = document.createElement('div'); d.className = 'scene-text sc-unit';
+      d.style.left = (x / W * 100) + '%'; d.style.top = (y / W * 100) + '%'; d.style.transform = anchor; d.innerHTML = math(t); labs.appendChild(d); };
+    if (s.xname) lab(W - 20, ay - 12, s.xname, 'translate(-100%,-100%)');
+    if (s.yname) lab(ax + 24, 30, s.yname, 'translate(0,0)');
+  }
+  const rankOf = v => { const idx = v.map((x, i) => [x, i]).sort((p, q) => p[0] - q[0]); const r = new Array(v.length); let i = 0;
+    while (i < idx.length) { let j = i; while (j + 1 < idx.length && idx[j + 1][0] === idx[i][0]) j++; const avg = (i + j) / 2 + 1;
+      for (let k = i; k <= j; k++) r[idx[k][1]] = avg; i = j + 1; } return r; };
+  const meanOf = v => v.reduce((a, b) => a + b, 0) / v.length;
+  const pearsonR = (x, y) => { const mx = meanOf(x), my = meanOf(y); let sxy = 0, sxx = 0, syy = 0;
+    for (let i = 0; i < x.length; i++) { const dx = x[i] - mx, dy = y[i] - my; sxy += dx * dy; sxx += dx * dx; syy += dy * dy; } return sxy / Math.sqrt(sxx * syy); };
+  /* r-set: standardised x, and a noise vector made exactly uncorrelated with x and scaled to unit spread */
+  function rSetBasis(set) {
+    const x = set.x, n = x.length, mx = meanOf(x), sx = Math.sqrt(x.reduce((a, b) => a + (b - mx) * (b - mx), 0) / n);
+    const zx = x.map(v => (v - mx) / sx), e = set.noise, me = meanOf(e);
+    const c = e.reduce((a, v, i) => a + (v - me) * zx[i], 0) / n;
+    const res = e.map((v, i) => v - me - c * zx[i]), sr = Math.sqrt(res.reduce((a, b) => a + b * b, 0) / n);
+    return { zx, ew: res.map(v => v / sr) };
+  }
+  function scatterLab(container, init) {
+    container.classList.add('lab', 'scenelab', 'scatlab'); if (init.cards) container.classList.add('famlab');
+    const left = document.createElement('div'); left.className = 'lab-left';
+    const right = document.createElement('div'); right.className = 'lab-controls';
+    container.appendChild(left); container.appendChild(right);
+    const w = init.window, g = Lab.graph(left, w), sets = init.sets, SC = [0.25, 0.5, 0.75, 0.9];
+    sets.forEach(s => { if (s.x) s.basis = rSetBasis(s); });
+    const RS = init.rslider;
+    let cur = sets.find(s => s.name === init.start) || sets[0], sp = RS ? RS.start : 0;
+    let extraOn = init.extra ? init.extra.on !== false : false;
+    const maxN = Math.max(...sets.map(s => s.x ? s.x.length : s.pts.length));
+    let P = [];
+    const load = () => { if (cur.x) { const b = cur.basis, k = Math.sqrt(Math.max(0, 1 - sp * sp));
+        P = cur.x.map((x, i) => [x, cur.ymean + cur.ysd * (sp * b.zx[i] + k * b.ew[i])]); }
+      else P = cur.pts.map(p => p.slice()); };
+    load();
+    const ex = init.extra ? { x: init.extra.at[0], y: init.extra.at[1] } : null;
+    const hs = [];
+    for (let i = 0; i < maxN; i++) {
+      const dragIt = init.dragIndex != null && i === init.dragIndex;
+      hs.push(g.point({ x: 0, y: 0 }, dragIt ? { drag: true, snap: 0, name: 'athlete', onMove: q => { P[i][0] = q.x; P[i][1] = q.y; refresh(); },
+        visible: () => i < P.length } : { color: CURVE_C, visible: () => i < P.length }));
+    }
+    const eh = ex ? g.point({ x: ex.x, y: ex.y }, { drag: true, snap: 0, name: 'extra point', visible: () => extraOn,
+      onMove: q => { ex.x = q.x; ex.y = q.y; refresh(); } }) : null;
+    const xs = () => P.map(p => p[0]).concat(extraOn && ex ? [ex.x] : []), ys = () => P.map(p => p[1]).concat(extraOn && ex ? [ex.y] : []);
+    const R = () => pearsonR(xs(), ys()), RSP = () => pearsonR(rankOf(xs()), rankOf(ys()));
+    const line = () => { const x = xs(), y = ys(), mx = meanOf(x), my = meanOf(y); let sxy = 0, sxx = 0;
+      for (let i = 0; i < x.length; i++) { sxy += (x[i] - mx) * (y[i] - my); sxx += (x[i] - mx) * (x[i] - mx); }
+      const a = sxy / sxx; return { a, b: my - a * mx }; };
+    if (init.fit) g.line(() => ({ x: w.xmin, y: line().a * w.xmin + line().b }), () => ({ x: w.xmax, y: line().a * w.xmax + line().b }), { color: RED_C });
+    const word = r => { const a = Math.abs(r), d = r < 0 ? 'negative' : 'positive';
+      return a < SC[0] ? 'very weak' : a < SC[1] ? `weak ${d}` : a < SC[2] ? `moderate ${d}` : a < SC[3] ? `strong ${d}` : `very strong ${d}`; };
+    const grp = (title, cls) => { const s = document.createElement('div'); s.className = 'lab-group' + (cls ? ' ' + cls : '');
+      if (title) { const h = document.createElement('div'); h.className = 'lab-group-title'; h.innerHTML = title; s.appendChild(h); } right.appendChild(s); return s; };
+    let pl = null, slider = null;
+    if (sets.length > 1) { const gd = grp('Data');
+      Lab.toggle(gd, { options: sets.map(s => s.name), value: cur.name, onChange: n => { cur = sets.find(s => s.name === n); load(); refresh(); } }); }
+    if (RS) { const gs = grp('Correlation');
+      slider = Lab.slider(gs, { min: RS.min, max: RS.max, step: RS.step, value: sp, label: 'r', format: v => fx(v, 2),
+        onChange: v => { sp = v; load(); refresh(); } });
+      ['pointerdown', 'keydown'].forEach(ev => slider.input.addEventListener(ev, () => pl && pl.stop()));
+      pl = player(gs, { min: RS.min, max: RS.max, seconds: RS.seconds || 8, get: () => sp,
+        set: v => { sp = Math.round(v * 100) / 100; slider.input.value = sp; const out = slider.input.parentNode.querySelector('output'); if (out) out.innerHTML = math(fx(sp, 2)); load(); refresh(); } }); }
+    if (init.extra && init.extra.toggle) { const ge = grp('Extra point');
+      Lab.toggle(ge, { options: ['Off', 'On'], value: extraOn ? 'On' : 'Off', onChange: v => { extraOn = v === 'On'; refresh(); } }); }
+    const gr = grp('Readings');
+    const readouts = [Lab.readout(gr, () => `r=${fx(R(), 3)}`)];
+    if (init.rs) readouts.push(Lab.readout(gr, () => `r_s=${fx(RSP(), 3)}`));
+    let slots = [];
+    if (init.cards) {
+      const gc = document.createElement('div'); gc.className = 'fam-cards'; container.appendChild(gc);
+      gc.innerHTML = '<div class="fc-head">Recap cards</div>';
+      for (let i = 0; i < 4; i++) { const d = document.createElement('div'); d.className = 'fam-card'; gc.appendChild(d); slots.push(d); }
+    }
+    const cardsNow = () => { const r = R(), s = RSP(), out = [];
+      out.push({ title: 'Strength and direction', tone: 'curve', line: `$r=${fx(r, 2)}$ is ${word(r)}. Closer to $\\pm 1$ means a tighter straight-line pattern.` });
+      out.push(init.rs && s - r > 0.03
+        ? { title: '$r_s$ is larger than $r$', tone: 'ans', line: 'This suggests the data rise (or fall) steadily but along a curve, or that an extreme point is dragging $r$ down. Check the scatter.' }
+        : { title: 'Compare $r$ and $r_s$', line: init.rs ? 'When $r_s$ is not clearly larger than $r$, the straight-line fit is doing about as well as the ranks.' : 'Show $r_s$ in the next scene.' });
+      out.push({ title: '$r$ measures straight lines', line: 'A relationship can always rise and still score below $1$ if it curves.' });
+      out.push({ title: 'Correlation is not causation', tone: 'red', line: 'A strong $r$ says the variables move together. It does not say one causes the other.' });
+      return out; };
+    function refresh() {
+      hs.forEach((h, i) => { if (i < P.length) { h.x = P[i][0]; h.y = P[i][1]; } });
+      if (eh) { eh.x = ex.x; eh.y = ex.y; }
+      g.redraw(); readouts.forEach(r => r.update());
+      if (slots.length) { const cs = cardsNow(); slots.forEach((d, i) => { const c = cs[i]; d.className = 'fam-card' + (c ? ' t-' + (c.tone || 'none') : ' empty');
+        d.innerHTML = c ? `<div class="fc-t">${prose(c.title)}</div><div class="fc-l">${prose(c.line)}</div>` : ''; }); }
+    }
+    refresh();
+    const state = { g, controls: right, readouts, refresh,
+      enter(byNext) { if (!pl) return; pl.stop(); if (byNext && RS.auto && !reduced()) pl.play(true); },
+      leave() { if (pl) pl.stop(); } };
+    container.__lab = state;
+    return state;
+  }
+
   window.Lab.presets.catalogue = catalogue;
+  window.Lab.presets.scatterLab = scatterLab;
   window.Lab.presets.logisticLab = logisticLab;
   window.Lab.scenes = SCENES;
   window.Lab.presets.coffeeScene = coffeeScene;
@@ -2914,7 +3046,7 @@ C.slides.forEach(d => {
       <p class="meta"><strong>${esc(d.code)}</strong><span>·</span>${tagHTML(d.regime)}<span>${esc(d.regimeText)}</span></p>
       <p class="keys">→ / Space next step · ← back · tap right or left third on a phone · S scratch pad · F fullscreen · ? help</p>`);
   } else if (d.type==='sceneTitle'){
-    const s = addSlide('s-stitle', `<div class="tc-kick">${esc(d.kicker||('Scene '+d.scene))}</div><h1>${nb(d.title)}</h1>${d.formula?`<div class="tc-row">${d.kind?`<div class="tc-art" role="img" aria-label="${esc(d.alt||'')}"></div>`:''}<div class="tc-formula">$$${d.formula}$$</div></div>`:`<div class="tc-art${d.wide?' wide':''}" role="img" aria-label="${esc(d.alt||'')}"></div>`}`);
+    const s = addSlide('s-stitle', `<div class="tc-kick">${esc(d.kicker||('Scene '+d.scene))}</div><h1>${nb(d.title)}</h1>${d.tagline?`<p class="tc-tag">${nb(d.tagline)}</p>`:''}${d.formula?`<div class="tc-row">${d.kind?`<div class="tc-art" role="img" aria-label="${esc(d.alt||'')}"></div>`:''}<div class="tc-formula">$$${d.formula}$$</div></div>`:`<div class="tc-art${d.wide?' wide':''}" role="img" aria-label="${esc(d.alt||'')}"></div>`}`);
     s.d = d; s.art = d;
   } else if (d.type==='today'){
     addSlide('s-today', `<div class="eyebrow">Lesson ${C.meta.lesson} · ${esc(C.meta.topicWords)}</div><h2>${esc(d.title)}</h2>
@@ -2928,7 +3060,7 @@ C.slides.forEach(d => {
     const stemHTML = d.setup ? `<p class="setup-pre">${nb(d.setup.preamble)}</p><div class="decode"><p class="para" data-until="0">${nb(d.setup.para)}</p><ul class="facts" data-step="1">${d.setup.facts.map(factLi).join('')}</ul></div>`
       : `<p>${nb(d.stem)}</p>${d.prompt?`<p class="prompt">${nb(d.prompt)}</p>`:''}${picks}`;
     const s = addSlide('s-example'+(d.setup?' s-setup':''), `<div class="eyebrow">${d.eyebrow ? esc(d.eyebrow) : `Worked Example ${d.n} · ${tagHTML(d.tag)}`}</div><h2>${esc(d.title)}</h2>
-      <div class="ex${sceneG?' scn':''}${sceneG&&(sceneG.layout==='stack'||sceneG.layout==='signs')?' stk':''}"><div class="stem">${stemHTML}</div>
+      <div class="ex${sceneG?' scn':''}${sceneG&&(sceneG.layout==='stack'||sceneG.layout==='signs')?' stk':''}${d.graph&&d.graph.second?' dual':''}${d.solo?' solo':''}"><div class="stem">${stemHTML}</div>
       <div class="panel work"></div>${d.note?`<p class="note">${nb(d.note)}</p>`:''}<div class="fig">${head}</div></div>`);
     const panel = s.el.querySelector('.panel.work'); let k = 0;
     s.d = d; s.off = d.sceneStart ? 1 : 0;
@@ -2956,7 +3088,7 @@ C.slides.forEach(d => {
     });
     const note = s.el.querySelector('.note'); if (note){ k++; note.dataset.step=k; }
     for (let i=1;i<=k;i++) s.steps.push([...s.el.querySelectorAll('.st'+i+', [data-step="'+i+'"]')]);
-    s.figSpec = d.graph;
+    if (!d.solo) s.figSpec = d.graph;
   } else if (d.type==='lab'){
     const s = addSlide('s-lab', `<div class="labhost"></div>`); s.d = d;
     s.lab_head = (d.eyebrow?`<div class="eyebrow">${esc(d.eyebrow)}</div>`:'') + `<h2>${esc(d.title)}</h2>`;
@@ -2973,6 +3105,11 @@ renderMathInElement(root, Object.assign({delimiters:DELIMS}, KOPTS));
 /* labs are built after the prose render so their own KaTeX is not re-scanned */
 slides.forEach(s => { if (!s.figSpec) return;
   const sp = s.figSpec, figEl = s.el.querySelector('.fig');
+  if (!sp.scene && sp.second){ /* v23: two graphs stacked in the figure column (graph.second = the lower spec) */
+    const h1 = document.createElement('div'), h2 = document.createElement('div'); figEl.appendChild(h1); figEl.appendChild(h2);
+    h1.style.cssText = h2.style.cssText = 'display:contents';
+    const f1 = Lab.figure(h1, sp, () => s.shown - (s.off||0)), f2 = Lab.figure(h2, sp.second, () => s.shown - (s.off||0));
+    s.fig = { redraw(){ f1.redraw(); f2.redraw(); } }; return; }
   if (!sp.scene){ s.fig = Lab.figure(figEl, sp, () => s.shown - (s.off||0)); return; }
   if (sp.scene.layout === 'stack' || sp.scene.layout === 'signs'){ s.fig = Lab.motionSlide(figEl, sp, () => s.shown - (s.off||0)); s.fig.redraw(); return; }   /* v23 */
   /* scene beside the graph: the figure draws into the row's graph host; the scene takes the state of the last reveal shown */
@@ -3035,7 +3172,7 @@ function fit(s){
   });
   s.fitWidth = fitWidth;
   /* density budget: a stem over 3 lines in the text column takes the full width instead */
-  const wideStem = () => { const ex = s.el.querySelector('.ex'), p = ex && ex.querySelector('.stem > p'); if (!p || !s.el.clientHeight) return;
+  const wideStem = () => { const ex = s.el.querySelector('.ex'), p = ex && ex.querySelector('.stem > p'); if (!p || !s.el.clientHeight || ex.classList.contains('dual')) return;
     ex.classList.remove('wide'); const lh = parseFloat(getComputedStyle(p).lineHeight);
     if (p.getBoundingClientRect().height > 3.05 * lh) ex.classList.add('wide'); };
   s.wideStem = wideStem;
@@ -3055,11 +3192,17 @@ function fit(s){
     if (free > 0){ const cap = s.el.clientHeight * 0.05, add = Math.min(free / (n + 1), cap);
       ctl.style.gap = (parseFloat(getComputedStyle(ctl).rowGap) + add) + 'px';
       head.style.marginBottom = (parseFloat(getComputedStyle(head).marginBottom) + add) + 'px'; }
+    /* v23: never let the title block run into the first control group (a wrapped title, or fonts that arrive late) */
+    ctl.style.marginTop = '';
+    const clash = head.getBoundingClientRect().bottom + 14 - ctl.getBoundingClientRect().top;
+    if (clash > 0) ctl.style.marginTop = clash + 'px';
   }
   Lab.placeAll(s.el);
 }
 const refit = () => { slides.forEach(t => fit(t)); fitAll(); slides.forEach(t => fit(t)); fit(slides[cur]); };
 window.addEventListener('resize', refit);
+if (window.ResizeObserver) slides.forEach(t => { const h = t.el.querySelector('.s-lab .lab-head, .lab-head'); if (!h) return; let last = h.offsetHeight;
+  new ResizeObserver(() => { if (Math.abs(h.offsetHeight - last) > 1){ last = h.offsetHeight; fit(t); } }).observe(h); });
 /* load every embedded face up front (KaTeX loads its delimiter faces lazily otherwise, which moves labels after placement) */
 if (document.fonts && document.fonts.load){
   const faces = ['KaTeX_Main','KaTeX_Math','KaTeX_AMS','KaTeX_Size1','KaTeX_Size2','KaTeX_Size3','KaTeX_Size4','STIX Two Math','STIX Two Text'];
