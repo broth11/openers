@@ -555,7 +555,7 @@
       const k = names[i], P = M.panels[k]; if (!P) continue;
       const top = 4 + i * LAD_H, y0 = top + 32, y1 = top + LAD_H - 20, Y = v => y1 - (v - P.ymin) / (P.ymax - P.ymin) * (y1 - y0);
       yb = y1;
-      a.text(8, (y0 + y1) / 2, `$${k}(t)$`, 'sc-name', 'w');
+      a.text(112, top + 16, `$${k}(t)$`, 'sc-name', 'w');   /* name above the axis, clear of the tick numerals */
       a.el('line', { x1: 100, x2: 975, y1: Y(0), y2: Y(0), class: 'sc-tick', 'stroke-width': 3 });
       a.el('line', { x1: 100, x2: 100, y1: y0 - 4, y2: y1 + 4, class: 'sc-tick', 'stroke-width': 3 });
       a.text(990, Y(0), '$t$', 'sc-num', 'e');
