@@ -354,6 +354,12 @@ html:root[data-skin="3b1b"]{--sc-curve:#58C4DD;--sc-red:#FC6255}
 html:root[data-skin="goldteal"]{--sc-curve:#5CD0B3;--sc-red:#FC6255}
 html:root[data-skin="bluebrown"]{--sc-curve:#58C4DD;--sc-red:#FC6255}
 html:root[data-skin="greengrey"]{--sc-curve:#58C4DD;--sc-red:#FC6255}
+/* v25 (U12 L3): every role as a variable, so scenes drawn at run time (cars, ladder curves) follow the picker's theme */
+:root{--sc-teal:#49A88F;--sc-pink:#94424F;--sc-green:#699C52;--sc-grey:#55636F;--sc-orange:#FF862F;--sc-brown:#8B5A2B;--sc-indigo:#3B5BDB;}
+html:root[data-skin="3b1b"]{--sc-teal:#5CD0B3;--sc-pink:#D147BD;--sc-green:#83C167;--sc-grey:#BBBBBB;--sc-orange:#FF862F;--sc-brown:#CD853F;--sc-indigo:#5C7CFA;}
+html:root[data-skin="goldteal"]{--sc-teal:#5CD0B3;--sc-pink:#D147BD;--sc-green:#83C167;--sc-grey:#BBBBBB;--sc-orange:#FF862F;--sc-brown:#CD853F;--sc-indigo:#5C7CFA;}
+html:root[data-skin="bluebrown"]{--sc-teal:#5CD0B3;--sc-pink:#D147BD;--sc-green:#83C167;--sc-grey:#BBBBBB;--sc-orange:#FF862F;--sc-brown:#CD853F;--sc-indigo:#5C7CFA;}
+html:root[data-skin="greengrey"]{--sc-teal:#5CD0B3;--sc-pink:#D147BD;--sc-green:#83C167;--sc-grey:#BBBBBB;--sc-orange:#FF862F;--sc-brown:#CD853F;--sc-indigo:#5C7CFA;}
 .scene-row{display:flex;position:relative;--h:min(30cqw,45cqh);height:var(--h);width:calc(var(--h)*1.6);flex:none}
 .scene{position:relative;flex:0 0 37.5%;height:100%}
 .scene-svg{position:absolute;inset:0;width:100%;height:100%;display:block;overflow:visible}
@@ -534,13 +540,26 @@ html:root[data-skin="3b1b"],html:root[data-skin="goldteal"],html:root[data-skin=
 /* v24 (Ben, 1/11/2026, MAI HL U12 L2): v-t graph with shaded area: the readout under the graph, and the area recap lab */
 .scene-row.stack .area-read{flex:none;font-size:calc(var(--fs-stem)*1.05);min-height:1.4em;line-height:1.4;padding-left:.3em;font-weight:600}
 .s-lab .lab.arlab .lab-controls{grid-template-columns:minmax(0,1fr)}
+@container (min-aspect-ratio: 3/4){ .s-lab .lab.llab{grid-template-areas:"head ctl" "left ctl"} .s-lab .lab.llab .lab-head{align-self:start} .s-lab .lab.llab .lab-controls{align-self:start} }
+.lab-lede{margin:0;font-size:var(--fs-body);color:var(--prose);line-height:1.35}
+.s-lab .lab.llab .lab-controls{grid-template-columns:minmax(0,1fr)} .s-lab .lab.llab .ar-card{min-height:calc(var(--fs-stem)*1.6)} .s-lab .lab.llab .lab-controls{gap:max(4px,.8cqh)} .s-lab .lab.llab .lab-group{gap:max(2px,.4cqh);padding-top:max(3px,.6cqh)} .s-lab .lab.llab .lab-fixed,.s-lab .lab.llab .lab-readout{padding-block:0;line-height:1.25;height:calc(var(--fs-stem)*.9*var(--g)*1.55);display:flex;align-items:center;font-size:calc(var(--fs-stem)*.9*var(--g));white-space:nowrap;overflow:hidden} .s-lab .lab.llab .lab-play{margin-top:0} .s-lab .lab.llab .scene-row.stack{--w:min(56cqw,76cqh)}
 .ar-card{border:1px dashed var(--note);border-radius:.5em;padding:.3em .65em;color:var(--note);display:flex;align-items:center}
 .ar-card.on{border-style:solid;color:var(--title)}
 .ar-lock{opacity:.75;font-style:italic}
 .sc-road{stroke:var(--note);opacity:.55} .sc-tickfill{fill:var(--note)} .sc-origin{stroke:var(--title)}
 .scene-text.sc-num{color:var(--note)}
 .ex.scn.stk .given{max-width:min(50cqw,72cqh)}
+.slide.s-ladder .ex.scn .given{flex-direction:column;flex-wrap:nowrap;gap:.12em;max-width:none}
 .ex.scn.stk .fig{width:min(50cqw,72cqh)}
+/* v25 (Ben, 2/11/2026): ladder slides give the whole right side to the three graphs; the title block and its rule stay in the left column */
+@container (min-aspect-ratio: 3/4){
+  .slide.s-ladder.active,.slide.s-ladder.measure:not(.active){display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto auto auto minmax(0,1fr);column-gap:var(--b3);row-gap:var(--b2);align-content:start}
+  .slide.s-ladder .eyebrow{grid-area:1/1} .slide.s-ladder h2{grid-area:2/1}
+  .slide.s-ladder .ex{display:contents}
+  .slide.s-ladder .ex .stem{grid-area:3/1} .slide.s-ladder .ex .panel.work{grid-area:4/1} .slide.s-ladder .ex .note{grid-area:5/1;align-self:start}
+  .slide.s-ladder .ex.scn.stk .fig{grid-area:1/2/-1/3;align-self:stretch;width:min(44cqw,84cqh);max-width:none}
+  .slide.s-ladder .scene-row.stack{--w:min(44cqw,84cqh)}
+}
 .s-stitle .tc-art.wide{height:auto;width:min(86cqw,120cqh);aspect-ratio:auto}
 .s-stitle .tc-art.wide .scene{height:auto;aspect-ratio:inherit}
 /* IA: the notepad gets the wider column */
@@ -645,8 +664,8 @@ C.slides.forEach(d => {
     const head = d.graph && d.graph.given ? `<ul class="given">${d.graph.given.map(factLi).join('')}</ul>` : (sceneG&&d.graph.heading?`<p class="scene-head">${nb(d.graph.heading)}</p>`:'');
     const stemHTML = d.setup ? `<p class="setup-pre">${nb(d.setup.preamble)}</p><div class="decode"><p class="para" data-until="0">${nb(d.setup.para)}</p><ul class="facts" data-step="1">${d.setup.facts.map(factLi).join('')}</ul></div>`
       : `<p>${nb(d.stem)}</p>${d.prompt?`<p class="prompt">${nb(d.prompt)}</p>`:''}${picks}`;
-    const s = addSlide('s-example'+(d.setup?' s-setup':''), `<div class="eyebrow">${d.eyebrow ? esc(d.eyebrow) : `Worked Example ${d.n} · ${tagHTML(d.tag)}`}</div><h2>${esc(d.title)}</h2>
-      <div class="ex${sceneG?' scn':''}${sceneG&&(sceneG.layout==='stack'||sceneG.layout==='signs')?' stk':''}${d.graph&&d.graph.second?' dual':''}${d.solo?' solo':''}"><div class="stem">${stemHTML}</div>
+    const s = addSlide('s-example'+(d.setup?' s-setup':'')+(sceneG&&sceneG.layout==='ladder'?' s-ladder':''), `<div class="eyebrow">${d.eyebrow ? esc(d.eyebrow) : `Worked Example ${d.n} · ${tagHTML(d.tag)}`}</div><h2>${esc(d.title)}</h2>
+      <div class="ex${sceneG?' scn':''}${sceneG&&(sceneG.layout==='stack'||sceneG.layout==='signs'||sceneG.layout==='ladder')?' stk':''}${d.graph&&d.graph.second?' dual':''}${d.solo?' solo':''}"><div class="stem">${stemHTML}</div>
       <div class="panel work"></div>${d.note?`<p class="note">${nb(d.note)}</p>`:''}<div class="fig">${head}</div></div>`);
     const panel = s.el.querySelector('.panel.work'); let k = 0;
     s.d = d; s.off = d.sceneStart ? 1 : 0;
@@ -677,7 +696,7 @@ C.slides.forEach(d => {
     if (!d.solo) s.figSpec = d.graph;
   } else if (d.type==='lab'){
     const s = addSlide('s-lab', `<div class="labhost"></div>`); s.d = d;
-    s.lab_head = (d.eyebrow?`<div class="eyebrow">${esc(d.eyebrow)}</div>`:'') + `<h2>${esc(d.title)}</h2>`;
+    s.lab_head = (d.eyebrow?`<div class="eyebrow">${esc(d.eyebrow)}</div>`:'') + `<h2>${esc(d.title)}</h2>` + (d.lede?`<p class="lab-lede">${nb(d.lede)}</p>`:'');
     if (d.controlScale) s.el.style.setProperty('--ctl', d.controlScale);
     const host = s.el.querySelector('.labhost'); host.style.cssText='display:flex;flex:1;min-height:0';
     s.lab = {preset:d.preset, init:d.init, host};
@@ -697,7 +716,7 @@ slides.forEach(s => { if (!s.figSpec) return;
     const f1 = Lab.figure(h1, sp, () => s.shown - (s.off||0)), f2 = Lab.figure(h2, sp.second, () => s.shown - (s.off||0));
     s.fig = { redraw(){ f1.redraw(); f2.redraw(); } }; return; }
   if (!sp.scene){ s.fig = Lab.figure(figEl, sp, () => s.shown - (s.off||0)); return; }
-  if (sp.scene.layout === 'stack' || sp.scene.layout === 'signs'){ s.fig = Lab.motionSlide(figEl, sp, () => s.shown - (s.off||0)); s.fig.redraw(); return; }   /* v23 */
+  if (sp.scene.layout === 'stack' || sp.scene.layout === 'signs' || sp.scene.layout === 'ladder'){ s.fig = Lab.motionSlide(figEl, sp, () => s.shown - (s.off||0)); s.fig.redraw(); return; }   /* v23 */
   /* scene beside the graph: the figure draws into the row's graph host; the scene takes the state of the last reveal shown */
   const host = document.createElement('div'); figEl.appendChild(host); host.style.cssText = 'display:contents';
   const sr = Lab.sceneRow(host, sp.window, sp.scene.kind, {alt: sp.scene.alt});
@@ -720,9 +739,9 @@ function paintSteps(s){ s.steps.forEach((els,i)=>els.forEach(e=>e.classList.togg
   s.el.querySelectorAll('.pick[data-on]').forEach(p=>{ const n=+p.dataset.on; p.classList.toggle('on', n>0 && s.shown>=n+(s.off||0)); }); }
 function overSlide(s){
   const r = s.el.getBoundingClientRect();
-  if ([...s.el.children].some(c => c.getBoundingClientRect().bottom > r.bottom - 2 || c.scrollWidth > c.clientWidth + 2 || c.scrollHeight > c.clientHeight + 2)) return true;
+  if ([...s.el.children].flatMap(c => getComputedStyle(c).display === 'contents' ? [...c.children] : [c]).some(c => c.getBoundingClientRect().bottom > r.bottom - 2 || c.scrollWidth > c.clientWidth + 2 || c.scrollHeight > c.clientHeight + 2)) return true;
   const ex = s.el.querySelector('.ex');
-  if (ex){ const er = ex.getBoundingClientRect();
+  if (ex && getComputedStyle(ex).display !== 'contents'){ const er = ex.getBoundingClientRect();
     if (ex.scrollHeight > ex.clientHeight + 2 || [...ex.children].some(c => !c.classList.contains('fig') && c.getBoundingClientRect().bottom > er.bottom - 2)) return true; }
   const ctl = s.el.querySelector('.lab-controls');
   if (ctl && (ctl.getBoundingClientRect().bottom > r.bottom - 2 || ctl.scrollWidth > ctl.clientWidth + 2)) return true;
@@ -780,7 +799,8 @@ function fit(s){
       head.style.marginBottom = (parseFloat(getComputedStyle(head).marginBottom) + add) + 'px'; }
     /* v23: never let the title block run into the first control group (a wrapped title, or fonts that arrive late) */
     ctl.style.marginTop = '';
-    const clash = head.getBoundingClientRect().bottom + 14 - ctl.getBoundingClientRect().top;
+    const side = head.getBoundingClientRect().right <= ctl.getBoundingClientRect().left + 1;   /* v26: controls in their own column (ladder recap) never clash with the title */
+    const clash = side ? 0 : head.getBoundingClientRect().bottom + 14 - ctl.getBoundingClientRect().top;
     if (clash > 0) ctl.style.marginTop = clash + 'px';
   }
   Lab.placeAll(s.el);
@@ -806,7 +826,7 @@ slides.forEach((s, i) => { const d = s.d || {};
   else if (s.el.classList.contains('s-stitle')) BEATS.push({i, n:0, kind:'scene', label:String(d.scene), tip:'Scene '+d.scene+': '+String(d.title).replace(/[$\\{}]/g,''), gap:true});
   else if (d.setup){ const sc = (d.eyebrow||'').split(' · ')[0];
     BEATS.push({i, n:0, kind:'pose', label:'P', tip:sc+': the situation'}); BEATS.push({i, n:1, kind:'step', label:'K', tip:sc+': key facts'}); }
-  else if (s.lab) BEATS.push(d.preset==='catalogue' ? {i, n:0, kind:'pose', label:d.beat||'IA', tip:d.title, big:true} : (d.preset==='growthFamily'||d.preset==='motionSigns'||d.preset==='areaLab') ? {i, n:0, kind:'scene', label:'R', tip:d.title, gap:true} : {i, n:0, kind:'animate', label:'A', tip:(d.eyebrow||'')+': '+d.title});
+  else if (s.lab) BEATS.push(d.preset==='catalogue' ? {i, n:0, kind:'pose', label:d.beat||'IA', tip:d.title, big:true} : (d.preset==='growthFamily'||d.preset==='motionSigns'||d.preset==='areaLab'||d.preset==='ladderLab') ? {i, n:0, kind:'scene', label:'R', tip:d.title, gap:true} : {i, n:0, kind:'animate', label:'A', tip:(d.eyebrow||'')+': '+d.title});
   else { const sc = (d.eyebrow||'').split(' · ')[0];
     if (d.sceneStart){ BEATS.push({i, n:0, kind:'scene', label:String(d.scene), tip:sc, gap:true}); BEATS.push({i, n:1, kind:'pose', label:'Q'+d.q, tip:sc+': question '+d.q}); }
     else if (!d.cont) BEATS.push({i, n:0, kind:'pose', label:d.beat||('Q'+d.q), tip:sc+': '+(d.beat?d.title:'question '+d.q)});
