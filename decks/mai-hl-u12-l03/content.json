@@ -22,6 +22,80 @@
    "regimeText": "boards out, calculator allowed"
   },
   {
+   "type": "example",
+   "solo": true,
+   "beat": "I1",
+   "eyebrow": "The big idea · What each one tells you",
+   "title": "How $s$, $v$ and $a$ connect",
+   "stem": "Position $s$ is where the car is. Velocity and acceleration tell you how the one before them is changing.",
+   "blocks": [
+    {
+     "walk": {
+      "cap": "One motion, three descriptions",
+      "tex": [
+       "s\\ \\xrightarrow{\\ \\ d/dt\\ \\ }\\ v\\ \\xrightarrow{\\ \\ d/dt\\ \\ }\\ a"
+      ]
+     }
+    },
+    {
+     "walk": {
+      "cap": "Velocity is the rate of change of position",
+      "tex": [
+       "v&=\\tfrac{ds}{dt}"
+      ],
+      "note": "The gradient of the $s$-$t$ graph: how fast, and which way."
+     }
+    },
+    {
+     "walk": {
+      "cap": "Acceleration is the rate of change of velocity",
+      "tex": [
+       "a&=\\tfrac{dv}{dt}"
+      ],
+      "note": "The gradient of the $v$-$t$ graph: how quickly $v$ is changing.",
+      "ans": true
+     }
+    }
+   ]
+  },
+  {
+   "type": "example",
+   "solo": true,
+   "beat": "I2",
+   "eyebrow": "The big idea · Going back the other way",
+   "title": "Integrate to go back",
+   "stem": "Today we run it backwards, from acceleration back to position. Integrating undoes differentiating.",
+   "blocks": [
+    {
+     "walk": {
+      "cap": "The same chain, reversed",
+      "tex": [
+       "a\\ \\xrightarrow{\\ \\ \\int\\ \\ }\\ v\\ \\xrightarrow{\\ \\ \\int\\ \\ }\\ s"
+      ]
+     }
+    },
+    {
+     "walk": {
+      "cap": "Integrate twice",
+      "tex": [
+       "v&={\\textstyle\\int} a\\,dt\\qquad s={\\textstyle\\int} v\\,dt"
+      ],
+      "note": "The area under the $a$-$t$ graph is the change in $v$. The area under the $v$-$t$ graph is the change in $s$."
+     }
+    },
+    {
+     "walk": {
+      "cap": "Each integral brings a constant",
+      "tex": [
+       "v&={\\textstyle\\int} a\\,dt+C\\qquad s={\\textstyle\\int} v\\,dt+D"
+      ],
+      "note": "A known $v$ gives $C$. A known $s$ gives $D$.",
+      "ans": true
+     }
+    }
+   ]
+  },
+  {
    "type": "sceneTitle",
    "scene": 1,
    "kicker": "Scene 1 of 2",
@@ -3504,7 +3578,7 @@
      "walk": {
       "cap": "Both gain $8\\ \\text{m s}^{-1}$",
       "tex": [
-       "v_A&=0+8=8,\\quad v_B=3+8=11"
+       "v_A(4)&=0+8=8,\\quad v_B(4)=3+8=11"
       ],
       "ans": true
      }
@@ -6945,9 +7019,10 @@
      "walk": {
       "cap": "The area under each velocity graph",
       "tex": [
-       "\\text{A: }&\\tfrac12\\times 4\\times 8=16",
-       "\\text{B: }&\\tfrac12(3+11)\\times 4=28"
-      ]
+       "\\text{A: }&\\tfrac12(0+8)(4)=16",
+       "\\text{B: }&\\tfrac12(3+11)(4)=28"
+      ],
+      "note": "The parallel sides are $v(0)$ and $v(4)$."
      }
     },
     {
@@ -10383,23 +10458,23 @@
    "q": 3,
    "eyebrow": "Two cars, one push · Question 3",
    "title": "A third car",
-   "stem": "Car C also has $a=2$. Its velocity is $5\\ \\text{m s}^{-1}$ at $t=1$, and it is at $15$ m at $t=2$. Where is car C at $t=4$?",
+   "stem": "Car C has $a=2$ and $v=5\\ \\text{m s}^{-1}$ at $t=1$. At $t=2$ it is at $s=15$ m. Where is it at $t=4$?",
    "blocks": [
     {
      "walk": {
-      "cap": "Integrate to find $v$",
+      "cap": "Integrate $a=2$: $v=2t+C$",
       "tex": [
-       "v&=2t+C",
-       "5&=2+C\\ \\Rightarrow\\ C=3"
+       "v(1)&=2(1)+C",
+       "5&=2+C\\Rightarrow C=3"
       ]
      }
     },
     {
      "walk": {
-      "cap": "Integrate again to find $s$",
+      "cap": "Integrate $v=2t+3$: $s=t^{2}+3t+D$",
       "tex": [
-       "s&=t^{2}+3t+D",
-       "15&=4+6+D\\ \\Rightarrow\\ D=5"
+       "s(2)&=2^{2}+3(2)+D",
+       "15&=10+D\\Rightarrow D=5"
       ]
      }
     },
@@ -10407,9 +10482,8 @@
      "walk": {
       "cap": "Use $t=4$",
       "tex": [
-       "s(4)&=16+12+5=33\\ \\text{m}"
+       "s(4)&=4^{2}+3(4)+5=33\\ \\text{m}"
       ],
-      "note": "Car C has car B's velocity graph, shifted $5$ m along.",
       "ans": true
      }
     }
@@ -19815,7 +19889,7 @@
      "walk": {
       "cap": "The area under the $a$-$t$ graph",
       "tex": [
-       "\\Delta v&\\approx 3.99\\ \\text{m s}^{-1}"
+       "\\Delta v&=\\int_0^{12}2e^{-0.5t}\\,dt\\approx 3.99"
       ],
       "note": "Each second adds a smaller area than the one before."
      }
@@ -19824,7 +19898,7 @@
      "walk": {
       "cap": "The velocity rises, then levels off",
       "tex": [
-       "v(12)&\\approx 3.99\\ \\text{m s}^{-1}"
+       "v(12)&=0+3.99=3.99\\ \\text{m s}^{-1}"
       ],
       "ans": true
      }
@@ -25780,20 +25854,21 @@
    "blocks": [
     {
      "walk": {
-      "cap": "The area up to time $t$",
+      "cap": "Integrate $a$ to find $v$",
       "tex": [
-       "\\Delta v&=4-4e^{-0.5t}"
-      ],
-      "note": "The area under $2e^{-0.5t}$ from $0$ to $t$ is the velocity, because $v(0)=0$."
+       "v&={\\textstyle\\int} 2e^{-0.5t}\\,dt=-4e^{-0.5t}+C",
+       "v(0)&=-4e^{0}+C=0\\ \\Rightarrow\\ C=4"
+      ]
      }
     },
     {
      "walk": {
       "cap": "Let $t$ get large",
       "tex": [
-       "e^{-0.5t}&\\to 0,\\quad v\\to 4\\ \\text{m s}^{-1}"
+       "v&=4-4e^{-0.5t}",
+       "e^{-0.5t}&\\to 0\\ \\Rightarrow\\ v\\to 4\\ \\text{m s}^{-1}"
       ],
-      "note": "This is the limiting velocity: the velocity gets close to $4$ but never reaches it.",
+      "note": "This is the limiting velocity: $v$ gets close to $4$ but never reaches it.",
       "ans": true
      }
     }
@@ -31749,7 +31824,7 @@
    "q": 6,
    "eyebrow": "The fading push · Question 6",
    "title": "How far by 12 seconds?",
-   "stem": "If the car had travelled at exactly $4\\ \\text{m s}^{-1}$ for all $12$ seconds, it would have gone $48$ m. How far has the real car gone?",
+   "stem": "At exactly $4\\ \\text{m s}^{-1}$ for $12$ seconds, the car would go $48$ m. How far has the real car gone?",
    "blocks": [
     {
      "walk": {
@@ -31763,7 +31838,7 @@
      "walk": {
       "cap": "The area under the velocity graph",
       "tex": [
-       "s(12)&\\approx 40.0\\ \\text{m}"
+       "s(12)&=\\int_0^{12}v\\,dt\\approx 40.0\\ \\text{m}"
       ],
       "note": "The slow start costs the car about $8$ m.",
       "ans": true

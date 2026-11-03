@@ -873,9 +873,10 @@
     const poly = cs => minus((term(cs[0], '') + term(cs[1], 't') + term(cs[2], 't^{2}')).replace(/^\+/, '') || '0');
     const aT = () => (ac === 1 ? '' : trim(ac));
     const r1 = document.createElement('div'); r1.className = 'lab-fixed'; r1.innerHTML = math(`v=\\int ${trim(ac)}\\,dt=${aT()}t+C`); gr.appendChild(r1);
-    const r2 = L.readout(gr, () => { const { C, m } = consts(); return minus(`v(${m.t1})=${trim(vk)}:\\ ${trim(vk)}=${trim(ac * m.t1)}+C\\ \\Rightarrow\\ C=${trim(C)}`); });
+    const r2 = L.readout(gr, () => { const { C, m } = consts(); return minus(`v(${m.t1})=${trim(ac)}(${m.t1})+C:\\ ${trim(vk)}=${trim(ac * m.t1)}+C\\ \\Rightarrow\\ C=${trim(C)}`); });
     const r3 = L.readout(gr, () => { const { C } = consts(); return minus(`s=\\int(${poly([C, ac, 0])})\\,dt=${poly([0, C, ac / 2])}+D`); });
-    const r4 = L.readout(gr, () => { const { C, D, m } = consts(); return minus(`s(${m.t2})=${trim(sk)}:\\ ${trim(sk)}=${trim(ac * m.t2 * m.t2 / 2 + C * m.t2)}+D\\ \\Rightarrow\\ D=${trim(D)}`); });
+    const r4 = L.readout(gr, () => { const { C, D, m } = consts(); const q = ac / 2, cs = C < 0 ? `-${trim(-C)}` : `+${trim(C)}`;
+      return minus(`s(${m.t2})=${q === 1 ? '' : trim(q)}${m.t2}^{2}${cs}(${m.t2})+D:\\ ${trim(sk)}=${trim(ac * m.t2 * m.t2 / 2 + C * m.t2)}+D\\ \\Rightarrow\\ D=${trim(D)}`); });
     const r5 = L.readout(gr, () => { const { C, D } = consts(); const tt = fx(v, 2).replace(/\.?0+$/, ''); return minus(`s=${poly([D, C, ac / 2])}:\\ s(${tt})=${trim(+(D + C * v + ac * v * v / 2).toFixed(2))}`); });
     const gc = grp('');
     const card = document.createElement('div'); card.className = 'ar-card on'; gc.appendChild(card); card.innerHTML = '<span>' + prose(init.prompt) + '</span>';

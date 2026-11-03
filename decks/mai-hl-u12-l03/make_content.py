@@ -153,6 +153,23 @@ out = [{'type': 'title', 'eyebrow': 'IB Mathematics: Applications and Interpreta
         'title': 'From Acceleration Back to Position', 'lede': 'Opener: two scenes, six questions and a recap, answered on your boards',
         'code': 'MAI HL U12 L3', 'regime': 'C', 'regimeText': 'boards out, calculator allowed'}]
 
+def idea(beat, head, title, stem, blocks):
+    return {'type': 'example', 'solo': True, 'beat': beat, 'eyebrow': f'The big idea · {head}', 'title': title, 'stem': stem, 'blocks': blocks}
+
+
+out.append(idea('I1', 'What each one tells you', 'How $s$, $v$ and $a$ connect',
+                'Position $s$ is where the car is. Velocity and acceleration tell you how the one before them is changing.',
+                [walk('One motion, three descriptions', ['s\\ \\xrightarrow{\\ \\ d/dt\\ \\ }\\ v\\ \\xrightarrow{\\ \\ d/dt\\ \\ }\\ a'], None),
+                 walk('Velocity is the rate of change of position', ['v&=\\tfrac{ds}{dt}'], 'The gradient of the $s$-$t$ graph: how fast, and which way.'),
+                 walk('Acceleration is the rate of change of velocity', ['a&=\\tfrac{dv}{dt}'], 'The gradient of the $v$-$t$ graph: how quickly $v$ is changing.', ans=True)]))
+out.append(idea('I2', 'Going back the other way', 'Integrate to go back',
+                'Today we run it backwards, from acceleration back to position. Integrating undoes differentiating.',
+                [walk('The same chain, reversed', ['a\\ \\xrightarrow{\\ \\ \\int\\ \\ }\\ v\\ \\xrightarrow{\\ \\ \\int\\ \\ }\\ s'], None),
+                 walk('Integrate twice', ['v&={\\textstyle\\int} a\\,dt\\qquad s={\\textstyle\\int} v\\,dt'],
+                      'The area under the $a$-$t$ graph is the change in $v$. The area under the $v$-$t$ graph is the change in $s$.'),
+                 walk('Each integral brings a constant', ['v&={\\textstyle\\int} a\\,dt+C\\qquad s={\\textstyle\\int} v\\,dt+D'],
+                      'A known $v$ gives $C$. A known $s$ gives $D$.', ans=True)]))
+
 # ================================================================ scene 1: two cars, one a-t graph
 out.append(title_card(1, 'Two Cars, One Push'))
 out.append(setup(1, 'One acceleration, two cars',
@@ -163,20 +180,20 @@ out.append(setup(1, 'One acceleration, two cars',
 out.append(q(1, 1, 'Who gains more velocity?',
              'Both cars feel the same acceleration for $4$ seconds. Which car gains more velocity?',
              [walk('The shaded area is a rectangle', ['2\\times 4&=8'], 'The area under the $a$-$t$ graph is the change in velocity.'),
-              walk('Both gain $8\\ \\text{m s}^{-1}$', ['v_A&=0+8=8,\\quad v_B=3+8=11'], None, ans=True)],
+              walk('Both gain $8\\ \\text{m s}^{-1}$', ['v_A(4)&=0+8=8,\\quad v_B(4)=3+8=11'], None, ans=True)],
              graph(1, [[0, st(4, show=1, shade=['a'])], [1, st(4, show=1, shade=['a'], areas=['a'])], [2, st(4, show=2, shade=['a'], areas=['a'], vals=['v'])]]),
              choices=['Car A, which starts from rest', 'Car B, which is already moving', 'Both gain the same'], correct=2, pick=2))
 out.append(q(1, 2, 'Which car is ahead?',
              'Both cars start at $O$. Now watch the two velocities. At $t=4$, which car is ahead, and by how much?',
-             [walk('The area under each velocity graph', ['\\text{A: }&\\tfrac12\\times 4\\times 8=16', '\\text{B: }&\\tfrac12(3+11)\\times 4=28'],
-                   None),
+             [walk('The area under each velocity graph', ['\\text{A: }&\\tfrac12(0+8)(4)=16', '\\text{B: }&\\tfrac12(3+11)(4)=28'],
+                   'The parallel sides are $v(0)$ and $v(4)$.'),
               walk('The gap', ['28-16&=12\\ \\text{m}'], 'Car B is $12$ m ahead: the extra $3\\ \\text{m s}^{-1}$ for $4$ s is the rectangle $3\\times 4=12$.', ans=True)],
              graph(1, [[0, st(4, show=2, shade=['v'])], [1, st(4, show=2, shade=['v'], areas=['v'])], [2, st(4, show=3, shade=['v'], areas=['v'], vals=['s'], hide=False, read='ts')]])))
 out.append(q(1, 3, 'A third car',
-             'Car C also has $a=2$. Its velocity is $5\\ \\text{m s}^{-1}$ at $t=1$, and it is at $15$ m at $t=2$. Where is car C at $t=4$?',
-             [walk('Integrate to find $v$', ['v&=2t+C', '5&=2+C\\ \\Rightarrow\\ C=3'], None),
-              walk('Integrate again to find $s$', ['s&=t^{2}+3t+D', '15&=4+6+D\\ \\Rightarrow\\ D=5'], None),
-              walk('Use $t=4$', ['s(4)&=16+12+5=33\\ \\text{m}'], 'Car C has car B\'s velocity graph, shifted $5$ m along.', ans=True)],
+             'Car C has $a=2$ and $v=5\\ \\text{m s}^{-1}$ at $t=1$. At $t=2$ it is at $s=15$ m. Where is it at $t=4$?',
+             [walk('Integrate $a=2$: $v=2t+C$', ['v(1)&=2(1)+C', '5&=2+C\\Rightarrow C=3'], None),
+              walk('Integrate $v=2t+3$: $s=t^{2}+3t+D$', ['s(2)&=2^{2}+3(2)+D', '15&=10+D\\Rightarrow D=5'], None),
+              walk('Use $t=4$', ['s(4)&=4^{2}+3(4)+5=33\\ \\text{m}'], None, ans=True)],
              graph(1, [[k, st(4, show=1, shade=['a'], areas=['a'], hide=True)] for k in range(4)])))
 
 # ================================================================ scene 2: the fading push
@@ -188,20 +205,20 @@ out.append(setup(2, 'An acceleration that fades',
                  ['st2', 'acc2', 'pos2'], st(0, hide=False, show=1, read='none'), st(0, hide=False, show=1, read='none')))
 out.append(q(2, 4, 'After a long time',
              'The acceleration is always positive. After a long time, what happens to the velocity?',
-             [walk('The area under the $a$-$t$ graph', ['\\Delta v&\\approx 3.99\\ \\text{m s}^{-1}'], 'Each second adds a smaller area than the one before.'),
-              walk('The velocity rises, then levels off', ['v(12)&\\approx 3.99\\ \\text{m s}^{-1}'], None, ans=True)],
+             [walk('The area under the $a$-$t$ graph', ['\\Delta v&=\\int_0^{12}2e^{-0.5t}\\,dt\\approx 3.99'], 'Each second adds a smaller area than the one before.'),
+              walk('The velocity rises, then levels off', ['v(12)&=0+3.99=3.99\\ \\text{m s}^{-1}'], None, ans=True)],
              graph(2, [[0, st(12, show=1, shade=['a'])], [1, st(12, show=1, shade=['a'], areas=['a'])], [2, st(12, show=2, shade=['a'], areas=['a'], vals=['v'])]]),
              choices=['It keeps growing without any limit', 'It rises, then levels off', 'It rises, then falls back to zero'], correct=1, pick=2))
 out.append(q(2, 5, 'Heading for what value?',
              'At $t=12$ the velocity is about $3.99\\ \\text{m s}^{-1}$ and still rising. What value is it heading towards?',
-             [walk('The area up to time $t$', ['\\Delta v&=4-4e^{-0.5t}'], 'The area under $2e^{-0.5t}$ from $0$ to $t$ is the velocity, because $v(0)=0$.'),
-              walk('Let $t$ get large', ['e^{-0.5t}&\\to 0,\\quad v\\to 4\\ \\text{m s}^{-1}'], 'This is the limiting velocity: the velocity gets close to $4$ but never reaches it.', ans=True)],
+             [walk('Integrate $a$ to find $v$', ['v&={\\textstyle\\int} 2e^{-0.5t}\\,dt=-4e^{-0.5t}+C', 'v(0)&=-4e^{0}+C=0\\ \\Rightarrow\\ C=4'], None),
+              walk('Let $t$ get large', ['v&=4-4e^{-0.5t}', 'e^{-0.5t}&\\to 0\\ \\Rightarrow\\ v\\to 4\\ \\text{m s}^{-1}'], 'This is the limiting velocity: $v$ gets close to $4$ but never reaches it.', ans=True)],
              graph(2, [[0, st(12, show=2, shade=['a'], areas=['a'], vals=['v'])], [1, st(12, show=2, shade=['a'], areas=['a'], vals=['v'])],
                        [2, st(12, show=2, shade=['a'], areas=['a'], vals=['v'], refs=['v'])]])))
 out.append(q(2, 6, 'How far by 12 seconds?',
-             'If the car had travelled at exactly $4\\ \\text{m s}^{-1}$ for all $12$ seconds, it would have gone $48$ m. How far has the real car gone?',
+             'At exactly $4\\ \\text{m s}^{-1}$ for $12$ seconds, the car would go $48$ m. How far has the real car gone?',
              [walk('Steady speed', ['4\\times 12&=48\\ \\text{m}'], None),
-              walk('The area under the velocity graph', ['s(12)&\\approx 40.0\\ \\text{m}'], 'The slow start costs the car about $8$ m.', ans=True)],
+              walk('The area under the velocity graph', ['s(12)&=\\int_0^{12}v\\,dt\\approx 40.0\\ \\text{m}'], 'The slow start costs the car about $8$ m.', ans=True)],
              graph(2, [[0, st(12, show=2, shade=['v'], refs=['v'])], [1, st(12, show=2, shade=['v'], refs=['v'], areas=['v'])],
                        [2, st(12, show=3, shade=['v'], refs=['v'], areas=['v'], vals=['s'], hide=False, read='ts')]]),
              choices=['More than 48 m', 'Exactly 48 m', 'Less than 48 m'], correct=2, pick=2))

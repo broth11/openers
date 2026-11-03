@@ -5,6 +5,7 @@ Run:  python3 qa/verify-mai-hl-u12-l03.py     (exits non-zero on the first wrong
 import sympy as sp
 
 t, x = sp.symbols('t x', positive=True)
+C, D = sp.symbols('C D')
 R = sp.Rational
 
 
@@ -25,7 +26,6 @@ ok(sp.integrate(a1, (t, 0, 4)) == 8, 'Q1: area under a-t from 0 to 4 is 8 for bo
 ok(vA.subs(t, 4) == 8 and vB.subs(t, 4) == 11, 'Q1: vA(4) = 8, vB(4) = 11')
 ok(sA.subs(t, 4) == 16 and sB.subs(t, 4) == 28, 'Q2: sA(4) = 16, sB(4) = 28')
 ok(sB.subs(t, 4) - sA.subs(t, 4) == 12, 'Q2: car B is 12 m ahead')
-C, D = sp.symbols('C D')
 vC = 2 * t + C
 Cv = sp.solve(sp.Eq(vC.subs(t, 1), 5), C)[0]
 ok(Cv == 3, 'Q3: v = 2t + C, v(1) = 5 gives C = 3')
@@ -40,6 +40,9 @@ v2 = sp.integrate(a2, (t, 0, t))
 s2 = sp.integrate(v2, (t, 0, t))
 ok(sp.simplify(v2 - (4 - 4 * sp.exp(-t / 2))) == 0, 'S2 v = 4 - 4e^(-t/2)')
 ok(sp.simplify(s2 - (4 * t - 8 + 8 * sp.exp(-t / 2))) == 0, 'S2 s = 4t - 8 + 8e^(-t/2)')
+vi = sp.integrate(a2, t)
+ok(sp.simplify(vi + 4 * sp.exp(-t / 2)) == 0 and sp.solve(sp.Eq(vi.subs(t, 0) + C, 0), C) == [4], 'Q5: v = -4e^(-t/2) + C, v(0) = 0 gives C = 4')
+ok(sp.simplify(sp.integrate(2 * sp.exp(-t / 2), t) - (-4 * sp.exp(-t / 2))) == 0 and (-4 * sp.exp(0) + 4) == 0, 'Q5: v(0) = -4e^0 + 4 = 0')
 ok(sp.limit(v2, t, sp.oo) == 4, 'Q5: limiting velocity is 4')
 ok(abs(float(v2.subs(t, 12 / 1)) - 3.99) < 0.01 and abs(float(sp.integrate(a2, (t, 0, 12))) - 3.99) < 0.01, 'Q4: change in velocity over 12 s is about 3.99')
 ok(abs(float(s2.subs(t, 12)) - 40.0198) < 1e-3, 'Q6: s(12) = 40.02 (to 1 d.p. 40.0)')
