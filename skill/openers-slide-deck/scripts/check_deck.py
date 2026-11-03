@@ -12,7 +12,7 @@ third. Whole run: zero external requests, zero JS errors. Screenshots of every f
 slide at 1280x800, 1000x570 and 390x844 go to --shots, taken 450 ms after the last reveal (steps fade in over 0.4 s).
 Density budget, at 1280x800: an example slide holds at most 6 working rows (steps + text blocks)
 and a stem of at most 3 lines; over budget fails (split by parts, stem repeated). The deck's --G
-at 1280x800 is printed, with a warning (not a failure) below 0.95.
+at 1280x800 is printed, with a warning below 0.95 and a failure below 0.8 (a single overflowing slide pins the deck-wide type size).
 Text size (v13, teacher 23/10/2026): on every example slide, fully revealed, the per-slide emergency shrink (--k)
 must not fire and the stem, working and every displayed formula must keep at least 85 % of the deck's normal body
 size (the median stem size at that viewport). FAIL at the computer sizes (DESKTOP); a warning only at 1024x768,
@@ -192,6 +192,7 @@ def main():
             if (w, h) == (1280, 800):
                 G = float(pg.evaluate("getComputedStyle(document.getElementById('frame')).getPropertyValue('--G')"))
                 print(f'--G at 1280x800: {G:.3f}' + ('  WARNING: below 0.95 (probe with build_deck.py --probe)' if G < 0.95 else ''))
+                if G < 0.8: fails.append(f'type size: the deck-wide --G is {G:.2f} (below 0.8): one slide or title card overflows at any size; bisect with a two-slide content.json (title + the slide) and read --G')   # v25 (U12 L2): a title card's tall integral sign pinned the whole deck at 0.6
                 for b in pg.evaluate(BUDGET_JS):
                     if b['rows'] > 6: fails.append(f"budget: slide {b['i']+1} has {b['rows']} working rows (max 6)")
                     if b['lines'] > 3.05: fails.append(f"budget: slide {b['i']+1} stem is {b['lines']} lines (max 3)")

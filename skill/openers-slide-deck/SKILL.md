@@ -280,3 +280,13 @@ Engine and layout rules
   `rs`, `cards` as before. Colour roles: avoid `indigo` for data points on the dark theme (it is the answer ink).
 - Check after any change: `check_deck.py` at nine sizes, per-slide `--probe` at 1470x830, 1280x800 and 1000x545, and the deck-wide
   `--G` (a single over-long title card once cut the whole deck to 0.83).
+
+
+## v25 defaults (Ben, 3/11/2026, MAI HL U12 L2)
+
+- **Deck-wide type size.** `--G` is one factor for the whole deck, the largest at which every slide fits, so one overflowing slide or title card shrinks every slide. Symptom: small type everywhere although each slide probes at 1.0. Cause met: a `sceneTitle` with a tall `formula` (an integral sign) overflowed its row by about 15px, which pinned `--G` at its floor of 0.6. The checker now fails below 0.8. To find the culprit, build a two-slide `content.json` (title plus one slide) for each slide and read `#frame`'s `--G`.
+- **Title card with a formula and no drawing**: give `sceneTitle` a `formula` and omit `kind`. The art box is dropped, the row is padded, and nothing is drawn.
+- **Slides with a static graph and no scene** (a v-t graph with `fn`, `polygon`, `label`, `path` items at `step`s) are fine for pure working beats (U12 L2 scene 3: by hand, by calculator). Split a slide over two (`cont`, stem repeated) before its probe `--G` falls below 0.95.
+- **The y-axis letter** (`yname`) sits at the top of the axis, right of it: keep the curve's start well below `ymax`.
+- **The shell** (`src/shell.css`, openers repo): a deck lesson fills the window (no maximum width, 6px margins). In full screen the header, margins and rounded corners go, so the deck is the whole screen; Esc leaves, the arrow keys and F still work.
+- **The single-file artifact** (`npm run artifact -- <key>`) inlines the deck as `window.__DECK_INLINE` and loads it by `srcdoc`; without it the preview is blank. Rebuild and republish it after every deck change (`dist-artifact/<key>.html`).
