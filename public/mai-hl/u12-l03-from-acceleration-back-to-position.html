@@ -211,7 +211,7 @@ h2 .dim{color:var(--note);font-weight:600}
 .lab-tick.tx{transform:translate(-50%,35%)}
 .lab-tick.ty{transform:translate(-130%,-50%)}
 .lab-tick.ax{transform:translate(-140%,-120%);font-style:italic}
-.lab-tick.ay{transform:translate(35%,10%);font-style:italic}
+.lab-tick.ay{transform:translate(70%,10%);font-style:italic}
 .lab-label{position:absolute;font-size:max(10px,3.6cqi);white-space:nowrap;line-height:1.1}
 .lab-handle{cursor:grab;outline:none} .lab-handle.active{cursor:grabbing}
 .lab-handle:focus-visible .halo{fill-opacity:.4}
@@ -497,10 +497,10 @@ html:root[data-skin="3b1b"],html:root[data-skin="goldteal"],html:root[data-skin=
 .s-stitle .tc-kick{font-size:var(--fs-eyebrow);font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--eyebrow)}
 .s-stitle h1{font-size:calc(var(--fs-hero)*1.08);font-weight:600;margin:0;line-height:1.08;color:var(--title);max-width:100%;text-wrap:balance}
 .s-stitle .tc-art{height:min(50cqh,62cqw);aspect-ratio:49/100;max-width:100%;position:relative;margin-top:max(6px,1.2cqh)}
-.s-stitle .tc-row{display:flex;align-items:center;justify-content:center;gap:max(24px,6cqw);flex-wrap:wrap}
+.s-stitle .tc-row{padding-block:max(14px,2.4cqh);display:flex;align-items:center;justify-content:center;gap:max(24px,6cqw);flex-wrap:wrap}
 .s-stitle .tc-row .tc-art{height:min(50cqh,56cqw)}
 .s-stitle .tc-formula{font-size:var(--fs-hero);color:var(--title)}
-.s-stitle .tc-formula .katex-display{margin:0}
+.s-stitle .tc-formula .katex-display{margin:0;padding-block:.25em}   /* v25: a tall integral sign must not overflow the row (it set the deck-wide type size to its floor) */
 .s-stitle .tc-art .scene{height:100%;width:100%}
 .s-stitle .tc-art .scene-svg{width:100%;height:100%;display:block}
 .s-setup .panel.work:empty{display:none}
@@ -3205,7 +3205,7 @@ C.slides.forEach(d => {
       <p class="meta"><strong>${esc(d.code)}</strong><span>·</span>${tagHTML(d.regime)}<span>${esc(d.regimeText)}</span></p>
       <p class="keys">→ / Space next step · ← back · tap right or left third on a phone · S scratch pad · F fullscreen · ? help</p>`);
   } else if (d.type==='sceneTitle'){
-    const s = addSlide('s-stitle', `<div class="tc-kick">${esc(d.kicker||('Scene '+d.scene))}</div><h1>${nb(d.title)}</h1>${d.tagline?`<p class="tc-tag">${nb(d.tagline)}</p>`:''}${d.formula?`<div class="tc-row"><div class="tc-art" role="img" aria-label="${esc(d.alt||'')}"></div><div class="tc-formula">$$${d.formula}$$</div></div>`:`<div class="tc-art${d.wide?' wide':''}" role="img" aria-label="${esc(d.alt||'')}"></div>`}`);
+    const s = addSlide('s-stitle', `<div class="tc-kick">${esc(d.kicker||('Scene '+d.scene))}</div><h1>${nb(d.title)}</h1>${d.tagline?`<p class="tc-tag">${nb(d.tagline)}</p>`:''}${d.formula?`<div class="tc-row">${d.kind?`<div class="tc-art" role="img" aria-label="${esc(d.alt||'')}"></div>`:''}<div class="tc-formula">$$${d.formula}$$</div></div>`:`<div class="tc-art${d.wide?' wide':''}" role="img" aria-label="${esc(d.alt||'')}"></div>`}`);
     s.d = d; s.art = d;
   } else if (d.type==='today'){
     addSlide('s-today', `<div class="eyebrow">Lesson ${C.meta.lesson} · ${esc(C.meta.topicWords)}</div><h2>${esc(d.title)}</h2>
@@ -3278,7 +3278,7 @@ slides.forEach(s => { if (!s.figSpec) return;
   const g = Lab.figure(gh, sp, () => s.shown - (s.off||0));
   const stateAt = n => { let st = {}; (sp.scene.states || []).forEach(([k, v]) => { if (k <= n) st = v; }); return st; };
   s.fig = { redraw(){ g.redraw(); sr.draw(stateAt(s.shown - (s.off||0))); } }; s.fig.redraw(); });
-slides.forEach(s => { if (!s.art) return; Lab.sceneArt(s.el.querySelector('.tc-art'), s.art.window, s.art.kind, s.art.state || {}, {alt: s.art.alt, motion: s.art.motion, color: s.art.color}); });
+slides.forEach(s => { if (!s.art || !s.art.kind) return;   /* v25: a title card with a formula and no drawing */ Lab.sceneArt(s.el.querySelector('.tc-art'), s.art.window, s.art.kind, s.art.state || {}, {alt: s.art.alt, motion: s.art.motion, color: s.art.color}); });
 slides.forEach(s => { if (s.lab){ const box=document.createElement('div'); box.style.cssText='flex:1;min-width:0';
   s.lab.host.appendChild(box); s.lab.state = Lab.presets[s.lab.preset](box, s.lab.init);
   const head = document.createElement('div'); head.className = 'lab-head'; head.innerHTML = s.lab_head;
