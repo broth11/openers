@@ -225,12 +225,12 @@ out.append(q(2, 6, 'How far by 12 seconds?',
 
 # ================================================================ recap lab
 out.append({'type': 'lab', 'preset': 'ladderLab', 'eyebrow': 'Recap · Constants', 'title': 'Find C and D',
-            'init': {'T': 6, 'a': 2, 't0': 3,
-                     'modes': {'start': {'t1': 0, 't2': 0, 'v': 3, 's': 5}, 'known': {'t1': 1, 't2': 2, 'v': 5, 's': 15}},
+            'init': {'T': 6, 'a': 2, 't0': 0,
+                     'modes': {'start': {'t1': 0, 't2': 0, 'v': -4, 's': 6}, 'known': {'t1': 1, 't2': 2, 'v': 5, 's': 15}},
                      'v': {'min': -6, 'max': 8, 'step': 1}, 's': {'min': -10, 'max': 30, 'step': 1},
                      'alt': 'A toy car on a number line above the graphs of acceleration, velocity and position against time',
                      'color': ORANGE, 'colors': {'a': RED, 'v': 'blue', 's': ORANGE, 'pos': TEAL, 'neg': PINK},
-                     'prompt': 'Which graph moves with $C$? With $D$?'}})
+                     }, 'lede': 'Which graph moves with C? With D?'})
 
 meta = {'cohort': 'MAI', 'cohortLabel': 'MAI HL', 'lesson': 3, 'topic': 'FromAccelerationBackToPosition', 'topicWords': 'From acceleration back to position',
         'file': 'mai-hl-u12-l03-from-acceleration-back-to-position.html', 'artifactTitle': 'MAI HL U12 L3 From Acceleration Back to Position',

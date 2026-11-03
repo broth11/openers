@@ -540,13 +540,16 @@ html:root[data-skin="3b1b"],html:root[data-skin="goldteal"],html:root[data-skin=
 /* v24 (Ben, 1/11/2026, MAI HL U12 L2): v-t graph with shaded area: the readout under the graph, and the area recap lab */
 .scene-row.stack .area-read{flex:none;font-size:calc(var(--fs-stem)*1.05);min-height:1.4em;line-height:1.4;padding-left:.3em;font-weight:600}
 .s-lab .lab.arlab .lab-controls{grid-template-columns:minmax(0,1fr)}
-.s-lab .lab.llab .lab-controls{grid-template-columns:minmax(0,1fr)} .s-lab .lab.llab .ar-card{min-height:calc(var(--fs-stem)*1.6)} .s-lab .lab.llab .lab-controls{gap:max(4px,.8cqh)} .s-lab .lab.llab .lab-group{gap:max(2px,.4cqh);padding-top:max(3px,.6cqh)} .s-lab .lab.llab .lab-fixed,.s-lab .lab.llab .lab-readout{padding-block:0;line-height:1.25;height:calc(var(--fs-stem)*.87*var(--g)*1.3);display:flex;align-items:center;font-size:calc(var(--fs-stem)*.87*var(--g))} .s-lab .lab.llab .lab-play{margin-top:0} .s-lab .lab.llab .scene-row.stack{--w:min(57cqw,106cqh)}
+@container (min-aspect-ratio: 3/4){ .s-lab .lab.llab{grid-template-areas:"head ctl" "left ctl"} .s-lab .lab.llab .lab-head{align-self:start} .s-lab .lab.llab .lab-controls{align-self:start} }
+.lab-lede{margin:0;font-size:var(--fs-body);color:var(--prose);line-height:1.35}
+.s-lab .lab.llab .lab-controls{grid-template-columns:minmax(0,1fr)} .s-lab .lab.llab .ar-card{min-height:calc(var(--fs-stem)*1.6)} .s-lab .lab.llab .lab-controls{gap:max(4px,.8cqh)} .s-lab .lab.llab .lab-group{gap:max(2px,.4cqh);padding-top:max(3px,.6cqh)} .s-lab .lab.llab .lab-fixed,.s-lab .lab.llab .lab-readout{padding-block:0;line-height:1.25;height:calc(var(--fs-stem)*.9*var(--g)*1.55);display:flex;align-items:center;font-size:calc(var(--fs-stem)*.9*var(--g));white-space:nowrap;overflow:hidden} .s-lab .lab.llab .lab-play{margin-top:0} .s-lab .lab.llab .scene-row.stack{--w:min(56cqw,76cqh)}
 .ar-card{border:1px dashed var(--note);border-radius:.5em;padding:.3em .65em;color:var(--note);display:flex;align-items:center}
 .ar-card.on{border-style:solid;color:var(--title)}
 .ar-lock{opacity:.75;font-style:italic}
 .sc-road{stroke:var(--note);opacity:.55} .sc-tickfill{fill:var(--note)} .sc-origin{stroke:var(--title)}
 .scene-text.sc-num{color:var(--note)}
 .ex.scn.stk .given{max-width:min(50cqw,72cqh)}
+.slide.s-ladder .ex.scn .given{flex-direction:column;flex-wrap:nowrap;gap:.12em;max-width:none}
 .ex.scn.stk .fig{width:min(50cqw,72cqh)}
 /* v25 (Ben, 2/11/2026): ladder slides give the whole right side to the three graphs; the title block and its rule stay in the left column */
 @container (min-aspect-ratio: 3/4){
@@ -554,8 +557,8 @@ html:root[data-skin="3b1b"],html:root[data-skin="goldteal"],html:root[data-skin=
   .slide.s-ladder .eyebrow{grid-area:1/1} .slide.s-ladder h2{grid-area:2/1}
   .slide.s-ladder .ex{display:contents}
   .slide.s-ladder .ex .stem{grid-area:3/1} .slide.s-ladder .ex .panel.work{grid-area:4/1} .slide.s-ladder .ex .note{grid-area:5/1;align-self:start}
-  .slide.s-ladder .ex.scn.stk .fig{grid-area:1/2/-1/3;align-self:stretch;width:min(46cqw,100cqh);max-width:none}
-  .slide.s-ladder .scene-row.stack{--w:min(46cqw,100cqh)}
+  .slide.s-ladder .ex.scn.stk .fig{grid-area:1/2/-1/3;align-self:stretch;width:min(44cqw,84cqh);max-width:none}
+  .slide.s-ladder .scene-row.stack{--w:min(44cqw,84cqh)}
 }
 .s-stitle .tc-art.wide{height:auto;width:min(86cqw,120cqh);aspect-ratio:auto}
 .s-stitle .tc-art.wide .scene{height:auto;aspect-ratio:inherit}
@@ -693,7 +696,7 @@ C.slides.forEach(d => {
     if (!d.solo) s.figSpec = d.graph;
   } else if (d.type==='lab'){
     const s = addSlide('s-lab', `<div class="labhost"></div>`); s.d = d;
-    s.lab_head = (d.eyebrow?`<div class="eyebrow">${esc(d.eyebrow)}</div>`:'') + `<h2>${esc(d.title)}</h2>`;
+    s.lab_head = (d.eyebrow?`<div class="eyebrow">${esc(d.eyebrow)}</div>`:'') + `<h2>${esc(d.title)}</h2>` + (d.lede?`<p class="lab-lede">${nb(d.lede)}</p>`:'');
     if (d.controlScale) s.el.style.setProperty('--ctl', d.controlScale);
     const host = s.el.querySelector('.labhost'); host.style.cssText='display:flex;flex:1;min-height:0';
     s.lab = {preset:d.preset, init:d.init, host};
@@ -796,7 +799,8 @@ function fit(s){
       head.style.marginBottom = (parseFloat(getComputedStyle(head).marginBottom) + add) + 'px'; }
     /* v23: never let the title block run into the first control group (a wrapped title, or fonts that arrive late) */
     ctl.style.marginTop = '';
-    const clash = head.getBoundingClientRect().bottom + 14 - ctl.getBoundingClientRect().top;
+    const side = head.getBoundingClientRect().right <= ctl.getBoundingClientRect().left + 1;   /* v26: controls in their own column (ladder recap) never clash with the title */
+    const clash = side ? 0 : head.getBoundingClientRect().bottom + 14 - ctl.getBoundingClientRect().top;
     if (clash > 0) ctl.style.marginTop = clash + 'px';
   }
   Lab.placeAll(s.el);

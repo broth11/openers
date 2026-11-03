@@ -555,7 +555,7 @@
       const k = names[i], P = M.panels[k]; if (!P) continue;
       const top = 4 + i * LAD_H, y0 = top + 32, y1 = top + LAD_H - 20, Y = v => y1 - (v - P.ymin) / (P.ymax - P.ymin) * (y1 - y0);
       yb = y1;
-      a.text(16, (y0 + y1) / 2, `$${k}$`, 'sc-name', 'w');
+      a.text(8, (y0 + y1) / 2, `$${k}(t)$`, 'sc-name', 'w');
       a.el('line', { x1: 100, x2: 975, y1: Y(0), y2: Y(0), class: 'sc-tick', 'stroke-width': 3 });
       a.el('line', { x1: 100, x2: 100, y1: y0 - 4, y2: y1 + 4, class: 'sc-tick', 'stroke-width': 3 });
       a.text(990, Y(0), '$t$', 'sc-num', 'e');
@@ -577,7 +577,7 @@
       const lines = [];
       P.series.forEach(ser => { const sub = ser.sub ? `_{${ser.sub}}` : '';
         if (areas.includes(k) && ser.area) lines.push([`${P.dname}${sub}=${num(ip(ser.area, t) - ip(ser.area, s.areaFrom || 0), P.dp == null ? 1 : P.dp)}`, ser.color]);
-        if (vals.includes(k)) lines.push([`${k}${sub}=${num(ip(ser.pts, t), P.dp == null ? 1 : P.dp)}`, ser.color]); });
+        if (vals.includes(k)) lines.push([`${k}${sub}(t)=${num(ip(ser.pts, t), P.dp == null ? 1 : P.dp)}`, ser.color]); });
       lines.forEach(([tx, col], j) => a.text(965 - (lines.length - 1 - j) * 250, top + 16, `$${tx}$`, 'sc-ar', 'e').style.color = col);   /* the readout row sits above the plot, clear of every curve */
     }
     for (let u = 0; u <= T + 1e-9; u += (M.ts || 1)) a.text(X(u), yb + 18, num(u, 0), 'sc-num', 'c');
@@ -872,14 +872,12 @@
     const term = (c, p) => { if (Math.abs(c) < 1e-9) return ''; const ab = Math.abs(c); return (c < 0 ? '-' : '+') + (ab === 1 && p ? '' : trim(ab)) + p; };
     const poly = cs => minus((term(cs[0], '') + term(cs[1], 't') + term(cs[2], 't^{2}')).replace(/^\+/, '') || '0');
     const aT = () => (ac === 1 ? '' : trim(ac));
-    const r1 = document.createElement('div'); r1.className = 'lab-fixed'; r1.innerHTML = math(`v=\\int ${trim(ac)}\\,dt=${aT()}t+C`); gr.appendChild(r1);
+    const r1 = document.createElement('div'); r1.className = 'lab-fixed'; r1.innerHTML = math(`v(t)=\\int ${trim(ac)}\\,dt=${aT()}t+C`); gr.appendChild(r1);
     const r2 = L.readout(gr, () => { const { C, m } = consts(); return minus(`v(${m.t1})=${trim(ac)}(${m.t1})+C:\\ ${trim(vk)}=${trim(ac * m.t1)}+C\\ \\Rightarrow\\ C=${trim(C)}`); });
-    const r3 = L.readout(gr, () => { const { C } = consts(); return minus(`s=\\int(${poly([C, ac, 0])})\\,dt=${poly([0, C, ac / 2])}+D`); });
+    const r3 = L.readout(gr, () => { const { C } = consts(); return minus(`s(t)=\\int(${poly([C, ac, 0])})\\,dt=${poly([0, C, ac / 2])}+D`); });
     const r4 = L.readout(gr, () => { const { C, D, m } = consts(); const q = ac / 2, cs = C < 0 ? `-${trim(-C)}` : `+${trim(C)}`;
       return minus(`s(${m.t2})=${q === 1 ? '' : trim(q)}${m.t2}^{2}${cs}(${m.t2})+D:\\ ${trim(sk)}=${trim(ac * m.t2 * m.t2 / 2 + C * m.t2)}+D\\ \\Rightarrow\\ D=${trim(D)}`); });
-    const r5 = L.readout(gr, () => { const { C, D } = consts(); const tt = fx(v, 2).replace(/\.?0+$/, ''); return minus(`s=${poly([D, C, ac / 2])}:\\ s(${tt})=${trim(+(D + C * v + ac * v * v / 2).toFixed(2))}`); });
-    const gc = grp('');
-    const card = document.createElement('div'); card.className = 'ar-card on'; gc.appendChild(card); card.innerHTML = '<span>' + prose(init.prompt) + '</span>';
+    const r5 = L.readout(gr, () => { const { C, D } = consts(); const tt = fx(v, 2).replace(/\.?0+$/, ''); return minus(`s(t)=${poly([D, C, ac / 2])}:\\ s(${tt})=${trim(+(D + C * v + ac * v * v / 2).toFixed(2))}`); });
     const readouts = [r2, r3, r4, r5];   /* r1 is the same for every slider position */
     function refresh() { sr.draw({ t: v, read: 'ts', show: 3, shade: ['a', 'v'], areas: ['a', 'v'], vals: ['a', 'v', 's'] }); readouts.forEach(r => r.update()); }
     labs(); refresh();

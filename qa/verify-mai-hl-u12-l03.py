@@ -53,12 +53,12 @@ u, a = sp.symbols('u a')
 vr = sp.integrate(a, t) + u
 sr = sp.integrate(vr, t)
 ok(sp.expand(sr - (u * t + a * t**2 / 2)) == 0, 'Recap: s = ut + at^2/2 follows from integrating twice')
-# the lab has a = 2 fixed and two known values: (v(0), s(0)) = (3, 5), or (v(1), s(2)) = (5, 15); both give C = 3, D = 5
-for (t1, vk, t2, sk) in ((0, 3, 0, 5), (1, 5, 2, 15)):
+# the lab has a = 2 fixed. Start mode: v(0) = -4, s(0) = 6 gives C = -4, D = 6. Known mode: v(1) = 5, s(2) = 15 gives C = 3, D = 5
+for (t1, vk, t2, sk, Ce, De) in ((0, -4, 0, 6, -4, 6), (1, 5, 2, 15, 3, 5)):
     Cl = vk - 2 * t1
     Dl = sk - (t2**2 + Cl * t2)
-    ok((Cl, Dl) == (3, 5), f'Recap known at t = {t1}, {t2}: C = 3, D = 5')
-ok(sp.integrate(2 * t + 3, t).subs(t, 3) + 5 == 23, 'Recap start: s(3) = 9 + 9 + 5 = 23, v(3) = 9')
+    ok((Cl, Dl) == (Ce, De), f'Recap known at t = {t1}, {t2}: C = {Ce}, D = {De}')
+ok(sp.expand(sp.integrate(-4 + 2 * t, t) + 6 - (t**2 - 4 * t + 6)) == 0, 'Recap start: s(t) = 6 - 4t + t^2, s(0) = 6')
 # every slider combination the lab allows gives exact integers for C and D
 ok(all(isinstance(vk - 2 * t1, int) for vk in range(-6, 9) for t1 in (0, 1)), 'Recap: C is an integer for every slider value')
 print('all checks passed')
