@@ -83,6 +83,12 @@ h1 { margin: 0; font-size: clamp(17px, 2.8vh, 26px); font-weight: 600; line-heig
 /* ---------- main row */
 /* deck lessons (`deck` in the module): the deck fills the main row; questions, stage, panel and timeline give way */
 .page.deck .qa, .page.deck .stage, .page.deck .side { display: none; }
+.page.deck { max-width: none; padding-inline: max(6px, env(safe-area-inset-left, 0px)) max(6px, env(safe-area-inset-right, 0px)); padding-bottom: max(6px, env(safe-area-inset-bottom, 0px)); gap: 6px; }
+.page.deck .deck-frame { border-radius: 12px; }
+/* full screen: the deck is the whole screen (no header, margin, rounded corners); Esc leaves, keys still step the deck */
+html:fullscreen .page.deck { padding: 0; gap: 0; }
+html:fullscreen .page.deck .top { display: none; }
+html:fullscreen .page.deck .deck-frame { border-radius: 0; box-shadow: none; }
 .deck-frame { flex: 1 1 auto; min-width: 0; width: 100%; border: 0; border-radius: 18px; box-shadow: var(--shadow); background: #000; display: block; }
 @media (max-width: 860px) { .page.deck { height: 100dvh; } .page.deck .main { flex: 1 1 0; } }
 .main { flex: 1 1 0; min-height: 0; display: flex; gap: 0; }
