@@ -47,7 +47,7 @@ Everything the kit can already do. Read this before building a new opener, and a
 | MAI HL U11 L11 | A hemisphere bowl | three.js + SVG | Solid of revolution, Strips |
 | MAI HL U5 L3 | Exponential and logarithmic models, log scales (deck lesson since 30 October 2026: `public/mai-hl/u05-l03-exponential-and-logarithmic-models.html`; the walk-through version is in `_archive/`) | Deck | Scenes ported from Context stage and Growth family |
 | MAI HL U12 L1 | The language of motion: two scenes, replay through s, v and a, recap (deck lesson, 1 November 2026: `public/mai-hl/u12-l01-the-language-of-motion.html`) | Deck | Motion track |
-| MAI HL U12 L2 | Displacement and distance from velocity: two scenes (the toy car reversed, Michael's ride) with a v-t graph and live shaded area, six questions, recap lab (deck lesson, 1 November 2026: `public/mai-hl/u12-l02-displacement-and-distance-from-velocity.html`) | Deck | Motion track, Area under velocity |
+| MAI HL U12 L2 | Displacement and distance from velocity: two motion scenes (the toy car reversed, Michael's ride) with a v-t graph and live shaded area, six questions, a Scene 1 wrap-up, a third scene that finds position and distance by hand and with the calculator (graph and working only), recap lab (deck lesson, 1 November 2026: `public/mai-hl/u12-l02-displacement-and-distance-from-velocity.html`) | Deck | Motion track, Area under velocity |
 | MAI HL U5 L2 | Cubic fitting, direct and inverse variation (legacy stepped) | SVG | Context stage, Polynomial explorer, Power family |
 
 ## Wanted next (from the syllabus survey, 2026-10-25)

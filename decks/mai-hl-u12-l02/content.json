@@ -24,7 +24,7 @@
   {
    "type": "sceneTitle",
    "scene": 1,
-   "kicker": "Scene 1 of 2",
+   "kicker": "Scene 1 of 3",
    "title": "The Toy Car, Reversed",
    "kind": "track",
    "wide": true,
@@ -93,7 +93,7 @@
      "xmin": -0.5,
      "xmax": 8.6,
      "ymin": -11.5,
-     "ymax": 7.5,
+     "ymax": 9,
      "gridx": 1,
      "gridy": 2,
      "xtick": 1,
@@ -2134,7 +2134,7 @@
      "xmin": -0.5,
      "xmax": 8.6,
      "ymin": -11.5,
-     "ymax": 7.5,
+     "ymax": 9,
      "gridx": 1,
      "gridy": 2,
      "xtick": 1,
@@ -4187,7 +4187,7 @@
      "xmin": -0.5,
      "xmax": 8.6,
      "ymin": -11.5,
-     "ymax": 7.5,
+     "ymax": 9,
      "gridx": 1,
      "gridy": 2,
      "xtick": 1,
@@ -6244,7 +6244,7 @@
      "xmin": -0.5,
      "xmax": 8.6,
      "ymin": -11.5,
-     "ymax": 7.5,
+     "ymax": 9,
      "gridx": 1,
      "gridy": 2,
      "xtick": 1,
@@ -8304,7 +8304,7 @@
      "xmin": -0.5,
      "xmax": 8.6,
      "ymin": -11.5,
-     "ymax": 7.5,
+     "ymax": 9,
      "gridx": 1,
      "gridy": 2,
      "xtick": 1,
@@ -10361,7 +10361,7 @@
      "xmin": -0.5,
      "xmax": 8.6,
      "ymin": -11.5,
-     "ymax": 7.5,
+     "ymax": 9,
      "gridx": 1,
      "gridy": 2,
      "xtick": 1,
@@ -12420,7 +12420,7 @@
      "xmin": -0.5,
      "xmax": 8.6,
      "ymin": -11.5,
-     "ymax": 7.5,
+     "ymax": 9,
      "gridx": 1,
      "gridy": 2,
      "xtick": 1,
@@ -14452,7 +14452,7 @@
   {
    "type": "sceneTitle",
    "scene": 2,
-   "kicker": "Scene 2 of 2",
+   "kicker": "Scene 2 of 3",
    "title": "Michael's Ride",
    "kind": "ride",
    "wide": true,
@@ -40681,6 +40681,782 @@
     "given": [
      {
       "html": "<b>$v(t)=3.6t^2-60t+285$</b>",
+      "c": "blue",
+      "shape": "cv"
+     },
+     {
+      "html": "<b>$s=0$ at $t=0$</b>",
+      "c": "orange"
+     }
+    ]
+   },
+   "cont": true
+  },
+  {
+   "type": "sceneTitle",
+   "scene": 3,
+   "kicker": "Scene 3 of 3",
+   "title": "By Hand or by Calculator",
+   "formula": "s(t)=s(0)+\\int_0^t v(u)\\,du",
+   "color": "orange",
+   "window": {
+    "xmin": 0,
+    "xmax": 1,
+    "ymin": 0,
+    "ymax": 1
+   },
+   "state": {},
+   "alt": "The rule for position from velocity"
+  },
+  {
+   "type": "example",
+   "scene": 3,
+   "eyebrow": "By hand or by calculator · Position",
+   "title": "Position from velocity, by hand (1 of 2)",
+   "beat": "H1",
+   "stem": "We can find the position with algebra, not only by reading areas.",
+   "blocks": [
+    {
+     "walk": {
+      "cap": "Integrate the velocity",
+      "tex": [
+       "s(t)&=\\int(6-2t)\\,dt",
+       "&=6t-t^2+c"
+      ],
+      "note": "Position is an antiderivative of velocity."
+     }
+    },
+    {
+     "walk": {
+      "cap": "Use $s(0)=0$ to find $c$",
+      "tex": [
+       "0&=6(0)-0^2+c",
+       "c&=0"
+      ],
+      "note": "The car starts at $O$. So $s(t)=6t-t^2$.",
+      "ans": true
+     }
+    }
+   ],
+   "graph": {
+    "window": {
+     "xmin": -0.5,
+     "xmax": 8.6,
+     "ymin": -11.5,
+     "ymax": 11.5,
+     "gridx": 1,
+     "gridy": 2,
+     "xtick": 1,
+     "ytick": 2,
+     "xname": "t",
+     "yname": "v",
+     "xtickFrom": 0,
+     "xtickBottom": true,
+     "aspect": 2.7,
+     "aspectPortrait": 2.7,
+     "labelMask": true
+    },
+    "items": [
+     {
+      "kind": "fn",
+      "expr": "6-2*x",
+      "color": "blue"
+     }
+    ],
+    "given": [
+     {
+      "html": "<b>$v(t)=6-2t$</b>",
+      "c": "blue",
+      "shape": "cv"
+     },
+     {
+      "html": "<b>$s=0$ at $t=0$</b>",
+      "c": "orange"
+     }
+    ]
+   }
+  },
+  {
+   "type": "example",
+   "scene": 3,
+   "eyebrow": "By hand or by calculator · Position",
+   "title": "Position from velocity, by hand (2 of 2)",
+   "beat": "H1",
+   "stem": "Check $s(t)=6t-t^2$ against the positions we read from the areas.",
+   "blocks": [
+    {
+     "walk": {
+      "cap": "Check against the areas",
+      "tex": [
+       "s(3)&=18-9=9",
+       "s(6)&=36-36=0",
+       "s(8)&=48-64=-16"
+      ],
+      "note": "These match the areas: $9$ m right of $O$, back at $O$, $16$ m left of $O$.",
+      "ans": true
+     }
+    }
+   ],
+   "graph": {
+    "window": {
+     "xmin": -0.5,
+     "xmax": 8.6,
+     "ymin": -11.5,
+     "ymax": 11.5,
+     "gridx": 1,
+     "gridy": 2,
+     "xtick": 1,
+     "ytick": 2,
+     "xname": "t",
+     "yname": "v",
+     "xtickFrom": 0,
+     "xtickBottom": true,
+     "aspect": 2.7,
+     "aspectPortrait": 2.7,
+     "labelMask": true
+    },
+    "items": [
+     {
+      "kind": "fn",
+      "expr": "6-2*x",
+      "color": "blue",
+      "step": 0
+     },
+     {
+      "kind": "polygon",
+      "pts": [
+       [
+        0,
+        0
+       ],
+       [
+        0,
+        6
+       ],
+       [
+        3,
+        0
+       ]
+      ],
+      "color": "teal",
+      "opacity": 0.5,
+      "step": 1
+     },
+     {
+      "kind": "polygon",
+      "pts": [
+       [
+        3,
+        0
+       ],
+       [
+        6,
+        -6
+       ],
+       [
+        6,
+        0
+       ]
+      ],
+      "color": "pink",
+      "opacity": 0.5,
+      "step": 1
+     },
+     {
+      "kind": "polygon",
+      "pts": [
+       [
+        6,
+        0
+       ],
+       [
+        6,
+        -6
+       ],
+       [
+        8,
+        -10
+       ],
+       [
+        8,
+        0
+       ]
+      ],
+      "color": "pink",
+      "opacity": 0.5,
+      "step": 1
+     },
+     {
+      "kind": "label",
+      "at": [
+       1,
+       2
+      ],
+      "tex": "9",
+      "anchor": "c",
+      "step": 1
+     },
+     {
+      "kind": "label",
+      "at": [
+       5,
+       -2
+      ],
+      "tex": "-9",
+      "anchor": "c",
+      "step": 1
+     },
+     {
+      "kind": "label",
+      "at": [
+       7,
+       -4
+      ],
+      "tex": "-16",
+      "anchor": "c",
+      "step": 1
+     }
+    ],
+    "given": [
+     {
+      "html": "<b>$v(t)=6-2t$</b>",
+      "c": "blue",
+      "shape": "cv"
+     },
+     {
+      "html": "<b>$s=0$ at $t=0$</b>",
+      "c": "orange"
+     }
+    ]
+   },
+   "cont": true
+  },
+  {
+   "type": "example",
+   "scene": 3,
+   "eyebrow": "By hand or by calculator · Distance",
+   "title": "Distance by hand: split at the turning point (1 of 2)",
+   "beat": "H2",
+   "stem": "How far does the car travel from $t=0$ to $t=8$? It turns round when $v=0$.",
+   "blocks": [
+    {
+     "walk": {
+      "cap": "When does it turn round?",
+      "tex": [
+       "6-2t&=0",
+       "t&=3"
+      ],
+      "note": "$v>0$ before $t=3$ and $v<0$ after it."
+     }
+    },
+    {
+     "walk": {
+      "cap": "Split the integral at $t=3$",
+      "tex": [
+       "\\int_0^3 v\\,dt&=\\left[6t-t^2\\right]_0^3=9",
+       "\\int_3^8 v\\,dt&=\\left[6t-t^2\\right]_3^8=-25"
+      ],
+      "note": "The second is negative: the car moves left."
+     }
+    }
+   ],
+   "graph": {
+    "window": {
+     "xmin": -0.5,
+     "xmax": 8.6,
+     "ymin": -11.5,
+     "ymax": 11.5,
+     "gridx": 1,
+     "gridy": 2,
+     "xtick": 1,
+     "ytick": 2,
+     "xname": "t",
+     "yname": "v",
+     "xtickFrom": 0,
+     "xtickBottom": true,
+     "aspect": 2.7,
+     "aspectPortrait": 2.7,
+     "labelMask": true
+    },
+    "items": [
+     {
+      "kind": "fn",
+      "expr": "6-2*x",
+      "color": "blue"
+     },
+     {
+      "kind": "point",
+      "at": [
+       3,
+       0
+      ],
+      "step": 1
+     },
+     {
+      "kind": "polygon",
+      "pts": [
+       [
+        0,
+        0
+       ],
+       [
+        0,
+        6
+       ],
+       [
+        3,
+        0
+       ]
+      ],
+      "color": "teal",
+      "opacity": 0.5,
+      "step": 2
+     },
+     {
+      "kind": "polygon",
+      "pts": [
+       [
+        3,
+        0
+       ],
+       [
+        8,
+        -10
+       ],
+       [
+        8,
+        0
+       ]
+      ],
+      "color": "pink",
+      "opacity": 0.5,
+      "step": 2
+     },
+     {
+      "kind": "label",
+      "at": [
+       1,
+       2
+      ],
+      "tex": "9",
+      "anchor": "c",
+      "step": 2
+     },
+     {
+      "kind": "label",
+      "at": [
+       6,
+       -3.4
+      ],
+      "tex": "-25",
+      "anchor": "c",
+      "step": 2
+     }
+    ],
+    "given": [
+     {
+      "html": "<b>$v(t)=6-2t$</b>",
+      "c": "blue",
+      "shape": "cv"
+     },
+     {
+      "html": "<b>$s=0$ at $t=0$</b>",
+      "c": "orange"
+     }
+    ]
+   }
+  },
+  {
+   "type": "example",
+   "scene": 3,
+   "eyebrow": "By hand or by calculator · Distance",
+   "title": "Distance by hand: split at the turning point (2 of 2)",
+   "beat": "H2",
+   "stem": "Now add the sizes of the two integrals.",
+   "blocks": [
+    {
+     "walk": {
+      "cap": "Add the sizes",
+      "tex": [
+       "\\text{distance}&=9+|-25|=34\\ \\text{m}"
+      ],
+      "note": "The signed integrals add to $-16$, the displacement.",
+      "ans": true
+     }
+    }
+   ],
+   "graph": {
+    "window": {
+     "xmin": -0.5,
+     "xmax": 8.6,
+     "ymin": -11.5,
+     "ymax": 11.5,
+     "gridx": 1,
+     "gridy": 2,
+     "xtick": 1,
+     "ytick": 2,
+     "xname": "t",
+     "yname": "v",
+     "xtickFrom": 0,
+     "xtickBottom": true,
+     "aspect": 2.7,
+     "aspectPortrait": 2.7,
+     "labelMask": true
+    },
+    "items": [
+     {
+      "kind": "fn",
+      "expr": "6-2*x",
+      "color": "blue",
+      "step": 0
+     },
+     {
+      "kind": "point",
+      "at": [
+       3,
+       0
+      ],
+      "step": 0
+     },
+     {
+      "kind": "polygon",
+      "pts": [
+       [
+        0,
+        0
+       ],
+       [
+        0,
+        6
+       ],
+       [
+        3,
+        0
+       ]
+      ],
+      "color": "teal",
+      "opacity": 0.5,
+      "step": 0
+     },
+     {
+      "kind": "polygon",
+      "pts": [
+       [
+        3,
+        0
+       ],
+       [
+        8,
+        -10
+       ],
+       [
+        8,
+        0
+       ]
+      ],
+      "color": "pink",
+      "opacity": 0.5,
+      "step": 0
+     },
+     {
+      "kind": "label",
+      "at": [
+       1,
+       2
+      ],
+      "tex": "9",
+      "anchor": "c",
+      "step": 0
+     },
+     {
+      "kind": "label",
+      "at": [
+       6,
+       -3.4
+      ],
+      "tex": "-25",
+      "anchor": "c",
+      "step": 0
+     }
+    ],
+    "given": [
+     {
+      "html": "<b>$v(t)=6-2t$</b>",
+      "c": "blue",
+      "shape": "cv"
+     },
+     {
+      "html": "<b>$s=0$ at $t=0$</b>",
+      "c": "orange"
+     }
+    ]
+   },
+   "cont": true
+  },
+  {
+   "type": "example",
+   "scene": 3,
+   "eyebrow": "By hand or by calculator · Calculator",
+   "title": "Distance with the calculator (1 of 2)",
+   "beat": "C",
+   "stem": "A calculator finds the total distance in one go, with no splitting.",
+   "blocks": [
+    {
+     "walk": {
+      "cap": "Distance is the integral of $|v|$",
+      "tex": [
+       "\\text{distance}&=\\int_0^8 |6-2t|\\,dt"
+      ],
+      "note": "$|v|$ flips the part below the axis above it."
+     }
+    },
+    {
+     "walk": {
+      "cap": "Enter it on the Casio",
+      "tex": [
+       "\\int_0^8 |6-2t|\\,dt&=34"
+      ],
+      "note": "RUN-MAT: OPTN, CALC, integral key. Abs is under OPTN, NUM. Type $6-2X$ inside it.",
+      "ans": true
+     }
+    }
+   ],
+   "graph": {
+    "window": {
+     "xmin": -0.5,
+     "xmax": 8.6,
+     "ymin": -11.5,
+     "ymax": 11.5,
+     "gridx": 1,
+     "gridy": 2,
+     "xtick": 1,
+     "ytick": 2,
+     "xname": "t",
+     "yname": "v",
+     "xtickFrom": 0,
+     "xtickBottom": true,
+     "aspect": 2.7,
+     "aspectPortrait": 2.7,
+     "labelMask": true
+    },
+    "items": [
+     {
+      "kind": "fn",
+      "expr": "6-2*x",
+      "color": "blue"
+     },
+     {
+      "kind": "path",
+      "pts": [
+       [
+        3,
+        0
+       ],
+       [
+        8,
+        10
+       ]
+      ],
+      "color": "orange",
+      "step": 1
+     },
+     {
+      "kind": "polygon",
+      "pts": [
+       [
+        0,
+        0
+       ],
+       [
+        0,
+        6
+       ],
+       [
+        3,
+        0
+       ]
+      ],
+      "color": "teal",
+      "opacity": 0.5,
+      "step": 1
+     },
+     {
+      "kind": "polygon",
+      "pts": [
+       [
+        3,
+        0
+       ],
+       [
+        8,
+        10
+       ],
+       [
+        8,
+        0
+       ]
+      ],
+      "color": "teal",
+      "opacity": 0.5,
+      "step": 1
+     },
+     {
+      "kind": "label",
+      "at": [
+       1,
+       2
+      ],
+      "tex": "9",
+      "anchor": "c",
+      "step": 1
+     },
+     {
+      "kind": "label",
+      "at": [
+       6.3,
+       3.4
+      ],
+      "tex": "25",
+      "anchor": "c",
+      "step": 1
+     }
+    ],
+    "given": [
+     {
+      "html": "<b>$v(t)=6-2t$</b>",
+      "c": "blue",
+      "shape": "cv"
+     },
+     {
+      "html": "<b>$s=0$ at $t=0$</b>",
+      "c": "orange"
+     }
+    ]
+   }
+  },
+  {
+   "type": "example",
+   "scene": 3,
+   "eyebrow": "By hand or by calculator · Calculator",
+   "title": "Distance with the calculator (2 of 2)",
+   "beat": "C",
+   "stem": "What does the integral of $v$ itself give?",
+   "blocks": [
+    {
+     "walk": {
+      "cap": "Without the absolute value",
+      "tex": [
+       "\\int_0^8 (6-2t)\\,dt&=-16"
+      ],
+      "note": "This is the displacement, not the distance.",
+      "ans": true
+     }
+    }
+   ],
+   "graph": {
+    "window": {
+     "xmin": -0.5,
+     "xmax": 8.6,
+     "ymin": -11.5,
+     "ymax": 11.5,
+     "gridx": 1,
+     "gridy": 2,
+     "xtick": 1,
+     "ytick": 2,
+     "xname": "t",
+     "yname": "v",
+     "xtickFrom": 0,
+     "xtickBottom": true,
+     "aspect": 2.7,
+     "aspectPortrait": 2.7,
+     "labelMask": true
+    },
+    "items": [
+     {
+      "kind": "fn",
+      "expr": "6-2*x",
+      "color": "blue",
+      "step": 0
+     },
+     {
+      "kind": "path",
+      "pts": [
+       [
+        3,
+        0
+       ],
+       [
+        8,
+        10
+       ]
+      ],
+      "color": "orange",
+      "step": 0
+     },
+     {
+      "kind": "polygon",
+      "pts": [
+       [
+        0,
+        0
+       ],
+       [
+        0,
+        6
+       ],
+       [
+        3,
+        0
+       ]
+      ],
+      "color": "teal",
+      "opacity": 0.5,
+      "step": 0
+     },
+     {
+      "kind": "polygon",
+      "pts": [
+       [
+        3,
+        0
+       ],
+       [
+        8,
+        10
+       ],
+       [
+        8,
+        0
+       ]
+      ],
+      "color": "teal",
+      "opacity": 0.5,
+      "step": 0
+     },
+     {
+      "kind": "label",
+      "at": [
+       1,
+       2
+      ],
+      "tex": "9",
+      "anchor": "c",
+      "step": 0
+     },
+     {
+      "kind": "label",
+      "at": [
+       6.3,
+       3.4
+      ],
+      "tex": "25",
+      "anchor": "c",
+      "step": 0
+     }
+    ],
+    "given": [
+     {
+      "html": "<b>$v(t)=6-2t$</b>",
       "c": "blue",
       "shape": "cv"
      },

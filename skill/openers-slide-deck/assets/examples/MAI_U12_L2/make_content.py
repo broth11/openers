@@ -1,6 +1,7 @@
 """MAI HL U12 L2, "Displacement and Distance from Velocity": content.json for the openers-slide-deck build (1 November 2026).
 
-Two scenes (the toy car given by its velocity, Michael's ride), six questions answered on boards, and a recap lab.
+Two motion scenes (the toy car given by its velocity, Michael's ride), six questions answered on boards, a third scene that finds the
+position and the distance by hand and with the calculator (no car, only the graph and the working), and a recap lab.
 Each scene shows a track above a standard v-t graph (the s-t graph is hidden). As time runs, the area between the v curve and
 the t-axis is shaded, one colour above the axis and one below it, and a readout under the graph gives the area. Each question
 autoplays to a checkpoint and stops; the car stays hidden until the answer is revealed (deck kit v24, `area` graph item,
@@ -35,6 +36,10 @@ assert sp.discriminant(V2, t) == -504 and min(V2.subs(t, R(k, 4)) for k in range
 assert area(V2, 0, 5) == 825 and area(V2, 5, 15) == 750 and area(V2, 0, 15) == 1575
 assert S2.subs(t, 5) == 825 and S2.subs(t, 15) == 1575 and R(750, 10) == 75
 assert area(V2, 0, 5) + area(V2, 5, 15) == 1575
+# scene 3: the toy car by hand (s = integral of v, then c; split at the turning point; the calculator's integral of |v|)
+assert sp.integrate(V1, t) == 6 * t - t**2 and (6 * t - t**2).subs(t, 0) == 0
+assert [(6 * t - t**2).subs(t, k) for k in (3, 6, 8)] == [9, 0, -16] and area(V1, 3, 8) == -25 and area(V1, 0, 3) == 9
+assert 9 + abs(-25) == 34 and 9 + (-25) == -16 and sp.integrate(sp.Abs(V1), (t, 0, 8)) == 34
 # recap function: roots 2 and 5; pieces +26/3, -9/2, +26/3; signed 77/6; total 131/6
 assert sp.factor(VR) == (t - 2) * (t - 5) and sp.solve(VR, t) == [2, 5]
 pieces = [area(VR, 0, 2), area(VR, 2, 5), area(VR, 5, 7)]
@@ -95,7 +100,7 @@ assert M1['area'][-1][1] == -16 and [r for r in M1['area'] if r[0] == 3][0][1] =
 assert [r for r in M2['area'] if r[0] == 5][0][1] == 825 and M2['area'][-1][1] == 1575
 
 WIN = {
-    1: {'xmin': -0.5, 'xmax': 8.6, 'ymin': -11.5, 'ymax': 7.5, 'gridx': 1, 'gridy': 2, 'xtick': 1, 'ytick': 2, 'xname': 't', 'yname': 'v', 'xtickFrom': 0, 'xtickBottom': True, 'aspect': 2.7, 'aspectPortrait': 2.7, 'labelMask': True},
+    1: {'xmin': -0.5, 'xmax': 8.6, 'ymin': -11.5, 'ymax': 9, 'gridx': 1, 'gridy': 2, 'xtick': 1, 'ytick': 2, 'xname': 't', 'yname': 'v', 'xtickFrom': 0, 'xtickBottom': True, 'aspect': 2.7, 'aspectPortrait': 2.7, 'labelMask': True},
     2: {'xmin': -1.5, 'xmax': 16.5, 'ymin': -45, 'ymax': 330, 'gridx': 5, 'gridy': 50, 'xtick': 5, 'ytick': 100, 'xname': 't', 'yname': 'v', 'xtickFrom': 0, 'aspect': 2.7, 'aspectPortrait': 2.7, 'labelMask': True},
 }
 F = {
@@ -188,7 +193,7 @@ def setup(n, head, pre, para, facts):
 
 
 def title_card(n, title):
-    d = {'type': 'sceneTitle', 'scene': n, 'kicker': f'Scene {n} of 2', 'title': title, 'kind': KIND[n], 'wide': True, 'color': ORANGE,
+    d = {'type': 'sceneTitle', 'scene': n, 'kicker': f'Scene {n} of 3', 'title': title, 'kind': KIND[n], 'wide': True, 'color': ORANGE,
          'window': {'xmin': 0, 'xmax': 1, 'ymin': 0, 'ymax': 1}, 'state': {}, 'alt': ALT[n].split(' above')[0] + ', drawn large'}
     if n == 1:
         d['motion'] = {'pts': [[0, 0], [1, 0]], 'dot': 1, 'xmin': -18, 'xmax': 10, 'lab': 4, 'unit': 'm', 'tunit': 's'}
@@ -261,6 +266,57 @@ out.extend(split(q(2, 6, 'Home to the friend\'s house',
               walk('Distance or displacement?', ['v&>0\\ \\text{for all }t'], '$v$ is never zero, so he never turns round. The distance he rode and his distance from home agree.', ans=True),
               walk('Position from velocity', ['s(15)&=s(0)+\\text{signed area}'], 'Start position plus the signed area gives the position. Worked Example 1 in the notes starts here.')],
              graph(2, [[0, state(15, True, 't', 5)], [1, state(15, False, 'ts', 5)]], frm=15, mark=5)), 2, 'What is the rule for finding the position from the velocity?'))
+
+# ================================================================ scene 3: by hand and by calculator (no car; the graph and the working)
+out.append({'type': 'sceneTitle', 'scene': 3, 'kicker': 'Scene 3 of 3', 'title': 'By Hand or by Calculator', 'formula': 's(t)=s(0)+\\int_0^t v(u)\\,du',
+            'color': ORANGE, 'window': {'xmin': 0, 'xmax': 1, 'ymin': 0, 'ymax': 1}, 'state': {}, 'alt': 'The rule for position from velocity'})
+W3 = dict(WIN[1], ymax=11.5)
+vcurve = {'kind': 'fn', 'expr': '6-2*x', 'color': 'blue'}
+tri = lambda *p: list(p)
+reg_a = tri([0, 0], [0, 6], [3, 0])
+reg_b = tri([3, 0], [6, -6], [6, 0])
+reg_c = tri([6, 0], [6, -6], [8, -10], [8, 0])
+reg_d = tri([3, 0], [8, -10], [8, 0])
+reg_u = tri([3, 0], [8, 10], [8, 0])
+
+
+def s3(title, stem, blocks, items, beat):
+    return {'type': 'example', 'scene': 3, 'eyebrow': 'By hand or by calculator · ' + title[0], 'title': title[1], 'beat': beat, 'stem': stem, 'blocks': blocks,
+            'graph': {'window': dict(W3), 'items': items, 'given': [dict(g) for g in GIVEN[1]]}}
+
+
+def split3(d, cut, stem2):
+    """split3: as split(), for a static graph (no scene)"""
+    a, b = copy.deepcopy(d), copy.deepcopy(d)
+    a['title'] += ' (1 of 2)'; b['title'] += ' (2 of 2)'
+    a['blocks'], b['blocks'] = d['blocks'][:cut], d['blocks'][cut:]
+    b['cont'], b['stem'] = True, stem2
+    a['graph']['items'] = [it for it in a['graph']['items'] if it.get('step', 0) <= cut]
+    for it in b['graph']['items']:
+        it['step'] = max(0, it.get('step', 0) - cut)
+    return [a, b]
+
+
+poly = lambda pts, c, step: {'kind': 'polygon', 'pts': pts, 'color': c, 'opacity': 0.5, 'step': step}
+lab = lambda x, y, tx, step: {'kind': 'label', 'at': [x, y], 'tex': tx, 'anchor': 'c', 'step': step}
+out.extend(split3(s3(('Position', 'Position from velocity, by hand'),
+              'We can find the position with algebra, not only by reading areas.',
+              [walk('Integrate the velocity', ['s(t)&=\\int(6-2t)\\,dt', '&=6t-t^2+c'], 'Position is an antiderivative of velocity.'),
+               walk('Use $s(0)=0$ to find $c$', ['0&=6(0)-0^2+c', 'c&=0'], 'The car starts at $O$. So $s(t)=6t-t^2$.', ans=True),
+               walk('Check against the areas', ['s(3)&=18-9=9', 's(6)&=36-36=0', 's(8)&=48-64=-16'], 'These match the areas: $9$ m right of $O$, back at $O$, $16$ m left of $O$.', ans=True)],
+              [vcurve, poly(reg_a, POS, 3), poly(reg_b, NEG, 3), poly(reg_c, NEG, 3), lab(1, 2, '9', 3), lab(5, -2, '-9', 3), lab(7, -4, '-16', 3)], 'H1'), 2, 'Check $s(t)=6t-t^2$ against the positions we read from the areas.'))
+out.extend(split3(s3(('Distance', 'Distance by hand: split at the turning point'),
+              'How far does the car travel from $t=0$ to $t=8$? It turns round when $v=0$.',
+              [walk('When does it turn round?', ['6-2t&=0', 't&=3'], '$v>0$ before $t=3$ and $v<0$ after it.'),
+               walk('Split the integral at $t=3$', ['\\int_0^3 v\\,dt&=\\left[6t-t^2\\right]_0^3=9', '\\int_3^8 v\\,dt&=\\left[6t-t^2\\right]_3^8=-25'], 'The second is negative: the car moves left.'),
+               walk('Add the sizes', ['\\text{distance}&=9+|-25|=34\\ \\text{m}'], 'The signed integrals add to $-16$, the displacement.', ans=True)],
+              [vcurve, {'kind': 'point', 'at': [3, 0], 'step': 1}, poly(reg_a, POS, 2), poly(reg_d, NEG, 2), lab(1, 2, '9', 2), lab(6, -3.4, '-25', 2)], 'H2'), 2, 'Now add the sizes of the two integrals.'))
+out.extend(split3(s3(('Calculator', 'Distance with the calculator'),
+              'A calculator finds the total distance in one go, with no splitting.',
+              [walk('Distance is the integral of $|v|$', ['\\text{distance}&=\\int_0^8 |6-2t|\\,dt'], '$|v|$ flips the part below the axis above it.'),
+               walk('Enter it on the Casio', ['\\int_0^8 |6-2t|\\,dt&=34'], 'RUN-MAT: OPTN, CALC, integral key. Abs is under OPTN, NUM. Type $6-2X$ inside it.', ans=True),
+               walk('Without the absolute value', ['\\int_0^8 (6-2t)\\,dt&=-16'], 'This is the displacement, not the distance.', ans=True)],
+              [vcurve, {'kind': 'path', 'pts': [[3, 0], [8, 10]], 'color': ORANGE, 'step': 1}, poly(reg_a, POS, 1), poly(reg_u, POS, 1), lab(1, 2, '9', 1), lab(6.3, 3.4, '25', 1)], 'C'), 2, 'What does the integral of $v$ itself give?'))
 
 # ================================================================ recap: area under any velocity
 ROOTS = [2, 5]
