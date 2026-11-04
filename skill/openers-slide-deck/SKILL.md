@@ -209,6 +209,8 @@ Lab slides: `{"type":"lab","preset":"sceneLab","eyebrow":"Typing speed · Trace 
    ```bash
    python3 <skill>/scripts/build_deck.py content.json --out build            # opens in 3b1b, picker included
    python3 <skill>/scripts/build_deck.py content.json --out probe --probe --probe-size 1470x830   # per-slide --G
+   # also probe a short windowed size (1280x650): one slide that cannot fit drags the whole deck's type size down (U12 L3, 4 Nov 2026: ladder figure was too tall at short heights, so every slide shrank to 0.52 while full screen looked fine)
+   python3 <skill>/scripts/build_deck.py content.json --out probe --probe --probe-size 1280x650
    python3 <skill>/scripts/check_deck.py build/<file>.html --shots build/shots
    ```
    `--G >= 0.95` at 1280x800, 1470x830 and 1470x956. Fix until PASS. Look at the shots: the scene's level
