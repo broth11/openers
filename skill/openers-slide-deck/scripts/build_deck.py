@@ -431,7 +431,7 @@ def render(content, theme_name, picker=False):
     sample_curves(content)
     kcss, kjs, autoren = katex()
     data = json.dumps(content, ensure_ascii=False).replace('</', '<\\/')
-    labkit = read('labkit.js') + '\n' + read('scenekit.js')
+    labkit = read('labkit.js') + '\n' + read('scenekit.js') + '\n' + read('statkit.js')   # v26: AP Statistics scenes and labs
     if th.get('lab'):
         labkit = 'window.LAB_THEME = ' + json.dumps(th['lab']) + ';\n' + labkit
     subs = {'{{TITLE}}': meta['artifactTitle'], '{{FONT_CSS}}': font_css() if th.get('stix', True) else '',

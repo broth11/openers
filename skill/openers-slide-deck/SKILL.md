@@ -300,3 +300,16 @@ Engine and layout rules
 - **The y-axis letter** (`yname`) sits at the top of the axis, right of it: keep the curve's start well below `ymax`.
 - **The shell** (`src/shell.css`, openers repo): a deck lesson fills the window (no maximum width, 6px margins). In full screen the header, margins and rounded corners go, so the deck is the whole screen; Esc leaves, the arrow keys and F still work.
 - **The single-file artifact** (`npm run artifact -- <key>`) inlines the deck as `window.__DECK_INLINE` and loads it by `srcdoc`; without it the preview is blank. Rebuild and republish it after every deck change (`dist-artifact/<key>.html`).
+
+
+## v26: AP Statistics scenes (Ben, 4/11/2026, AP Stats 3.A.1 to 3.A.3 closer)
+
+`assets/statkit.js` (loaded after scenekit by `build_deck.py`) adds statistics scenes and labs. Model: `decks/ap-stats-3a1-3a3/make_content.py`.
+
+- Scene kind `enose`: the E-Nose and the people it tested, a person with a tick or cross per guess (n up to 48), a coloured square per guess beyond that. State `{n, marks: '1101...', head}`; `marks: ''` shows unmarked people.
+- Lab `pHatLab`: simulated tests of a guessing machine pile up as dots that match the normal density, then the curve appears (autoplay on Next). Slider for the number of tests with Play and Loop, an n slider (step 1, so the checker's move changes a readout), a curve toggle; readouts: the count at or beyond the observed p-hat, and sigma, z, and the tail probability. `init {p, obs, n, sims, seed, seconds, nRange}`.
+- The lab and the generator share one random generator (mulberry32; `test(n, i, p, seed)` in both), so the dots on the slides are the tests the lab replays. Keep them in step if either changes.
+- The graph keeps one window; y is in display units (density divided by the window top for the current n) and has no tick numbers, so nothing moves when n changes. A rebuilt graph fails the stability check.
+- Keep in-graph text labels off p-hat graphs whose given row already names the lines: at deck type size they collide across the narrow window, and a label anchored right of a line near the right edge widens the slide and fires the emergency shrink.
+- Lab readouts: one combined line for sigma, z, and P keeps the controls short enough for `--G` 0.95.
+

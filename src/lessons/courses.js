@@ -10,5 +10,6 @@ export const EXPLORERS = [
   { group: 'AP Statistics', name: 'Normal distribution', url: 'https://claude.ai/artifact/RZhR78U3mf6sM2gEpbdnnf', dot: '#14968a' },
   { group: 'AP Statistics', name: 'Inference for a mean', url: 'https://claude.ai/artifact/UErCmLaZBBLwPXKdBEeBJU', dot: '#7552e0' },
   { group: 'AP Statistics', name: 'Sampling distributions of the mean (2.B.5)', url: './ap-stats/2b5-sampling-distributions.html', dot: '#14968a' },
+  { group: 'AP Statistics', name: 'Sampling distribution of p̂, conditions, and confidence intervals (3.A.1 to 3.A.3 closer)', url: './ap-stats/3a1-3a3-sampling-distributions-closer.html', dot: '#d0457f' },
   { group: 'IB MAI', name: 'Periodic models', url: 'https://claude.ai/artifact/BHHQpdK1D5g57FUozvvdUR', dot: '#1572b8' },
 ]

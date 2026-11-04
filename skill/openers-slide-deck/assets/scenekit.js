@@ -1053,6 +1053,7 @@
   window.Lab.presets.scatterLab = scatterLab;
   window.Lab.presets.logisticLab = logisticLab;
   window.Lab.scenes = SCENES;
+  window.Lab.player = player;   /* v26: shared with statkit.js */
   window.Lab.presets.coffeeScene = coffeeScene;
   window.Lab.presets.sceneLab = sceneLab;
   window.Lab.presets.growthFamily = growthFamily;
