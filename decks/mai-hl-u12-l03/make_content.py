@@ -26,7 +26,8 @@ assert area(A1, 0, 4) == 8 == 2 * 4                                   # Q1: the 
 assert VA.subs(t, 4) == 8 and VB.subs(t, 4) == 11 and VB.subs(t, 4) - VA.subs(t, 4) == 3
 assert area(VA, 0, 4) == 16 == R(1, 2) * 4 * 8 and area(VB, 0, 4) == 28 == R(1, 2) * (3 + 11) * 4    # Q2
 assert SA.subs(t, 4) == 16 and SB.subs(t, 4) == 28 and 28 - 16 == 12 == 3 * 4
-assert 5 + area(VB, 0, 4) == 33                                       # Q3: car C starts 5 m right of O with B's velocity graph
+assert SA.subs(t, 0) == 0 and SB.subs(t, 0) == 0 and VA.subs(t, 0) == 0 and VB.subs(t, 0) == 3     # Q3: C = 0, 3 and D = 0, 0
+assert 5 + area(VB, 0, 4) == 33                                       # Q4: car C starts 5 m right of O with B's velocity graph
 
 # ---------------------------------------------------------------- scene 2: a = 2 e^(-t/2), from rest at O, 0 <= t <= 12
 A2 = 2 * sp.exp(-t / 2)
@@ -150,7 +151,7 @@ def title_card(n, title):
 
 
 out = [{'type': 'title', 'eyebrow': 'IB Mathematics: Applications and Interpretations HL · Unit 12 · Lesson 3',
-        'title': 'From Acceleration Back to Position', 'lede': 'Opener: two scenes, six questions and a recap, answered on your boards',
+        'title': 'From Acceleration Back to Position', 'lede': 'Opener: two scenes, seven questions and a recap, answered on your boards',
         'code': 'MAI HL U12 L3', 'regime': 'C', 'regimeText': 'boards out, calculator allowed'}]
 
 def idea(beat, head, title, stem, blocks):
@@ -189,7 +190,13 @@ out.append(q(1, 2, 'Which car is ahead?',
                    'The parallel sides are $v(0)$ and $v(4)$.'),
               walk('The gap', ['28-16&=12\\ \\text{m}'], 'Car B is $12$ m ahead: the extra $3\\ \\text{m s}^{-1}$ for $4$ s is the rectangle $3\\times 4=12$.', ans=True)],
              graph(1, [[0, st(4, show=2, shade=['v'])], [1, st(4, show=2, shade=['v'], areas=['v'])], [2, st(4, show=3, shade=['v'], areas=['v'], vals=['s'], hide=False, read='ts')]])))
-out.append(q(1, 3, 'A third car',
+out.append(q(1, 3, 'Find the position function for each car',
+             'Both cars start at $O$ with $a=2$. Car A starts from rest, and car B has $v=3$ at $t=0$. Find $s(t)$ for each car.',
+             [walk('Integrate $a=2$ and use $v(0)$', ['v_A&=2t+C,\\quad C=0', 'v_B&=2t+C,\\quad C=3'], None),
+              walk('Integrate each $v$; $s(0)=0$ gives $D=0$', ['s_A&=t^{2}+D=t^{2}', 's_B&=t^{2}+3t+D=t^{2}+3t'], None, ans=True)],
+             graph(1, [[0, st(4, show=1, shade=['a'])], [1, st(4, show=2, shade=['a'])],
+                       [2, st(4, show=3, shade=['v'], vals=['s'], hide=False, read='ts')]])))
+out.append(q(1, 4, 'A third car',
              'Car C has $a=2$ and $v=5\\ \\text{m s}^{-1}$ at $t=1$. At $t=2$ it is at $s=15$ m. Where is it at $t=4$?',
              [walk('Integrate $a=2$: $v=2t+C$', ['v(1)&=2(1)+C', '5&=2+C\\Rightarrow C=3'], None),
               walk('Integrate $v=2t+3$: $s=t^{2}+3t+D$', ['s(2)&=2^{2}+3(2)+D', '15&=10+D\\Rightarrow D=5'], None),
@@ -203,19 +210,19 @@ out.append(setup(2, 'An acceleration that fades',
                  'At $t=0$ the car is at $O$ and at rest. Its acceleration is $a(t)=2e^{-0.5t}$ metres per second squared, for $0\\le t\\le 12$ seconds. '
                  'The area under the $a$-$t$ graph is shaded as time runs.',
                  ['st2', 'acc2', 'pos2'], st(0, hide=False, show=1, read='none'), st(0, hide=False, show=1, read='none')))
-out.append(q(2, 4, 'After a long time',
+out.append(q(2, 5, 'After a long time',
              'The acceleration is always positive. After a long time, what happens to the velocity?',
              [walk('The area under the $a$-$t$ graph', ['\\Delta v&=\\int_0^{12}2e^{-0.5t}\\,dt\\approx 3.99'], 'Each second adds a smaller area than the one before.'),
               walk('The velocity rises, then levels off', ['v(12)&=0+3.99=3.99\\ \\text{m s}^{-1}'], None, ans=True)],
              graph(2, [[0, st(12, show=1, shade=['a'])], [1, st(12, show=1, shade=['a'], areas=['a'])], [2, st(12, show=2, shade=['a'], areas=['a'], vals=['v'])]]),
              choices=['It keeps growing without any limit', 'It rises, then levels off', 'It rises, then falls back to zero'], correct=1, pick=2))
-out.append(q(2, 5, 'Heading for what value?',
+out.append(q(2, 6, 'Heading for what value?',
              'At $t=12$ the velocity is about $3.99\\ \\text{m s}^{-1}$ and still rising. What value is it heading towards?',
              [walk('Integrate $a$ to find $v$', ['v&={\\textstyle\\int} 2e^{-0.5t}\\,dt=-4e^{-0.5t}+C', 'v(0)&=-4e^{0}+C=0\\ \\Rightarrow\\ C=4'], None),
               walk('Let $t$ get large', ['v&=4-4e^{-0.5t}', 'e^{-0.5t}&\\to 0\\ \\Rightarrow\\ v\\to 4\\ \\text{m s}^{-1}'], 'This is the limiting velocity: $v$ gets close to $4$ but never reaches it.', ans=True)],
              graph(2, [[0, st(12, show=2, shade=['a'], areas=['a'], vals=['v'])], [1, st(12, show=2, shade=['a'], areas=['a'], vals=['v'])],
                        [2, st(12, show=2, shade=['a'], areas=['a'], vals=['v'], refs=['v'])]])))
-out.append(q(2, 6, 'How far by 12 seconds?',
+out.append(q(2, 7, 'How far by 12 seconds?',
              'At exactly $4\\ \\text{m s}^{-1}$ for $12$ seconds, the car would go $48$ m. How far has the real car gone?',
              [walk('Steady speed', ['4\\times 12&=48\\ \\text{m}'], None),
               walk('The area under the velocity graph', ['s(12)&=\\int_0^{12}v\\,dt\\approx 40.0\\ \\text{m}'], 'The slow start costs the car about $8$ m.', ans=True)],
