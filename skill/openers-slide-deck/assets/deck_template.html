@@ -582,6 +582,32 @@ html:root[data-skin="3b1b"],html:root[data-skin="goldteal"],html:root[data-skin=
 .pad ol ol>li{counter-increment:sub;padding-left:2.1em}
 .pad ol ol>li::before{content:counter(st) "." counter(sub);font-weight:600;color:#3F6FA8}
 .pad .katex{color:inherit}
+
+/* profile (v27): a mathematician featurette. Name and years, three or four short blocks that reveal one by one,
+   an optional portrait (supplied by the teacher, never fetched) and a drawing of the person's work. */
+.s-profile{gap:var(--b2)}
+.s-profile h2 .dim{color:var(--note);font-weight:500;font-size:.78em;letter-spacing:0;margin-left:.35em}
+.pf-line{margin:0;color:var(--framing);font-size:calc(var(--fs-body)*.95);line-height:1.3}
+.pf{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:var(--b3);align-items:stretch;overflow:hidden}
+.pf-text{display:flex;flex-direction:column;gap:max(8px,1.7cqh);min-height:0;font-size:calc(var(--fs-body)*.9)}
+.pf-b h3{margin:0 0 .18em;font-size:calc(var(--fs-small)*.92);font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--tagtx)}
+.pf-b.care h3{color:var(--hl)}
+.pf-b p{margin:0;line-height:1.4;color:var(--prose);max-width:60ch}
+.pf-b .katex{color:inherit}
+.pf-fig{display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr);min-height:0;min-width:0}
+.pf-fig>*{grid-area:1/1;min-height:0;min-width:0}   /* portrait and work drawing share the cell: the portrait gives way when the work appears */
+.pf-card{margin:0;flex:1;min-height:0;display:flex;flex-direction:column;gap:.35em;background:var(--card);border:1px solid var(--cardline);border-radius:4px;box-shadow:var(--cardshadow);padding:max(8px,1.6cqh) max(10px,1.4cqw)}
+.pf-svg{flex:1;min-height:0;display:flex}
+.pf-svg svg{width:100%;height:100%;display:block}
+.pf-card figcaption{font-size:calc(var(--fs-body)*.88);line-height:1.3;color:var(--note)}
+.pf-card figcaption .katex{color:inherit}
+.pf-por{margin:0;display:flex;flex-direction:column;align-items:center;gap:.35em;transition:opacity .4s ease-out}
+.pf-por.gone{opacity:0;visibility:hidden}
+.pf-por img{display:block;flex:1;min-height:0;max-width:100%;object-fit:contain;border-radius:4px;border:1px solid var(--cardline);background:var(--card)}
+.pf-por figcaption{font-size:calc(var(--fs-body)*.88);line-height:1.3;color:var(--note)}
+.pf-svg .pf-ink{fill:var(--mathink)} .pf-svg .pf-grid{stroke:var(--cardline);fill:none} .pf-svg .pf-axis{stroke:var(--gr);fill:none}
+.pf-svg .pf-pos{fill:var(--bl);stroke:var(--bl)} .pf-svg .pf-neg{fill:var(--tagtx);stroke:var(--tagtx)}   /* --bl and --tagtx differ in every theme (--hl does not) */
+.pf-svg .pf-lab{fill:var(--prose);font-family:'STIX Two Text',Georgia,serif}
 </style>
 <!--/PART-A-->
 </head>
@@ -694,6 +720,16 @@ C.slides.forEach(d => {
     const note = s.el.querySelector('.note'); if (note){ k++; note.dataset.step=k; }
     for (let i=1;i<=k;i++) s.steps.push([...s.el.querySelectorAll('.st'+i+', [data-step="'+i+'"]')]);
     if (!d.solo) s.figSpec = d.graph;
+  } else if (d.type==='profile'){   /* v27 */
+    const blocks = d.blocks||[];
+    const blk = blocks.map((b,i)=>`<section class="pf-b${b.care?' care':''}" data-step="${i+1}"><h3>${esc(b.head)}</h3><p>${nb(b.text)}</p></section>`).join('');
+    const wstep = d.portrait ? ((d.work&&d.work.step)||0) : 0;
+    const por = d.portrait ? `<figure class="pf-por"${wstep?` data-until="${wstep-1}"`:''}><img src="${d.portrait.img}" alt="${esc(d.portrait.alt||d.name)}"><figcaption>${nb(d.portrait.credit||'')}</figcaption></figure>` : '';
+    const wk = d.work ? `<figure class="pf-card"${wstep?` data-step="${wstep}"`:''}><div class="pf-svg" role="img" aria-label="${esc(d.work.alt||'')}">${d.work.svg}</div><figcaption>${nb(d.work.caption||'')}</figcaption></figure>` : '';
+    const s = addSlide('s-profile', `<div class="eyebrow">${esc(d.eyebrow||'Mathematician')}</div><h2>${esc(d.name)}<span class="dim">${esc(d.years||'')}</span></h2>${d.line?`<p class="pf-line">${nb(d.line)}</p>`:''}<div class="pf"><div class="pf-text">${blk}</div><div class="pf-fig">${por}${wk}</div></div>`);
+    s.d = d;
+    const nsteps = Math.max(blocks.length, wstep);
+    for (let i=1;i<=nsteps;i++) s.steps.push([...s.el.querySelectorAll('[data-step="'+i+'"]')]);
   } else if (d.type==='lab'){
     const s = addSlide('s-lab', `<div class="labhost"></div>`); s.d = d;
     s.lab_head = (d.eyebrow?`<div class="eyebrow">${esc(d.eyebrow)}</div>`:'') + `<h2>${esc(d.title)}</h2>` + (d.lede?`<p class="lab-lede">${nb(d.lede)}</p>`:'');
@@ -824,6 +860,7 @@ slides.forEach((s, i) => { const d = s.d || {};
   else if (s.el.classList.contains('s-gdc')){ BEATS.push({i, n:0, kind:'pose', label:'G'+(d.skill||''), tip:'GDC skill '+(d.skill||'')+': '+(d.title||'')});
     (d.steps||[]).forEach((st, q) => BEATS.push({i, n:q+1, kind:'step', label:'W', tip:'GDC step '+(q+1)})); }
   else if (s.el.classList.contains('s-stitle')) BEATS.push({i, n:0, kind:'scene', label:String(d.scene), tip:'Scene '+d.scene+': '+String(d.title).replace(/[$\\{}]/g,''), gap:true});
+  else if (s.el.classList.contains('s-profile')) BEATS.push({i, n:0, kind:'pose', label:'M', tip:'Mathematician: '+d.name});   /* v27 */
   else if (d.setup){ const sc = (d.eyebrow||'').split(' · ')[0];
     BEATS.push({i, n:0, kind:'pose', label:'P', tip:sc+': the situation'}); BEATS.push({i, n:1, kind:'step', label:'K', tip:sc+': key facts'}); }
   else if (s.lab) BEATS.push(d.preset==='catalogue' ? {i, n:0, kind:'pose', label:d.beat||'IA', tip:d.title, big:true} : (d.preset==='growthFamily'||d.preset==='motionSigns'||d.preset==='areaLab'||d.preset==='ladderLab') ? {i, n:0, kind:'scene', label:'R', tip:d.title, gap:true} : {i, n:0, kind:'animate', label:'A', tip:(d.eyebrow||'')+': '+d.title});

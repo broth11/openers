@@ -313,3 +313,16 @@ Engine and layout rules
 - Keep in-graph text labels off p-hat graphs whose given row already names the lines: at deck type size they collide across the narrow window, and a label anchored right of a line near the right edge widens the slide and fires the emergency shrink.
 - Lab readouts: one combined line for sigma, z, and P keeps the controls short enough for `--G` 0.95.
 
+
+## v27: the `profile` slide, a mathematician featurette (Ben, 6/11/2026, MAI HL U5 L6)
+
+A short biography page, built to be reused for any person whose work the lesson leans on (Pearson and Spearman in U5 L6 are the models: `decks/mai-hl-u05-l06/make_content.py`, drawings in `profiles.py`).
+
+`{"type": "profile", "eyebrow": "Mathematician · University College London", "name": "Karl Pearson", "years": " 1857 to 1936", "blocks": [{"head": "The question", "text": "..."}, {"head": "The work", "text": "..."}, {"head": "The hard part", "text": "...", "care": true}], "work": {"svg": "<svg viewBox=\"0 0 500 340\">...", "step": 2, "alt": "...", "caption": "..."}, "portrait": {"img": "data:image/jpeg;base64,...", "alt": "...", "credit": "..."}}`
+
+- Blocks reveal one per Next. Use three (four will not fit at deck type size: the text column holds about 12 lines of 62 characters at 0.9 of body size). `care: true` colours the heading amber, for a block that needs weight (a person's harmful legacy, a caveat).
+- **Portrait**: the teacher supplies the file (`portraits/<name>.jpg` in the deck folder; `make_content.py` embeds it with `portrait()`). Never fetch a photo of a real person from the web or draw one. If the image is AI-made, say so in `credit` ("Illustration (AI-generated), not a photograph"). The portrait fills the right column and gives way to the work drawing at `work.step`; with no portrait the drawing is there from the start.
+- **Work drawing**: an original inline SVG of the idea (never a copy of a historical figure or page). Use the classes `pf-pos` (the answer colour), `pf-neg` (the tag colour; `--bl` and `--tagtx` differ in every theme, `--hl` does not), `pf-grid`, `pf-axis`, `pf-ink`, `pf-lab`, and set text at 22 to 24 units on a 500 x 340 viewBox so it renders at least 85 % of body size. Do not rely on colour alone: mark the meaning with signs or labels. No maths inside the SVG; put it in the caption (`$...$` renders there).
+- Timeline: one `M` beat. The slide is not an example: it has no graph, question, or answer.
+- The text column is the tight resource. If a profile pulls the deck-wide `--G` below 0.95, cut words; do not shrink the type. Check with `check_deck.py` and read `--G` at 1280x800.
+- Facts: ground every date and claim in a source (a biography, the original paper's catalogue, a history-of-statistics article) and keep to what it says. Invented data in a drawing is labelled "Invented" in the caption.

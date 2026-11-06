@@ -13,8 +13,22 @@ Run:  python3 make_content.py   (writes content.json next to it; CAPS points at 
 import base64, json, os, sys
 import numpy as np
 import sympy as sp
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import profiles
 
 CAPS = os.environ.get('CAPS', os.path.join(os.path.dirname(os.path.abspath(__file__)), 'caps', 'lcd'))
+
+
+PORTRAITS = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'portraits')
+
+
+def portrait(stem, alt, credit):
+    """A portrait Ben supplies: portraits/<stem>.jpg or .png. Absent file: the slide simply has no portrait (nothing is fetched)."""
+    for ext, mime in (('jpg', 'jpeg'), ('jpeg', 'jpeg'), ('png', 'png')):
+        f = os.path.join(PORTRAITS, f'{stem}.{ext}')
+        if os.path.exists(f):
+            return {'img': f'data:image/{mime};base64,' + base64.b64encode(open(f, 'rb').read()).decode(), 'alt': alt, 'credit': credit}
+    return None
 
 
 def img(name, alt, **kw):
@@ -157,6 +171,14 @@ def norm(xs, ys, xm, ym):
     return [[a / xm, b / ym] for a, b in zip(xs, ys)]
 
 
+
+def profile(name, years, line, blocks, work, port=None, eyebrow='Mathematician'):
+    d = {'type': 'profile', 'eyebrow': eyebrow, 'name': name, 'years': years, 'line': line,
+         'blocks': [{'head': h, 'text': t, **({'care': True} if c else {})} for h, t, c in blocks], 'work': work}
+    if port: d['portrait'] = port
+    S.append(d)
+
+
 # ================================================================ scene 1
 N1 = 'How tight is the scatter plot?'
 scene_title(1, 'How Tight Is the Scatter Plot?', X1, Y_TIGHT, W1, 'A scatter diagram of twenty points rising in a tight cloud')
@@ -169,13 +191,13 @@ setup(1, N1, 'Revision and marks',
       'She asks 20 students how many hours they revise each week, $h$, and records each test mark out of $100$, $m$. '
       'Every student is one point on a scatter diagram.', F1, W1, pts(X1, Y_TIGHT, 'pink', 1))
 question(1, 1, N1, 'Read the cloud', 'Predict: which value of $r$ matches this scatter diagram?',
-         [walk('The points hug a rising line', ['r&\\approx 0.95'], 'The correlation coefficient $r$ is found on the GDC. A value near $1$ means a tight, rising, straight pattern.', True)],
+         [walk('The points hug a rising line', ['r&\\approx 0.95'], '$r$ is Pearson’s product-moment correlation coefficient. It measures how close the points lie to a straight line, and the GDC finds it. A value near $1$ means a tight, rising, straight pattern.', True)],
          W1, pts(X1, Y_TIGHT, 'pink'), G1, ['$r=0.3$', '$r=0.7$', '$r=0.95$'], 2)
 question(1, 1, N1, 'A scale for $|r|$', 'How do we put a word on the size of $r$? Use $|r|$, the size without the sign.',
          [walk('Strength from $|r|$', ['0\\text{ to }0.25&:\\ \\text{very weak}', '0.25\\text{ to }0.5&:\\ \\text{weak}',
                                        '0.5\\text{ to }0.75&:\\ \\text{moderate}', '0.75\\text{ to }0.9&:\\ \\text{strong}',
                                        '0.9\\text{ to }1&:\\ \\text{very strong}'],
-               'The sign gives the direction: $+$ rises, $-$ falls. This scatter is a very strong positive correlation.')],
+               'The sign gives the direction: $+$ rises, $-$ falls. This scatter is a very strong positive linear correlation.')],
          W1, pts(X1, Y_TIGHT, 'pink'), G1, cont=True)
 question(1, 2, N1, 'Spread the points', 'A second school finds the same trend, but the points are more spread out. Predict what happens to $r$.',
          [walk('Same trend, more scatter', ['r_{\\text{before}}&=0.95', 'r_{\\text{after}}&=0.73'],
@@ -193,6 +215,15 @@ S.append({'type': 'lab', 'preset': 'scatterLab', 'eyebrow': N1 + ' · Slide r', 
                    'rslider': {'min': -1, 'max': 1, 'step': 0.05, 'start': 0.95, 'seconds': 8, 'auto': True},
                    'sets': [{'name': 'Revision', 'x': X1, 'noise': E, 'ymean': 55, 'ysd': 16}]}})
 
+# ---------------------------------------------------------------- mathematician: Pearson (v27 profile layout)
+profile('Karl Pearson', ' 1857 to 1936', '',
+        [('The question', 'How strongly are children’s heights tied to their parents’? Francis Galton had the data and the first idea. Pearson, his colleague, wanted exact mathematics for heredity.', False),
+         ('The work', 'He turned Galton’s slope into a formula: the average product of each point’s deviations from the two means, scaled to run from $-1$ to $1$. That is $r$, and it measures straight lines only.', False),
+         ('The hard part', 'Pearson was a eugenicist. He used correlations to argue that heredity outweighs environment, and that selective breeding, not social reform, should shape the population. One historian judges that this rested more on class prejudice than on sound science.', True)],
+        {'svg': profiles.pearson_svg(), 'step': 2, 'alt': 'A scatter of ten points with dashed lines at the two means and a shaded rectangle from each point to the means',
+         'caption': f'Invented heights, Galton style. Dashed lines mark the means. Each rectangle is one point’s product of deviations: positive in the + corners, negative in the − corners. Here $r={profiles.R_P:.2f}$.'},
+        port=portrait('pearson', 'Illustration of Karl Pearson beside a bell curve, a histogram and a scatter plot with a fitted line', 'Illustration (AI-generated), not a photograph'), eyebrow='Mathematician · University College London')
+
 # ================================================================ scene 2
 N2 = 'A curve that only goes up'
 scene_title(2, 'A Curve That Only Goes Up', XP, YP, W2, 'A plant’s height each week: points rising along an upward curve')
@@ -204,7 +235,7 @@ setup(2, N2, 'A seedling', 'A gardener measures a seedling at the end of each we
       F2, W2, pts(XP, YP, 'pink', 1))
 question(2, 1, N2, 'Always rising', 'Predict: the plant rises every week. What is $r$?',
          [walk('GDC: linear regression', ['r&=0.888'], None, True),
-          walk('Always rising, but not a line', None, 'A relationship that only rises, or only falls, is monotonic. $r$ only rewards a straight line, so it stays below $1$.')],
+          walk('Monotonic, not linear', None, 'Always rising: monotonic increasing. Always falling: monotonic decreasing. Pearson’s $r$ rewards straight lines, so it stays below $1$.')],
          W2, pts(XP, YP, 'pink') + [line(A1, B1, 'blue', 1), {'kind': 'label', 'at': [2.2, 27], 'tex': 'r=0.888', 'anchor': 'c', 'step': 1}],
          G2, ['$r=1$', '$r$ just under $1$', '$r$ near $0.5$'], 1)
 assert round(A1, 2) == 3.03 and round(B1, 2) == -7.77
@@ -219,9 +250,18 @@ question(2, 3, N2, 'One odd point', 'A sensor glitch records the plant at only $
                                     {'kind': 'label', 'at': [2.2, 27], 'tex': 'r=0.888', 'anchor': 'c', 'step': 0, 'until': 0},
                                     {'kind': 'label', 'at': [2.2, 27], 'tex': 'r=0.704', 'anchor': 'c', 'step': 1}], G2,
          ['$r$ rises', '$r$ falls', '$r$ stays the same'], 1)
-S.append({'type': 'lab', 'preset': 'scatterLab', 'eyebrow': N2 + ' · Drag the outlier', 'title': 'The effects of one point on the Pearson’s Product-Moment Correlation Coefficient',
+S.append({'type': 'lab', 'preset': 'scatterLab', 'eyebrow': N2 + ' · Drag the outlier', 'title': 'One point and Pearson’s product-moment correlation coefficient',
           'init': {'window': WL2, 'start': 'Plant', 'fit': True, 'extra': {'at': list(OUT), 'on': True},
                    'sets': [{'name': 'Plant', 'pts': [[a, b] for a, b in zip(XP, YP)]}]}})
+
+# ---------------------------------------------------------------- mathematician: Spearman (v27 profile layout)
+profile('Charles Spearman', ' 1863 to 1945', '',
+        [('The question', 'Are pupils who do well in one school subject good at the others? Does cleverness show in simple senses such as hearing pitch? In 1904 he was working toward a PhD in Leipzig under Wilhelm Wundt and set out to measure it.', False),
+         ('The work', 'His data were often rankings, such as a teacher’s ordering of pupils, so he built a coefficient for two rankings. Today $r_s$ is Pearson’s $r$ computed on the ranks.', False),
+         ('On your calculator', '$r_s=1$ when one ranking rises exactly as the other does, even along a curve. So $r_s$ measures how monotonic a relationship is, where Pearson’s $r$ measures how linear.', False)],
+        {'svg': profiles.spearman_svg(), 'step': 2, 'alt': 'Two columns of ranks one to eight with a line joining each pupil’s two ranks; the lines are nearly parallel',
+         'caption': f'Invented ranks for eight pupils. Each line joins one pupil’s two ranks. Mostly parallel lines mean the rankings agree: $r_s={profiles.RS_F:.2f}$.'},
+        port=portrait('spearman', 'Illustration of Charles Spearman beside two rank columns, a rank scatter plot and the symbol rho s', 'Illustration (AI-generated), not a photograph'), eyebrow='Psychologist · University College London')
 
 # ================================================================ scene 3
 N3 = 'Eight sprinters'
@@ -231,7 +271,7 @@ F3 = facts(('<b>8 athletes</b>: one point for each', {'c': 'orange'}), ('$h$: ho
 G3 = facts(('<b>8 athletes</b>', {'c': 'orange'}), ('$h$ hours, $t$ seconds gained', {'shape': 'none'}))
 setup(3, N3, 'Training and improvement', 'A coach follows eight sprinters through a season.',
       'For each athlete she records $h$, the hours of training each week, and $t$, how many seconds faster the athlete runs 100 m. '
-      'More training helps, but the gains slow down.', F3, W3, pts(HX, HYf, 'orange', 1))
+      'More training helps, but the gains slow down: the points rise without lying on a straight line. Spearman’s rank correlation coefficient, $r_s$, measures how monotonic they are.', F3, W3, pts(HX, HYf, 'orange', 1))
 RXf = [float(v) for v in rx]; RYf = [float(v) for v in ry]
 A3, B3 = lsrl(RXf, RYf)
 WRK = {'xmin': -1, 'xmax': 9.5, 'ymin': -1, 'ymax': 9.5, 'gridx': 1, 'gridy': 1, 'xtick': 1, 'ytick': 1, 'xname': 'ranked hours', 'yname': 'ranked time', 'xtickFrom': 0, 'ytickFrom': 0}
@@ -250,7 +290,7 @@ question(3, 1, N3, 'Rank by hand', 'Rank $h$ and $t$, smallest first. What rank 
                None),
           walk(None, [T2], 'The tie takes places 3 and 4, so each gets $\\frac{3+4}{2}=3.5$.', True)],
          W3, pts(HX, HYf, 'orange'), G3, prompt=TBL, solo=True)
-question(3, 2, N3, 'Which is closer to 1?', 'Next the GDC finds $r$ for the data, then Spearman’s $r_s$ for the ranks. Predict which is closer to $1$.',
+question(3, 2, N3, 'Which is closer to 1?', 'Next the GDC finds Pearson’s $r$ for the data, then Spearman’s $r_s$ for the ranks. Predict which is closer to $1$.',
          [walk('Check both on the GDC', None, 'First $r$ for the data, then $r_s$ for the ranks.')],
          W3, pts(HX, HYf, 'orange'), G3, ['$r$ of the data', '$r_s$ of the ranks', 'They are equally close'], 1,
          second=(WRK, pts(RXf, RYf, 'green')))
@@ -278,11 +318,11 @@ S.append({'type': 'gdc', 'skill': 2, 'tag': 'C', 'title': 'Find $r_s$ from the r
                     {'t': 'Press [F1] X.', 's': lcd('s3', 'ax+b or a+bx')},
                     {'t': 'Press [F1] ax+b. Read $r_s=0.994$ to 3 s.f. Afterwards set SET back to List 1 and List 2.', 's': lcd('s4', 'LinearReg: r = 0.99402979', hl=[1.5, 42, 73, 10.5])}]})
 question(3, 4, N3, 'Plot the ranks', 'Plot the rank of $t$ against the rank of $h$. How does this scatter compare with the original?',
-         [walk('The ranks line up almost perfectly', ['r_s&=0.994'], '$r_s$ is $r$ for the ranks. The points hug a straight line far more closely than the original scatter, so $r_s$ is closer to $1$.', True)],
+         [walk('The ranks line up almost perfectly', ['r_s&=0.994'], '$r_s$ is Pearson’s $r$ applied to the ranks. The ranked points hug a straight line far more closely than the original scatter, so $r_s$ is closer to $1$.', True)],
          WRK, pts(RXf, RYf, 'green') + [line(A3, B3, 'blue', 1, None, 0, 9), {'kind': 'label', 'at': [2.2, 7.4], 'tex': 'r_s=0.994', 'anchor': 'c', 'step': 1}], G3)
 question(3, 5, N3, 'What does $r_s>r$ suggest?', 'The GDC gives $r=0.935$ and $r_s=0.994$. What does $r_s>r$ suggest?',
          [walk('The ranks line up better', ['r_s&=0.994', 'r&=0.935'],
-               'It suggests the data rise steadily but along a curve, or an outlier is dragging $r$ down. Always check the scatter.', True)],
+               'It suggests the data are close to monotonic but not linear, or an outlier is dragging $r$ down. The tied pair keeps $r_s$ just below $1$. Always check the scatter.', True)],
          W3, pts(HX, HYf, 'orange') + [line(A_S, B_S, 'blue', 1, None, 0, 15), {'kind': 'label', 'at': [3.2, 0.9], 'tex': 'r=0.935', 'anchor': 'c', 'step': 1}], G3,
          ['A perfect straight line', 'A steady rise along a curve', '$r_s$ is never larger than $r$'], 1,
          second=(WRK, pts(RXf, RYf, 'green') + [line(A3, B3, 'blue', 1, None, 0, 9.4), {'kind': 'label', 'at': [2.2, 7.4], 'tex': 'r_s=0.994', 'anchor': 'c', 'step': 1}]))
@@ -290,7 +330,7 @@ S.append({'type': 'lab', 'preset': 'scatterLab', 'eyebrow': N3 + ' · Move one a
           'init': {'window': W3, 'start': 'Sprinters', 'rs': True, 'fit': True, 'dragIndex': 7,
                    'sets': [{'name': 'Sprinters', 'pts': [[a, b] for a, b in zip(HX, HYf)]}]}})
 
-S.append({'type': 'lab', 'preset': 'scatterLab', 'eyebrow': N3 + ' · Back to the seedling', 'title': 'The effects of one point on the Spearman’s Rank Correlation Coefficient',
+S.append({'type': 'lab', 'preset': 'scatterLab', 'eyebrow': N3 + ' · Back to the seedling', 'title': 'One point and Spearman’s rank correlation coefficient',
           'init': {'window': WL2, 'start': 'Plant', 'rs': True, 'extra': {'at': list(OUT), 'on': True},
                    'sets': [{'name': 'Plant', 'pts': [[a, b] for a, b in zip(XP, YP)]}]}})
 

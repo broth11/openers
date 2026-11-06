@@ -1027,11 +1027,11 @@
       for (let i = 0; i < 4; i++) { const d = document.createElement('div'); d.className = 'fam-card'; gc.appendChild(d); slots.push(d); }
     }
     const cardsNow = () => { const r = R(), s = RSP(), out = [];
-      out.push({ title: 'Strength and direction', tone: 'curve', line: `$r=${fx(r, 2)}$ is ${word(r)}. Closer to $\\pm 1$ means a tighter straight-line pattern.` });
+      out.push({ title: 'Pearson’s $r$: strength and direction', tone: 'curve', line: `$r=${fx(r, 2)}$ is ${word(r)}. Closer to $\\pm 1$ means a tighter straight-line pattern.` });
       out.push(init.rs && s - r > 0.03
-        ? { title: '$r_s$ is larger than $r$', tone: 'ans', line: 'This suggests the data rise (or fall) steadily but along a curve, or that an extreme point is dragging $r$ down. Check the scatter.' }
+        ? { title: 'Spearman’s $r_s$ is larger than $r$', tone: 'ans', line: 'This suggests the data are close to monotonic but not linear, or that an extreme point is dragging $r$ down. Check the scatter.' }
         : { title: 'Compare $r$ and $r_s$', line: init.rs ? 'When $r_s$ is not clearly larger than $r$, the straight-line fit is doing about as well as the ranks.' : 'Show $r_s$ in the next scene.' });
-      out.push({ title: '$r$ measures straight lines', line: 'A relationship can always rise and still score below $1$ if it curves.' });
+      out.push({ title: 'Pearson’s $r$ measures linear correlation', line: 'A relationship can always rise (monotonic) and still score below $1$ if it curves.' });
       out.push({ title: 'Correlation is not causation', tone: 'red', line: 'A strong $r$ says the variables move together. It does not say one causes the other.' });
       return out; };
     function refresh() {

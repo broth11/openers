@@ -3,6 +3,8 @@
 // rises, eight sprinters, ice cream and sunburn), each with a title card and a setup slide, two calculator slides in scene 3
 // (students rank by hand), the recap explorer, and the IA slide. The generator is in decks/mai-hl-u05-l06/ (make_content.py,
 // with the fx-CG50 screen captures); do not edit the deck HTML by hand.
+// 6 November 2026: two mathematician profile slides (Pearson after scene 1, Spearman after scene 2), portraits supplied by Ben in
+// decks/mai-hl-u05-l06/portraits/, and the vocabulary (Pearson product-moment, linear, monotonic, Spearman rank correlation) named throughout.
 //
 // Casio steps not in the verified key log (never flagged on screen; told to Ben in the hand-off):
 //   - SET list picking for 2Var XList and 2Var YList ([DOWN] twice, [F1] LIST, list number, [EXE]) is inferred from

@@ -267,3 +267,7 @@ Present in the engine, **not used** (decision: no Today slide).
 - `walk.tex` may hold a whole `\begin{array}` table; `\htmlClass{ansc}{...}` colours cells in the answer yellow.
 - `gdc`: `table` (TeX) shows the data table under the title.
 - `lab` / `scatterLab`: `rslider`, `fit`, `rs`, `extra`, `dragIndex`, `cards` (see SKILL.md, v23 house rules).
+
+
+## v27 additions (6/11/2026)
+- `profile`: a mathematician featurette. `{type, eyebrow, name, years, blocks[{head, text, care?}], work{svg, step?, alt, caption}, portrait?{img (data URI), alt, credit}, line?}`. One `M` timeline beat; blocks reveal one by one; the portrait shows until `work.step`, then the work drawing replaces it. See SKILL.md, v27.
