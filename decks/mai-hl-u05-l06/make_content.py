@@ -222,7 +222,7 @@ profile('Karl Pearson', ' 1857 to 1936', '',
          ('The hard part', 'Pearson was a eugenicist. He used correlations to argue that heredity outweighs environment, and that selective breeding, not social reform, should shape the population. One historian judges that this rested more on class prejudice than on sound science.', True)],
         {'svg': profiles.pearson_svg(), 'step': 2, 'alt': 'A scatter of ten points with dashed lines at the two means and a shaded rectangle from each point to the means',
          'caption': f'Invented heights, Galton style. Dashed lines mark the means. Each rectangle is one point’s product of deviations: positive in the + corners, negative in the − corners. Here $r={profiles.R_P:.2f}$.'},
-        port=portrait('pearson', 'Illustration of Karl Pearson beside a bell curve, a histogram and a scatter plot with a fitted line', 'Illustration (AI-generated), not a photograph'), eyebrow='Mathematician · University College London')
+        port=portrait('pearson', 'Illustration of Karl Pearson seated at a desk with a pen and inkwell, resting his head on his hand', 'Illustration (AI-generated), not a photograph'), eyebrow='Mathematician · University College London')
 
 # ================================================================ scene 2
 N2 = 'A curve that only goes up'
@@ -261,7 +261,7 @@ profile('Charles Spearman', ' 1863 to 1945', '',
          ('On your calculator', '$r_s=1$ when one ranking rises exactly as the other does, even along a curve. So $r_s$ measures how monotonic a relationship is, where Pearson’s $r$ measures how linear.', False)],
         {'svg': profiles.spearman_svg(), 'step': 2, 'alt': 'Two columns of ranks one to eight with a line joining each pupil’s two ranks; the lines are nearly parallel',
          'caption': f'Invented ranks for eight pupils. Each line joins one pupil’s two ranks. Mostly parallel lines mean the rankings agree: $r_s={profiles.RS_F:.2f}$.'},
-        port=portrait('spearman', 'Illustration of Charles Spearman beside two rank columns, a rank scatter plot and the symbol rho s', 'Illustration (AI-generated), not a photograph'), eyebrow='Psychologist · University College London')
+        port=portrait('spearman', 'Illustration of Charles Spearman in a head-and-shoulders portrait', 'Illustration (AI-generated), not a photograph'), eyebrow='Psychologist · University College London')
 
 # ================================================================ scene 3
 N3 = 'Eight sprinters'
