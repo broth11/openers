@@ -1,0 +1,737 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Speed on the s(t) and v(t) graphs | MAI HL Unit 12 Lesson 3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=DM+Sans:wght@400;500;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,600;1,8..60,700&display=swap">
+<style>
+:root{--bg:#FFE8A3;--surface:#fff;--ink:#141414;--muted:#3F3F3F;--line:#141414;--acc:#2D5BFF;--sel:#D97706;--sel-ink:#7A4300;--coral:#C9440F;--coralg:#E4501B;--strip:#7C3AED;--ok:#15803d;--f-ui:'DM Sans',system-ui,sans-serif;--f-math:'Source Serif 4',Georgia,'Times New Roman',serif;--f-head:'Bricolage Grotesque','DM Sans',system-ui,sans-serif}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font:400 16px/1.4 var(--f-ui);overflow:hidden}
+button{font:inherit;color:inherit;cursor:pointer}
+#app{height:100vh;display:flex;flex-direction:column;gap:10px;padding:10px max(16px,env(safe-area-inset-right)) 12px max(16px,env(safe-area-inset-left))}
+.top{display:flex;align-items:center;gap:14px;flex:none;flex-wrap:wrap;row-gap:8px}
+.cttl{min-width:260px}
+.cttl h1{margin:0;font:800 clamp(20px,2.4vw,28px)/1.05 var(--f-head);letter-spacing:-.02em}
+.cttl .tag{font:700 12px var(--f-ui);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.tl{flex:1;min-width:300px;display:flex;align-items:center;gap:6px;background:#fff;border:3px solid var(--ink);border-radius:14px;box-shadow:1px 1px 0 var(--ink);padding:6px 10px;overflow-x:auto}
+.sep{flex:none;width:2px;height:22px;background:var(--ink);opacity:.25;margin:0 4px}
+.cb{flex:none;min-width:30px;height:30px;padding:0 8px;border:2.5px solid var(--ink);border-radius:10px;background:#fff;font:700 14px var(--f-ui)}
+.cb.cb-n{width:30px;padding:0;border-radius:50%;background:var(--ink);color:#fff;margin-right:2px}
+.cb.on{background:var(--acc);color:#fff;border-color:var(--ink)}
+.cb.cb-n.on{box-shadow:0 0 0 3px color-mix(in srgb,var(--acc) 45%,transparent)}
+.cb-arrow{flex:none;width:32px;height:32px;border:2.5px solid var(--ink);border-radius:10px;background:#fff;box-shadow:1px 1px 0 var(--ink);font-weight:700}
+.cb-arrow:disabled{opacity:.35;cursor:default}
+.gridbtn{flex:none;width:30px;height:30px;padding:0;border:2.5px solid var(--ink);border-radius:10px;background:#fff;display:inline-flex;align-items:center;justify-content:center;line-height:0}
+.gridbtn svg{width:16px;height:16px}
+.gridbtn[aria-pressed=true]{background:var(--ink);color:#fff}
+.tools{display:flex;gap:8px}
+.btn{height:34px;padding:0 12px;border:2.5px solid var(--ink);border-radius:10px;background:#fff;box-shadow:1px 1px 0 var(--ink);font:700 14px var(--f-ui)}
+.cpage{flex:1;min-height:0;display:flex;flex-direction:column}
+.cmain{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:12px}
+.pic{min-height:0;min-width:0;display:flex;flex-direction:column;background:#fff;border:3px solid var(--ink);border-radius:18px;box-shadow:1px 1px 0 var(--ink);padding:12px 14px 10px}
+.panel{min-height:0;display:flex;flex-direction:column;background:#fff;border:3px solid var(--ink);border-radius:18px;box-shadow:1px 1px 0 var(--ink);overflow:hidden}
+.cardview{display:none}
+.cpage.cardmode .cardview{display:flex;flex-direction:column;justify-content:center;gap:clamp(14px,3vh,30px);flex:1;min-height:0;padding:clamp(16px,4vh,48px) clamp(20px,5vw,72px);background:#fff;border:3px solid var(--ink);border-radius:18px;box-shadow:1px 1px 0 var(--ink)}
+.cpage.cardmode .cmain{display:none}
+.cv-topic{margin:0;font:700 14px var(--f-ui);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.cv-q{margin:0;font-family:var(--f-math);font-weight:600;font-size:clamp(28px,5.4vh,50px);line-height:1.22;max-width:21em}
+.cv-f{font-family:var(--f-math);font-size:clamp(24px,4.4vh,40px)}
+.shead{flex:none}
+.shead h2{margin:0 0 2px;font:800 clamp(18px,2vw,23px)/1.1 var(--f-head);letter-spacing:-.02em}
+.shead h2 span{color:var(--muted);font-weight:500}
+.cap{margin:2px 0 6px;font-size:16.5px;line-height:1.38;max-width:62em}
+.pred{margin:4px 0 6px;padding:8px 10px;border:2.5px solid var(--ink);border-radius:10px;background:#FFF6D6}
+.pred .pq{font-weight:700;margin-bottom:6px}
+.pred .pc{display:flex;gap:8px;flex-wrap:wrap}
+.pred .pc button{border:2.5px solid var(--ink);border-radius:10px;background:#fff;padding:5px 12px;font-weight:500}
+.pred .pc button:hover{background:#fff;outline:3px solid var(--acc);outline-offset:1px}
+.pred .pc button.right{background:#dcfce7}
+.pred .pc button.wrong{background:#fee2e2}
+.pred .pa{margin-top:6px}
+.replay{margin-left:8px;border:2.5px solid var(--ink);border-radius:10px;background:#fff;font:700 13px var(--f-ui);padding:2px 10px}
+.trackwrap{flex:none;height:62px}
+.trackwrap svg{display:block;width:100%;height:62px}
+.gwrap{position:relative;flex:1;min-height:180px;touch-action:none;user-select:none;-webkit-user-select:none}
+.gwrap svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.gwrap .dl{position:absolute;transform:translate(-50%,-50%);background:#fff;border:2.5px solid var(--ink);border-radius:6px;box-shadow:1px 1px 0 var(--ink);padding:1px 9px;font:600 18px var(--f-math);white-space:nowrap;pointer-events:none}
+.readout{flex:none;margin-top:4px;font-family:var(--f-math);font-size:19px;min-height:30px;display:flex;flex-wrap:wrap;gap:2px 16px;align-items:baseline}
+.readout .rk{white-space:nowrap}
+.chips{flex:none;display:flex;gap:8px;flex-wrap:wrap;margin:2px 0 2px}
+.chip{border:2.5px solid var(--ink);border-radius:10px;background:#fff;padding:2px 10px;font-family:var(--f-math);font-size:18px;white-space:nowrap}
+.chip.win{background:#FFE2B8;border-color:var(--ink);box-shadow:0 0 0 3px var(--sel)}
+.chip small{font:700 11px var(--f-ui);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-left:6px}
+.controls{flex:none;display:flex;flex-direction:column;gap:2px;min-height:34px}
+.ctl-h{display:flex;align-items:baseline;gap:12px;font-size:13px;line-height:1.1;margin-bottom:2px;font-weight:700;color:var(--muted)}
+.ctl-h .ctl-v{font-family:var(--f-math);font-size:18px;color:var(--ink);font-weight:600;min-width:7.5em}
+.ctl-r input[type=range]{display:block;flex:none;max-width:none;height:20px;margin:0;padding:0;background:transparent;-webkit-appearance:none;appearance:none}
+.ctl-r input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:3px;background:var(--ink)}
+.ctl-r input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:20px;height:20px;margin-top:-7px;box-sizing:border-box;border-radius:50%;background:var(--sel);border:2.5px solid var(--ink)}
+.ctl-r input[type=range]::-moz-range-track{height:6px;border-radius:3px;background:var(--ink)}
+.ctl-r input[type=range]::-moz-range-thumb{width:20px;height:20px;box-sizing:border-box;border-radius:50%;background:var(--sel);border:2.5px solid var(--ink)}
+.ctl-r input[type=range]:focus-visible{outline:2px solid var(--acc);outline-offset:3px}
+.tabs{flex:none;display:flex;border-bottom:3px solid var(--ink)}
+.tabs button{flex:1;border:0;background:transparent;padding:10px 4px 8px;font:700 14px var(--f-ui);border-bottom:4px solid transparent;margin-bottom:-3px;color:var(--muted)}
+.tabs button[aria-selected=true]{color:var(--ink);border-bottom-color:var(--ink)}
+.tabs button.mist[aria-selected=true]{border-bottom-color:var(--coralg)}
+.tbody{flex:1;min-height:0;overflow:auto;padding:12px 14px 14px}
+.tbody h3{margin:0 0 4px;font:700 13px var(--f-ui);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.tbody ul,.tbody ol{margin:0 0 12px;padding-left:20px}
+.tbody li{margin:0 0 6px;font-size:16px}
+.card{margin:0 0 10px;padding:8px 12px;background:#fff;border:2.5px solid var(--ink);border-left-width:9px;border-radius:8px}
+.card.teal{border-left-color:var(--acc)}.card.sel{border-left-color:var(--sel)}.card.coral{border-left-color:var(--coralg)}.card.muted{border-left-color:#5B5B5B}
+.card .ct{font:700 13px var(--f-ui);letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.card .cf{font-family:var(--f-math);font-size:21px;margin-top:2px}
+.wb{margin:0 0 12px}
+.wb .wt{font-size:15px;font-weight:500;margin-bottom:3px}
+.wb .wl{font-family:var(--f-math);font-size:21px;line-height:1.5;padding:1px 4px}
+.wb .wl.ans{background:#FFF1DC;border:2px solid var(--sel);border-radius:8px;padding:3px 8px;margin-top:2px}
+.note{font-size:15px;color:var(--muted);border-top:2px dashed #bbb;padding-top:8px;margin-top:4px}
+.sw{display:flex;align-items:center;gap:10px;margin:0 0 12px;font-weight:700}
+.sw button{width:46px;height:26px;border:2.5px solid var(--ink);border-radius:13px;background:#fff;position:relative;padding:0}
+.sw button::after{content:"";position:absolute;top:2px;left:2px;width:17px;height:17px;border-radius:50%;background:var(--ink);transition:left .15s}
+.sw button[aria-checked=true]{background:var(--coralg)}
+.sw button[aria-checked=true]::after{left:22px}
+.mrow{margin:0 0 9px}.mrow b{display:block;font:700 12px var(--f-ui);letter-spacing:.08em;text-transform:uppercase;color:var(--coral)}
+.mrow.fix b{color:var(--ok)}
+.step{display:block;margin:0 0 7px;font-size:15.5px}
+kbd.k{display:inline-block;min-width:24px;padding:0 7px;margin:0 1px;border-radius:6px;background:var(--ink);color:#fff;font:700 12.5px/21px var(--f-ui);text-align:center}
+.entry{display:inline-block;padding:0 6px;border:1.5px solid #bbb;border-radius:5px;background:#FFF8E1;font-family:var(--f-math);font-size:17px}
+.watch{margin-top:8px;padding:8px 10px;border:2.5px solid var(--ink);border-radius:8px;background:#FFD23F;font-size:15px}
+.watch b{font-weight:700}
+.unchk{margin-top:8px;padding:6px 10px;border:2px dashed var(--ink);border-radius:8px;font-size:14px;color:var(--muted)}
+.goal{font-weight:700;margin-bottom:8px}
+/* math */
+.me{white-space:nowrap}
+.me i{font-family:var(--f-math);font-style:italic}
+.me{font-family:var(--f-math)}
+.me .mo{margin:0 .24em}
+.me .tx{font-style:normal}
+.me sup,.me sub{font-size:.72em;line-height:0}
+.me .fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 .12em;font-size:.95em}
+.me .fr>span:first-child{border-bottom:1.5px solid currentColor;padding:0 .2em}
+.me .fr>span:last-child{padding:0 .2em}
+.cv-f .me,.cap .me,li .me,.card .me{font-size:1.06em}
+@media(max-width:1000px){
+  body{overflow:auto}
+  #app{height:auto;min-height:100vh}
+  .cmain{grid-template-columns:1fr}
+  .gwrap{min-height:340px}
+  .panel{min-height:320px}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="top">
+    <div class="cttl"><div class="tag">MAI HL · Unit 12 · Lesson 3</div><h1>Speed on the s(t) and v(t) graphs</h1></div>
+    <div class="tl" id="tl" role="toolbar" aria-label="Lesson timeline"></div>
+    <div class="tools"><button class="btn" id="fs" title="Full screen">Full screen</button></div>
+  </div>
+  <div class="cpage" id="cpage">
+    <section class="cardview" id="cardview">
+      <p class="cv-topic" id="cvTopic"></p>
+      <p class="cv-q" id="cvQ"></p>
+      <div class="cv-f" id="cvF"></div>
+    </section>
+    <div class="cmain" id="cmain">
+      <section class="pic" id="pic">
+        <div class="shead" id="shead"></div>
+        <div class="trackwrap" id="trackwrap"></div>
+        <div class="gwrap" id="gwrap"></div>
+        <div class="readout" id="readout"></div>
+        <div class="chips" id="chips"></div>
+        <div class="controls" id="controls"></div>
+      </section>
+      <aside class="panel" id="panel">
+        <div class="tabs" id="tabs" role="tablist"></div>
+        <div class="tbody" id="tbody"></div>
+      </aside>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+/* ================= the model =================
+   a(t) = 6 - 2t, v(0) = -5, s(0) = 0  =>  v(t) = -t^2 + 6t - 5,  s(t) = -t^3/3 + 3t^2 - 5t
+   0 <= t <= 7. One function set computes the picture, the readout, the Working tab and the Casio answer. */
+const TMAX = 7;
+const v = t => -t*t + 6*t - 5;
+const a = t => 6 - 2*t;
+const s = t => -t*t*t/3 + 3*t*t - 5*t;
+const T = String.raw;
+const EPS = 1e-9;
+
+/* ---------- number formatting ---------- */
+const N = (x, d = 2) => { let r = Math.round(x * 10**d) / 10**d; if (Object.is(r, -0) || r === 0) r = 0; return String(r).replace('-', '−'); };
+const inexact = x => Math.abs(x - Math.round(x * 100) / 100) > 1e-9;
+const eq = x => (inexact(x) ? '\\approx ' : '= ') + N(x);
+
+/* ---------- tiny TeX subset to HTML (no CDN needed) ---------- */
+function tex(src) {
+  let i = 0, last = '';
+  const emit = (h, raw) => { last = raw; return h; };
+  function seq(stop) { let o = ''; while (i < src.length && src[i] !== stop) o += item(); return o; }
+  function item() {
+    let h = atom();
+    while (src[i] === '^' || src[i] === '_') { const k = src[i++]; const g = grp(); h += k === '^' ? `<sup>${g}</sup>` : `<sub>${g}</sub>`; }
+    return h;
+  }
+  function grp() { last = ''; if (src[i] === '{') { i++; const h = seq('}'); i++; return h; } return atom(); }
+  function raw(stop) { let o = ''; while (i < src.length && src[i] !== stop) o += src[i++]; i++; return o; }
+  function atom() {
+    const c = src[i];
+    if (c === ' ' || c === '\n') { i++; return ''; }
+    if (c === '\\') {
+      let j = i + 1;
+      if (!/[a-zA-Z]/.test(src[j] || '')) { const d = src[j]; i = j + 1; return d === ',' ? ' ' : d === ' ' ? ' ' : d === ';' ? ' ' : d === '!' ? '' : emit(d, d); }
+      while (/[a-zA-Z]/.test(src[j] || '')) j++;
+      const cmd = src.slice(i + 1, j); i = j;
+      const sym = { le: '≤', ge: '≥', ne: '≠', approx: '≈', to: '→', Rightarrow: '⇒', int: '∫', pm: '±', times: '×', cdot: '·', prime: '′', dots: '…', quad: ' ', theta: 'θ', Delta: 'Δ', infty: '∞' };
+      if (cmd in sym) { const x = sym[cmd]; if ('≤≥≠≈→⇒×'.includes(x)) return emit(`<span class="mo">${x}</span>`, x); return emit(x, x); }
+      if (cmd === 'frac') { while (src[i] === ' ') i++; const n = grp(); while (src[i] === ' ') i++; const d = grp(); return emit(`<span class="fr"><span>${n}</span><span>${d}</span></span>`, '1'); }
+      if (cmd === 'text' || cmd === 'mathrm') { i++; const r = raw('}'); return emit(`<span class="tx">${r.replace(/ /g, ' ')}</span>`, 'a'); }
+      if (cmd === 'left' || cmd === 'right') return '';
+      return '';
+    }
+    i++;
+    if (/[A-Za-z]/.test(c)) return emit(`<i>${c}</i>`, c);
+    if (c === '=' || c === '+' || c === '<' || c === '>') return emit(`<span class="mo">${c}</span>`, c);
+    if (c === '-') { const unary = last === '' || '(=+<>,|{[→⇒≤≥≈'.includes(last); return emit(unary ? '−' : '<span class="mo">−</span>', '-'); }
+    if (c === "'") return emit('′', c);
+    return emit(c, c);
+  }
+  const out = seq(null);
+  return `<span class="me">${out}</span>`;
+}
+/* html-safe variant: keeps markup, converts $...$ only */
+function mh(str) { return str.split('$').map((p, k) => k % 2 ? tex(p) : p).join(''); }
+/* mixed text with $...$ maths */
+function m(str) { return str.split('$').map((p, k) => k % 2 ? tex(p) : p.replace(/&/g, '&amp;').replace(/</g, '&lt;')).join(''); }
+
+/* ================= geometry ================= */
+const XMIN = -0.6, XMAX = 7.5;
+function makeGeo(W, H, kinds, ranges, labelPanel) {
+  const MT = 14, MB = 8, gap = 16, L = 6, R = 24;
+  const avail = H - MT - MB - gap * (kinds.length - 1);
+  const ratio = kinds.length === 1 ? [1] : [0.42, 0.58];
+  let y = MT; const panels = [];
+  kinds.forEach((k, i) => { const h = avail * ratio[i]; panels.push({ kind: k, top: y, bot: y + h, ymin: ranges[k][0], ymax: ranges[k][1], xlab: labelPanel === i }); y += h + gap; });
+  return { W, H, L, R, panels, xPx: t => L + (t - XMIN) / (XMAX - XMIN) * (W - L - R), tOf: x => XMIN + (x - L) / (W - L - R) * (XMAX - XMIN) };
+}
+const yPx = (p, val) => p.bot - (val - p.ymin) / (p.ymax - p.ymin) * (p.bot - p.top);
+function stepFor(p) { const ppu = (p.bot - p.top) / (p.ymax - p.ymin); for (const st of [1, 2, 4, 5, 10]) if (st * ppu >= 25) return st; return 10; }
+const COL = { blue: '#2D5BFF', coral: '#E4501B', coralg: '#E4501B', sel: '#D97706', strip: '#7C3AED', ink: '#141414' };
+
+function pathOf(G, p, f, t0, t1, dt = 0.04) {
+  let d = '';
+  const n = Math.max(2, Math.round((t1 - t0) / dt));
+  for (let k = 0; k <= n; k++) { const t = t0 + (t1 - t0) * k / n; d += (k ? 'L' : 'M') + G.xPx(t).toFixed(1) + ' ' + yPx(p, f(t)).toFixed(1); }
+  return d;
+}
+function baseSVG(G, p, pi, grid) {
+  let o = `<clipPath id="cp${pi}"><rect x="0" y="${p.top - 2}" width="${G.W}" height="${p.bot - p.top + 4}"/></clipPath>`;
+  const st = stepFor(p), y0 = yPx(p, 0), x0 = G.xPx(0);
+  if (grid) {
+    for (let g = Math.ceil(p.ymin / st) * st; g <= p.ymax + 1e-9; g += st) o += `<line x1="${G.xPx(XMIN)}" x2="${G.xPx(XMAX)}" y1="${yPx(p, g)}" y2="${yPx(p, g)}" stroke="#141414" stroke-opacity=".14" stroke-width="1.5"/>`;
+    for (let t = 1; t <= TMAX; t++) o += `<line x1="${G.xPx(t)}" x2="${G.xPx(t)}" y1="${p.top}" y2="${p.bot}" stroke="#141414" stroke-opacity=".14" stroke-width="1.5"/>`;
+  }
+  // axes
+  o += `<line x1="${G.xPx(XMIN)}" x2="${G.xPx(XMAX)}" y1="${y0}" y2="${y0}" stroke="#141414" stroke-width="3"/>`;
+  o += `<line x1="${x0}" x2="${x0}" y1="${p.top}" y2="${p.bot}" stroke="#141414" stroke-width="3"/>`;
+  const halo = 'paint-order="stroke" stroke="#fff" stroke-width="5" stroke-linejoin="round"';
+  for (let t = 1; t <= TMAX; t++) {
+    o += `<line x1="${G.xPx(t)}" x2="${G.xPx(t)}" y1="${y0 - 5}" y2="${y0 + 5}" stroke="#141414" stroke-width="2.5"/>`;
+    if (p.xlab) o += `<text x="${G.xPx(t)}" y="${y0 + 23}" text-anchor="middle" font-family="Source Serif 4,Georgia,serif" font-size="16" fill="#141414" ${halo}>${t}</text>`;
+  }
+  for (let g = Math.ceil(p.ymin / st) * st; g <= p.ymax + 1e-9; g += st) {
+    if (g === 0) continue;
+    o += `<line x1="${x0 - 5}" x2="${x0 + 5}" y1="${yPx(p, g)}" y2="${yPx(p, g)}" stroke="#141414" stroke-width="2.5"/>`;
+    o += `<text x="${x0 - 11}" y="${yPx(p, g) + 5}" text-anchor="end" font-family="Source Serif 4,Georgia,serif" font-size="16" fill="#141414" ${halo}>${String(g).replace('-', '−')}</text>`;
+  }
+  const ff = 'font-family="Source Serif 4,Georgia,serif"';
+  o += `<text x="${G.xPx(XMAX) - 2}" y="${y0 - 11}" text-anchor="end" ${ff} font-size="21" font-style="italic">t</text>`;
+  o += `<text x="${x0 + 12}" y="${p.top + 18}" ${ff} font-size="21"><tspan font-style="italic">${p.kind}</tspan>(<tspan font-style="italic">t</tspan>)</text>`;
+  return o;
+}
+function handle(G, p, t, color = COL.sel) { return `<circle cx="${G.xPx(t)}" cy="${yPx(p, 0)}" r="9" fill="${color}" stroke="#141414" stroke-width="2.5"/>`; }
+function dot(G, p, t, val, fill, r = 6) { return `<circle cx="${G.xPx(t)}" cy="${yPx(p, val)}" r="${r}" fill="${fill}" stroke="#141414" stroke-width="2.5"/>`; }
+function vline(G, p, t, color, w = 2, dash = '6 5', op = 1) { return `<line x1="${G.xPx(t)}" x2="${G.xPx(t)}" y1="${p.top}" y2="${p.bot}" stroke="${color}" stroke-width="${w}" stroke-dasharray="${dash}" opacity="${op}"/>`; }
+function tangent(G, p, pi, t, color, w = 4) {
+  const k = v(t), s0 = s(t), h = 1.3;
+  return `<g clip-path="url(#cp${pi})"><line x1="${G.xPx(t - h)}" y1="${yPx(p, s0 - k * h)}" x2="${G.xPx(t + h)}" y2="${yPx(p, s0 + k * h)}" stroke="${color}" stroke-width="${w}" stroke-linecap="round"/></g>`;
+}
+
+/* ================= scene definitions ================= */
+const K = n => `<kbd class="k">${n}</kbd>`;
+const E = x => `<span class="entry">${x}</span>`;
+const unchecked = 'Written from the fx-CG50 menus, not yet checked on a calculator. Press through it once before class.';
+
+function cands(t1, t2) {
+  const lo = Math.min(t1, t2), hi = Math.max(t1, t2), L = [{ t: lo, why: 'start' }];
+  if (hi > lo) { if (lo < 3 - EPS && hi > 3 + EPS) L.push({ t: 3, why: 'a(t) = 0' }); L.push({ t: hi, why: 'end' }); } else L[0].why = 'only point';
+  L.forEach(c => { c.v = v(c.t); c.sp = Math.abs(c.v); });
+  const mx = Math.max(...L.map(c => c.sp)), mv = Math.max(...L.map(c => c.v));
+  L.forEach(c => { c.win = Math.abs(c.sp - mx) < EPS; c.vmax = Math.abs(c.v - mv) < EPS; });
+  return { lo, hi, L, mx, mv, win: L.filter(c => c.win), vm: L.filter(c => c.vmax) };
+}
+const tcur = (P, stop) => (stop.scene === 2 && stop.kind !== 'I') ? cands(P.t1, P.t2).win[0].t : P.t;
+
+const SCENES = [
+/* ---------------------------------------------------------- 1: speed on v(t) */
+{
+  id: 'vgraph', title: 'Speed on the v(t) graph', ranges: { v: [-13.5, 13.5], s: [-3.6, 9.6] }, panels: ['v'],
+  stops: [
+    { kind: 'Q', topic: 'Speed on the velocity graph', q: 'Velocity can be negative. Speed cannot. How does a velocity graph show speed?', f: T`a(t)=6-2t,\quad v(0)=-5\ \text{m s}^{-1}` },
+    { kind: 'I', set: { t: 0, fold: 0, wrong: false }, track: true,
+      caption: 'A particle moves along a line. Its velocity $v(t)$ is negative at first, so it moves left. The parts of the curve below the axis are about to flip up.',
+      predict: { q: 'At $t=0$ the velocity is $v(0)=-5\\ \\text{m s}^{-1}$. What is the particle\'s speed?', choices: [T`-5\ \text{m s}^{-1}`, T`5\ \text{m s}^{-1}`, T`0\ \text{m s}^{-1}`].map(x => '$' + x + '$'), correct: 1, a: 'Speed is the size of the velocity, so it is $5\\ \\text{m s}^{-1}$. The sign only tells you the direction (left). Watch the coral part flip: that is the graph of $|v(t)|$.' },
+      play: { param: 'fold', to: 1, seconds: 2.5 }, notice: 'Violet is $|v(t)|$. Anything below the axis is reflected above it.' },
+    { kind: 'P', set: { fold: 1, wrong: false }, track: true, controls: ['t'],
+      caption: 'Drag the orange cursor along the $t$-axis. The violet bracket is the distance from the axis to the curve.',
+      look: ['Speed is the vertical distance from the $t$-axis to the curve, on whichever side the curve is.', 'At $t=1$ and $t=5$ the curve touches the axis. $v=0$ there, so the speed is $0$.', 'At $t=7$ the curve is much further from the axis than anywhere else. The particle is fastest there, and it is moving left.'],
+      steps: ['Set $t=0$. $v(0)=-5$, but the speed is $5\\ \\text{m s}^{-1}$.', 'Set $t=3$. $v(3)=4$, so the speed is $4\\ \\text{m s}^{-1}$.', 'Set $t=7$. $v(7)=-12$, so the speed is $12\\ \\text{m s}^{-1}$, moving left.'],
+      mistake: { param: 'wrong', what: 'They read speed straight off the graph of $v(t)$, so below the axis they report a negative speed.', why: 'A distance cannot be negative. Below the axis $v(t)<0$ means the particle moves left, not that it is slower.', fix: 'Take the size: speed $=|v(t)|$. On the graph, measure the distance to the axis and ignore the sign.' } },
+    { kind: 'S', set: { t: 0, fold: 1, wrong: false }, track: true, caption: 'Speed is $|v(t)|$. On the $v(t)$ graph it is the distance from the $t$-axis, whichever side the curve is on.',
+      cards: [{ title: 'Speed from the velocity graph', html: T`\text{speed}=|v(t)|`, tone: 'teal' }, { title: 'Example at the start', html: T`v(0)=-5\ \Rightarrow\ \text{speed}=5\ \text{m s}^{-1}`, tone: 'sel' }, { title: 'Direction', html: T`v>0:\ \text{right}\qquad v<0:\ \text{left}`, tone: 'muted' }] },
+    { kind: 'S', set: { t: 0, fold: 1, wrong: true }, track: true, caption: 'The mistake: reading $v(0)=-5$ as a speed of $-5$. The coral bracket points below the axis, but a speed is a distance and cannot be negative.',
+      mistake: { param: 'wrong', what: 'They read speed straight off the graph of $v(t)$, so below the axis they report a negative speed.', why: 'A distance cannot be negative. Below the axis $v(t)<0$ means the particle moves left, not that it is slower.', fix: 'Take the size: speed $=|v(t)|$. On the graph, measure the distance to the axis and ignore the sign.' },
+      cards: [{ title: 'In the markscheme', html: T`\text{speed}\ge 0\ \text{always}`, tone: 'coral' }] }
+  ]
+},
+/* ---------------------------------------------------------- 2: speed on s(t) */
+{
+  id: 'sgraph', title: 'Speed on the s(t) graph', ranges: { v: [-13.5, 6.5], s: [-3.6, 9.6] }, panels: ['s'],
+  stops: [
+    { kind: 'Q', topic: 'Speed on the position graph', q: 'The graph now shows position $s(t)$, not velocity. There is no $|v(t)|$ curve to read. Where is the speed?', f: T`v(t)=s'(t)` },
+    { kind: 'I', set: { t: 0, wrong: false }, track: true,
+      caption: 'The orange line is the tangent to $s(t)$. Its steepness is the speed. Whether it leans up or down is the direction.',
+      predict: { q: 'At the highest point of $s(t)$ the particle is as far right as it ever gets. How fast is it moving there?', choices: ['Its greatest speed', 'It is momentarily at rest', 'The same speed as at $t=0$'], correct: 1, a: 'The tangent at the top is flat, so the slope $s\'(t)=v(t)$ is $0$. The particle stops and turns round. Speed lives in the slope, not in the height.' },
+      play: { param: 't', from: 0, to: 7, seconds: 9 }, notice: 'Watch the tangent as it sweeps along.' },
+    { kind: 'P', set: { wrong: false }, track: true, controls: ['t'],
+      caption: 'Drag the orange cursor along the $t$-axis. The tangent shows the slope of $s(t)$, and the track above shows the particle.',
+      look: ['The tangent leans down when the particle moves left, and up when it moves right.', 'The flatter the tangent, the slower the particle. A flat tangent means speed $0$.', 'Steepness counts in both directions. A tangent that falls steeply is as fast as one that rises steeply.'],
+      steps: ['Set $t=1$. The tangent is flat: $v(1)=0$ and the particle turns round.', 'Set $t=3$. The slope is $+4$, so the speed is $4\\ \\text{m s}^{-1}$, moving right.', 'Set $t=7$. The slope is $-12$, so the speed is $12\\ \\text{m s}^{-1}$, moving left.'],
+      mistake: { param: 'wrong', what: 'They look for the highest point of the $s(t)$ graph to find the greatest speed.', why: 'Height on this graph is position. At the top the curve is flat, so $v=0$ and the particle is momentarily at rest.', fix: 'Look for the steepest part of the curve, rising or falling. That is where $|s\'(t)|$ is largest.' } },
+    { kind: 'S', set: { t: 3, wrong: false }, track: true, caption: 'Speed is the steepness of $s(t)$, in either direction: $|s\'(t)|=|v(t)|$.',
+      cards: [{ title: 'Speed from the position graph', html: T`\text{speed}=|s'(t)|`, tone: 'teal' }, { title: 'Greatest speed', html: T`\text{steepest tangent, up or down}`, tone: 'sel' }, { title: 'Direction', html: T`s'(t)>0:\ \text{right}\qquad s'(t)<0:\ \text{left}`, tone: 'muted' }] },
+    { kind: 'S', set: { t: 5, wrong: true }, track: true, caption: 'The mistake: the highest point of $s(t)$, at $t=5$, is not the fastest. The tangent is flat there, so the speed is $0$.',
+      mistake: { param: 'wrong', what: 'They look for the highest point of the $s(t)$ graph to find the greatest speed.', why: 'Height on this graph is position. At the top the curve is flat, so $v=0$ and the particle is momentarily at rest.', fix: 'Look for the steepest part of the curve, rising or falling. That is where $|s\'(t)|$ is largest.' },
+      cards: [{ title: 'At the highest point', html: T`s'(5)=v(5)=0\ \Rightarrow\ \text{speed}=0`, tone: 'coral' }] }
+  ]
+},
+/* ---------------------------------------------------------- 3: greatest speed */
+{
+  id: 'greatest', title: 'Greatest speed on an interval', ranges: { v: [-13.5, 6.5], s: [-3.6, 9.6] }, panels: ['s', 'v'],
+  stops: [
+    { kind: 'Q', topic: 'Greatest speed', q: 'On a time interval, when is the particle moving fastest? Is that the same moment its velocity is greatest?', f: T`v(t)=-t^2+6t-5,\quad 0\le t\le 7` },
+    { kind: 'I', set: { t1: 0, t2: 5, t: 0, wrong: false }, track: true,
+      caption: 'Both graphs share one time axis. The cursor sweeps $0\\le t\\le 5$. Compare the distance of $v(t)$ from the axis with the steepness of $s(t)$.',
+      predict: { q: 'Over $0\\le t\\le 5$ the greatest velocity is $4\\ \\text{m s}^{-1}$, at $t=3$. What is the greatest speed?', choices: ['$4\\ \\text{m s}^{-1}$, also at $t=3$', '$5\\ \\text{m s}^{-1}$, at $t=0$', '$0\\ \\text{m s}^{-1}$'], correct: 1, a: 'At $t=0$, $v=-5$, so the speed is $5$. That beats $4$. A large negative velocity is a large speed in the other direction.' },
+      play: { param: 't', from: 0, to: 5, seconds: 6 }, notice: 'Orange marks the candidates once you answer.' },
+    { kind: 'P', set: { wrong: false }, track: true, controls: ['t1', 't2'],
+      caption: 'Drag the two orange handles to choose an interval. The candidates are the two ends and any time inside where $a(t)=0$.',
+      look: ['The greatest speed is at an end of the interval, or at a time inside where $a(t)=0$. Nowhere else.', 'On $v(t)$ it is the point furthest from the $t$-axis. On $s(t)$ it is the steepest tangent, rising or falling.', 'Greatest velocity and greatest speed differ when the largest $|v|$ happens where $v$ is negative.'],
+      steps: ['Set $0\\le t\\le 5$. The speed is $5$ at $t=0$, but the velocity is greatest at $t=3$.', 'Set $1\\le t\\le 5$. Both ends have speed $0$, so the greatest speed is $4$, inside, at $t=3$.', 'Set $0\\le t\\le 7$. The end $t=7$ wins with $12\\ \\text{m s}^{-1}$, moving left.'],
+      mistake: { param: 'wrong', what: 'They find the greatest value of $v$, the highest point of the $v(t)$ graph, and call it the greatest speed.', why: 'Speed is $|v|$. A velocity of $-5$ is a bigger speed than a velocity of $4$, but it sits lower on the graph.', fix: 'Compare $|v|$ at the ends and where $a(t)=0$. On the graph, look for the point furthest from the $t$-axis, not the highest point.' } },
+    { kind: 'S', set: { t1: 0, t2: 5, wrong: false }, track: true,
+      caption: 'Check the ends and the times where $a(t)=0$, then compare $|v|$. On $0\\le t\\le 5$ the winner is the end $t=0$.',
+      cards: [{ title: 'On v(t)', html: T`\text{greatest speed}=\text{furthest point from the }t\text{-axis}`, tone: 'teal' }, { title: 'On s(t)', html: T`\text{greatest speed}=\text{steepest tangent, up or down}`, tone: 'teal' }, { title: 'Candidates, 0 ≤ t ≤ 5', html: T`|v(0)|=5,\ |v(3)|=4,\ |v(5)|=0`, tone: 'sel' }, { title: 'Answer', html: T`5\ \text{m s}^{-1}\ \text{at }t=0`, tone: 'sel' }] },
+    { kind: 'S', set: { t1: 0, t2: 5, wrong: true }, track: true,
+      caption: 'The mistake: the greatest velocity is $4$ at $t=3$, but the greatest speed is $5$ at $t=0$. They are different questions.',
+      mistake: { param: 'wrong', what: 'They find the greatest value of $v$, the highest point of the $v(t)$ graph, and call it the greatest speed.', why: 'Speed is $|v|$. A velocity of $-5$ is a bigger speed than a velocity of $4$, but it sits lower on the graph.', fix: 'Compare $|v|$ at the ends and where $a(t)=0$. On the graph, look for the point furthest from the $t$-axis, not the highest point.' },
+      cards: [{ title: 'In the markscheme', html: T`\text{compare }|v|\text{ at the ends and at }a=0`, tone: 'coral' }] }
+  ]
+}
+];
+
+/* flat stop list; Q cards are numbered stops too */
+const STOPS = [];
+SCENES.forEach((sc, si) => {
+  let sN = 0; const nS = sc.stops.filter(x => x.kind === 'S').length;
+  sc.stops.forEach(st => { const lab = st.kind === 'Q' ? String(si + 1) : st.kind === 'S' && nS > 1 ? 'S' + (++sN) : st.kind; STOPS.push(Object.assign({ scene: si, sc, label: lab }, st)); });
+});
+
+/* ================= working + keypresses (computed from the model) ================= */
+function working(stop, P) {
+  const sc = stop.scene;
+  if (sc === 0) {
+    const t = P.t, vv = v(t);
+    return { blocks: [
+      ['Velocity from acceleration, with $v(0)=-5$', [T`v(t)=\int a\,dt=\int(6-2t)\,dt=6t-t^2+c`, T`v(0)=-5\Rightarrow c=-5`, T`v(t)=-t^2+6t-5`]],
+      [`Velocity at $t=${N(t)}$`, [T`v(${N(t)})=-(${N(t)})^2+6(${N(t)})-5=${N(vv)}\ \text{m s}^{-1}`]],
+      ['Speed is the size of the velocity', [T`\text{speed}=|v(${N(t)})|=${N(Math.abs(vv))}\ \text{m s}^{-1}`], true]
+    ], note: vv < 0 ? 'The velocity is negative, so the particle moves left. The speed drops the sign.' : vv > 0 ? 'The velocity is positive, so the particle moves right.' : 'The velocity is zero: the particle is momentarily at rest.' };
+  }
+  if (sc === 1) {
+    const t = P.t, k = v(t);
+    return { blocks: [
+      ['Position from velocity, with $s(0)=0$', [T`s(t)=\int v\,dt=-\frac{t^3}{3}+3t^2-5t+c`, T`s(0)=0\Rightarrow c=0`]],
+      ['Slope of the graph is the velocity', [T`s'(t)=-t^2+6t-5=v(t)`, T`s'(${N(t)})=${N(k)}`]],
+      ['Speed is the size of the slope', [T`\text{speed}=|s'(${N(t)})|=${N(Math.abs(k))}\ \text{m s}^{-1}`], true]
+    ], note: k === 0 ? 'The tangent is flat: the particle is at rest for an instant, and this is where it turns round.' : 'The tangent leans ' + (k > 0 ? 'up, so the particle moves right.' : 'down, so the particle moves left.') };
+  }
+  const c = cands(P.t1, P.t2), inside = c.lo < 3 - EPS && c.hi > 3 + EPS;
+  const lines = c.L.map(x => T`|v(${N(x.t)})|=${N(x.sp)}`);
+  const w = c.win[0];
+  return { blocks: [
+    ['Times inside the interval where $a(t)=0$', [T`6-2t=0\Rightarrow t=3`, inside ? T`3\ \text{is inside }${N(c.lo)}\le t\le ${N(c.hi)}` : T`3\ \text{is not inside }${N(c.lo)}\le t\le ${N(c.hi)}`]],
+    ['Compare $|v|$ at the ends' + (inside ? ' and at $t=3$' : ''), lines],
+    ['Greatest speed', [T`${N(w.sp)}\ \text{m s}^{-1}\ \text{at }t=${N(w.t)}` + (c.win.length > 1 ? T`\ \text{(and }t=${N(c.win[1].t)}\text{)}` : '')], true]
+  ], note: c.mv !== c.mx ? `The greatest velocity is ${N(c.mv)} m s⁻¹, but the greatest speed is ${N(c.mx)} m s⁻¹. They differ because the largest |v| happens where v is negative.` : 'Here the greatest velocity and the greatest speed agree.' };
+}
+function keys(stop, P) {
+  const absSeq = `${K('OPTN')} ${K('F6')} (▷) ${K('F4')} (NUMERIC) ${K('F1')} (Abs)`;
+  if (stop.scene === 0) {
+    return { sections: [{ goal: 'See $|v(t)|$ on the graph screen', steps: [
+      `${K('MENU')} then open <b>Graph</b>`,
+      `In Y1, enter ${absSeq}, then ${E('−X²+6X−5')}, then ${K('EXE')}`,
+      `${K('SHIFT')} ${K('F3')} (V-Window): ${E('Xmin 0')} ${E('Xmax 7')} ${E('Ymin −1')} ${E('Ymax 13')}, then ${K('EXE')} and exit`,
+      `${K('F6')} (DRAW). The graph sits above the axis`,
+      `${K('SHIFT')} ${K('F1')} (Trace), then ${K('→')} to move along. The y-value is the speed`] }],
+      watch: 'Without Abs, the calculator draws v(t) and the y-value can be negative.', unchecked };
+  }
+  if (stop.scene === 1) {
+    const t = P.t;
+    return { sections: [{ goal: `Speed at $t=${N(t)}$ from the slope of $s(t)$`, steps: [
+      `${K('MENU')} ${K('1')}: Run-Matrix`,
+      `Take the absolute value: ${absSeq}`,
+      `${K('OPTN')} ${K('F4')} (CALC) ${K('F1')} (d/dx)`,
+      `Type ${E('−X³÷3+3X²−5X')}, ${K('→')} to the point field, type ${E(N(t))}`,
+      `${K('EXE')}. The display shows ${N(Math.abs(v(t)))}`] }],
+      watch: 'The slope can be negative. The Abs outside makes it the speed.', unchecked };
+  }
+  const c = cands(P.t1, P.t2), w = c.win[0];
+  return { sections: [{ goal: `Greatest speed for $${N(c.lo)}\\le t\\le ${N(c.hi)}$`, steps: [
+    `${K('MENU')} then open <b>Graph</b>. In Y1, enter ${absSeq}, then ${E('−X²+6X−5')}, ${K('EXE')}`,
+    `${K('SHIFT')} ${K('F3')} (V-Window): ${E('Xmin ' + N(c.lo))} ${E('Xmax ' + N(c.hi))} ${E('Ymin −1')} ${E('Ymax 13')}, then ${K('F6')} (DRAW)`,
+    `${K('SHIFT')} ${K('F5')} (G-Solv) ${K('F2')} (MAX). This finds a peak <i>inside</i> the window` + (c.L.some(x => x.why === 'a(t) = 0') ? `: x = 3, y = 4` : ': none here'),
+    `An end of the window is not a peak. Check the ends with ${K('MENU')} ${K('1')} and ${absSeq}${E('v(' + N(c.lo) + ')')}, then ${E('v(' + N(c.hi) + ')')}`,
+    `Compare the values. The largest is ${N(w.sp)}, at ${E('t = ' + N(w.t))}`] }],
+    watch: 'MAX only finds interior peaks. The ends of the interval are candidates too.', unchecked };
+}
+
+/* ================= state ================= */
+const P = { t: 0, fold: 0, t1: 0, t2: 5, wrong: false };
+const PDEF = { t: 0, fold: 0, t1: 0, t2: 5, wrong: false };
+let si = 0, tab = 'notice', picked = null, raf = null, playDone = false, G = null;
+const gridState = {};
+const $ = id => document.getElementById(id);
+const stopObj = () => STOPS[si];
+let pending = false;
+const sched = () => { if (!pending) { pending = true; requestAnimationFrame(() => { pending = false; render(); }); } };
+
+/* ---------- timeline ---------- */
+const GRIDSVG = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5.3 1.5v13M10.7 1.5v13M1.5 5.3h13M1.5 10.7h13"/></svg>';
+function buildTimeline() {
+  let h = `<button class="cb-arrow" id="prev" aria-label="Previous stop">◀</button>`;
+  let last = -1;
+  STOPS.forEach((st, i) => {
+    if (st.scene !== last) { if (last >= 0) h += '<span class="sep"></span>'; last = st.scene; }
+    if (st.kind === 'Q') h += `<button class="cb cb-n${i === si ? ' on' : ''}" data-i="${i}" title="${st.sc.title}">${st.label}</button>`;
+    else h += `<button class="cb${i === si ? ' on' : ''}" data-i="${i}">${st.label}</button>`;
+    if (i === si && st.kind !== 'Q') h += `<button class="gridbtn" id="gridbtn" aria-pressed="${gridOn()}" title="Grid">${GRIDSVG}</button>`;
+  });
+  h += `<button class="cb-arrow" id="next" aria-label="Next stop">▶</button>`;
+  $('tl').innerHTML = h;
+  $('prev').disabled = si === 0; $('next').disabled = si === STOPS.length - 1;
+  $('tl').querySelectorAll('[data-i]').forEach(b => b.onclick = () => go(+b.dataset.i));
+  $('prev').onclick = () => go(si - 1); $('next').onclick = () => go(si + 1);
+  const gb = $('gridbtn'); if (gb) gb.onclick = () => { gridState[si] = !gridOn(); gb.setAttribute('aria-pressed', gridOn()); sched(); };
+  const on = $('tl').querySelector('.cb.on'); if (on) on.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+}
+const gridOn = () => gridState[si] !== undefined ? gridState[si] : stopObj().grid !== false;
+
+/* ---------- navigation ---------- */
+function go(i) {
+  if (i < 0 || i >= STOPS.length) return;
+  stopPlay(); si = i; picked = null; playDone = false;
+  const st = stopObj();
+  if (st.kind !== 'Q') {
+    if (st.kind === 'I' || st.set === undefined) Object.assign(P, PDEF, st.set || {});
+    else Object.assign(P, st.set);
+    if (st.kind === 'S' && st.set && st.set.wrong === undefined) P.wrong = false;
+  }
+  tab = 'notice';
+  history.replaceState(null, '', '?stop=' + i + location.hash);
+  buildAll();
+  if (st.play && !st.predict) startPlay(st.play);
+}
+function stopPlay() { if (raf) cancelAnimationFrame(raf); raf = null; }
+function startPlay(sp) {
+  stopPlay(); const from = sp.from !== undefined ? sp.from : P[sp.param]; P[sp.param] = from; playDone = false;
+  const t0 = performance.now();
+  const f = now => { const k = Math.min(1, (now - t0) / (sp.seconds * 1000)); P[sp.param] = from + (sp.to - from) * k; sched(); if (k < 1) raf = requestAnimationFrame(f); else { raf = null; playDone = true; sched(); } };
+  raf = requestAnimationFrame(f);
+}
+
+/* ---------- build the static parts of a stop ---------- */
+function buildAll() {
+  const st = stopObj(), card = st.kind === 'Q';
+  $('cpage').classList.toggle('cardmode', card);
+  buildTimeline();
+  if (card) { $('cvTopic').innerHTML = st.topic; $('cvQ').innerHTML = m(st.q); $('cvF').innerHTML = st.f ? tex(st.f) : ''; return; }
+  buildHead(); buildControls(); buildTabs(); sched();
+}
+function buildHead() {
+  const st = stopObj(); const kindName = { I: 'Introduction', P: 'Playground', S: 'Summary' }[st.kind];
+  let h = `<h2>${st.sc.title} <span>· ${kindName}${st.label.length > 1 && st.kind === 'S' ? ' ' + st.label.slice(1) : ''}</span></h2><p class="cap">${m(st.caption)}`;
+  if (st.kind === 'I' && st.play) h += `<button class="replay" id="replay" ${playDone ? '' : 'hidden'}>Replay</button>`;
+  h += '</p>';
+  if (st.predict) {
+    h += `<div class="pred" id="pred"><div class="pq">${m(st.predict.q)}</div><div class="pc">` + st.predict.choices.map((c, i) => `<button data-c="${i}">${m(c)}</button>`).join('') + `</div><div class="pa" id="pa"></div></div>`;
+  }
+  $('shead').innerHTML = h;
+  const rp = $('replay'); if (rp) rp.onclick = () => { if (st.predict && picked === null) return; Object.assign(P, st.set || {}); startPlay(st.play); };
+  document.querySelectorAll('#pred [data-c]').forEach(b => b.onclick = () => pick(+b.dataset.c));
+  if (st.predict && picked !== null) showPick();
+}
+function pick(i) {
+  const st = stopObj(); if (picked !== null) return; picked = i; showPick();
+  if (st.play) { Object.assign(P, st.set || {}); startPlay(st.play); }
+  buildTabs(); sched();
+}
+function showPick() {
+  const st = stopObj(), pr = st.predict;
+  document.querySelectorAll('#pred [data-c]').forEach(b => { const i = +b.dataset.c; b.disabled = true; if (i === pr.correct) b.classList.add('right'); else if (i === picked) b.classList.add('wrong'); });
+  $('pa').innerHTML = `<b>${picked === pr.correct ? 'Yes.' : 'Not quite.'}</b> ` + m(pr.a);
+}
+
+/* ---------- sliders (built once per stop, never rebuilt while dragging) ---------- */
+const CTL = {
+  t: { label: 'Time', min: 0, max: TMAX, step: 0.05, show: t => `t = ${N(t)} s` },
+  t1: { label: 'From', min: 0, max: TMAX, step: 0.5, show: t => `t₁ = ${N(t, 1)}` },
+  t2: { label: 'To', min: 0, max: TMAX, step: 0.5, show: t => `t₂ = ${N(t, 1)}` }
+};
+function buildControls() {
+  const st = stopObj(), box = $('controls'); box.innerHTML = '';
+  (st.controls || []).forEach(k => {
+    const c = CTL[k], row = document.createElement('div'); row.className = 'ctl ctl-r'; row.dataset.k = k;
+    row.innerHTML = `<div class="ctl-h"><span>${c.label}</span><span class="ctl-v" id="cv_${k}"></span></div><input type="range" id="in_${k}" min="${c.min}" max="${c.max}" step="${c.step}" value="${P[k]}" aria-label="${c.label}">`;
+    box.appendChild(row);
+    row.querySelector('input').addEventListener('input', e => { stopPlay(); P[k] = +e.target.value; sched(); });
+  });
+}
+function syncControls() {
+  const st = stopObj(); if (!G) return;
+  (st.controls || []).forEach(k => {
+    const c = CTL[k], inp = $('in_' + k); if (!inp) return;
+    if (document.activeElement !== inp && +inp.value !== P[k]) inp.value = P[k];
+    $('cv_' + k).textContent = c.show(P[k]);
+    const row = inp.parentElement;
+    inp.style.width = (G.xPx(c.max) - G.xPx(c.min) + 20) + 'px';
+    inp.style.marginLeft = (G.xPx(c.min) - 10) + 'px';
+    row.querySelector('.ctl-h').style.marginLeft = '0px';
+  });
+}
+
+/* ---------- right-hand panel ---------- */
+function buildTabs() {
+  const st = stopObj(), list = [];
+  list.push(['notice', 'Notice']); list.push(['working', 'Working']); list.push(['casio', 'Casio']);
+  if (st.mistake) list.push(['mistake', 'Mistake']);
+  if (!list.some(x => x[0] === tab)) tab = 'notice';
+  $('tabs').innerHTML = list.map(([k, n]) => `<button role="tab" data-t="${k}" class="${k === 'mistake' ? 'mist' : ''}" aria-selected="${tab === k}">${n}</button>`).join('');
+  $('tabs').querySelectorAll('button').forEach(b => b.onclick = () => { tab = b.dataset.t; buildTabs(); });
+  fillTab();
+}
+function fillTab() {
+  const st = stopObj(), body = $('tbody'); let h = '';
+  if (tab === 'notice') {
+    if (st.look) h += `<h3>Look for</h3><ul>${st.look.map(x => `<li>${m(x)}</li>`).join('')}</ul>`;
+    if (st.steps) h += `<h3>Try this</h3><ol>${st.steps.map(x => `<li>${m(x)}</li>`).join('')}</ol>`;
+    if (st.cards) h += st.cards.map(c => `<div class="card ${c.tone}"><div class="ct">${c.title}</div><div class="cf">${tex(c.html)}</div></div>`).join('');
+    if (st.kind === 'I') {
+      if (st.predict && picked === null) h += `<p>Answer the question above first. Then the animation runs.</p>`;
+      else h += `<p>${m(st.notice || '')}</p>`;
+    }
+  } else if (tab === 'working') {
+    const w = working(st, P);
+    h += w.blocks.map(b => `<div class="wb"><div class="wt">${m(b[0])}</div>${b[1].map((l, j) => `<div class="wl${b[2] && j === b[1].length - 1 ? ' ans' : ''}">${tex(l)}</div>`).join('')}</div>`).join('') + `<div class="note">${m(w.note)}</div>`;
+  } else if (tab === 'casio') {
+    const k = keys(st, P);
+    h += k.sections.map(sec => `<div class="goal">${mh(sec.goal)}</div>` + sec.steps.map((x, j) => `<span class="step"><b>${j + 1}.</b> ${mh(x)}</span>`).join('')).join('');
+    h += `<div class="watch"><b>Watch out.</b> ${mh(k.watch)}</div><div class="unchk">${k.unchecked}</div>`;
+  } else if (tab === 'mistake') {
+    const mk = st.mistake;
+    h += `<div class="sw"><button role="switch" id="wsw" aria-checked="${P.wrong}"></button><span>Show the mistake on the graph</span></div>`;
+    h += `<div class="mrow"><b>What people do</b>${m(mk.what)}</div><div class="mrow"><b>Why it fails</b>${m(mk.why)}</div><div class="mrow fix"><b>Do this instead</b>${m(mk.fix)}</div>`;
+  }
+  body.innerHTML = h;
+  const sw = $('wsw'); if (sw) sw.onclick = () => { P.wrong = !P.wrong; sw.setAttribute('aria-checked', P.wrong); sched(); };
+}
+
+/* ================= drawing ================= */
+function trackSVG(tc, W) {
+  const L = 28, R = W - 28, lo = -4, hi = 10, X = x => L + (x - lo) / (hi - lo) * (R - L);
+  const sv = s(tc), vv = v(tc), y = 38;
+  let o = `<line x1="${L - 8}" x2="${R + 8}" y1="${y}" y2="${y}" stroke="#141414" stroke-width="3"/>`;
+  for (let x = lo; x <= hi; x++) { o += `<line x1="${X(x)}" x2="${X(x)}" y1="${y - 5}" y2="${y + 5}" stroke="#141414" stroke-width="2"/>`; if (x % 2 === 0) o += `<text x="${X(x)}" y="${y + 22}" text-anchor="middle" font-family="Source Serif 4,Georgia,serif" font-size="14" fill="#141414">${x === 0 ? 'O' : String(x).replace('-', '−')}</text>`; }
+  o += `<line x1="${X(0)}" x2="${X(sv)}" y1="${y}" y2="${y}" stroke="${COL.blue}" stroke-width="5" stroke-linecap="round" opacity=".55"/>`;
+  const len = vv * 9, ax = X(sv), col = vv >= 0 ? COL.blue : COL.coral;
+  if (Math.abs(len) > 1) {
+    const dir = Math.sign(len), x2 = ax + len;
+    o += `<line x1="${ax}" x2="${x2}" y1="${y - 17}" y2="${y - 17}" stroke="${col}" stroke-width="4" stroke-linecap="round"/><path d="M${x2} ${y - 17} l${-dir * 9} -6 M${x2} ${y - 17} l${-dir * 9} 6" stroke="${col}" stroke-width="4" stroke-linecap="round" fill="none"/>`;
+  }
+  o += `<circle cx="${ax}" cy="${y}" r="9" fill="${COL.sel}" stroke="#141414" stroke-width="2.5"/>`;
+  return `<svg viewBox="0 0 ${W} 62" preserveAspectRatio="none" role="img" aria-label="Particle on a line">${o}</svg>`;
+}
+
+function render() {
+  const st = stopObj(); if (st.kind === 'Q') return;
+  const wrap = $('gwrap'), W = wrap.clientWidth, H = wrap.clientHeight; if (W < 50 || H < 50) return;
+  const sc = st.sc, kinds = sc.panels;
+  G = makeGeo(W, H, kinds, sc.ranges, kinds.length - 1);
+  const grid = gridOn(); const labels = []; let svg = '';
+  const pv = G.panels.find(p => p.kind === 'v'), ps = G.panels.find(p => p.kind === 's');
+  G.panels.forEach((p, pi) => { svg += baseSVG(G, p, pi, grid); });
+  const iv = G.panels.indexOf(pv), is_ = G.panels.indexOf(ps);
+  const predictPending = st.predict && picked === null;
+  const tc = tcur(P, st);
+  const L = (x, y, dx, dy, html, color, point) => labels.push({ x: G.xPx(x), y, dx, dy, html, color, point });
+  let readout = '';
+
+  if (sc.id === 'vgraph') {
+    const p = pv, f = P.fold, morph = t => { const x = v(t); return x < 0 ? x * (1 - 2 * f) : x; };
+    if (f > 0.97 && !P.wrong) svg += `<g clip-path="url(#cp${iv})"><path d="${pathOf(G, p, v, 0, TMAX)}" fill="none" stroke="${COL.blue}" stroke-width="4" stroke-dasharray="9 7" opacity=".85"/></g>`;
+    svg += `<g clip-path="url(#cp${iv})"><path d="${pathOf(G, p, f > 0.97 && P.wrong ? v : morph, 0, TMAX)}" fill="none" stroke="${f > 0.001 && !P.wrong ? COL.strip : COL.blue}" stroke-width="${4.6}" stroke-linejoin="round"/></g>`;
+    const vv = v(P.t), sp = Math.abs(vv), mark = P.wrong ? vv : (f > 0.97 ? sp : vv);
+    const showBr = st.kind !== 'I' || f > 0.97;
+    if (showBr && !predictPending) {
+      const y1 = yPx(p, 0), y2 = yPx(p, mark), col = P.wrong ? COL.coralg : COL.strip, x = G.xPx(P.t);
+      svg += `<line x1="${x}" x2="${x}" y1="${y1}" y2="${y2}" stroke="${col}" stroke-width="6" stroke-linecap="round"/>`;
+      if (vv < 0 && f > 0.97) svg += dot(G, p, P.t, vv, '#fff', 5);
+      svg += dot(G, p, P.t, mark, col, 6);
+      L(P.t, (y1 + y2) / 2, 34, 0, P.wrong ? tex(N(vv)) : tex(N(sp)), col, false);
+    }
+    if (st.kind === 'P' || st.kind === 'S') svg += vline(G, p, P.t, COL.sel, 2) + handle(G, p, P.t);
+    // labels for the curves
+    if (f > 0.97) { L(0.3, yPx(p, v(0.3)), 66, 34, tex(T`v(t)`), COL.blue, false); L(6.1, yPx(p, Math.abs(v(6.1))), -74, -14, tex(T`|v(t)|`), COL.strip, false); }
+    else L(2.2, yPx(p, v(2.2)), -62, -32, tex(T`v(t)`), COL.blue, false);
+    const showSp = !(st.predict && picked === null);
+    readout = `<span class="rk">${tex(T`t=${N(P.t)}\ \text{s}`)}</span><span class="rk">${tex(T`v(t)=${N(vv)}\ \text{m s}^{-1}`)}</span>` + (showSp ? `<span class="rk">${tex(T`\text{speed}=|v(t)|=${N(sp)}\ \text{m s}^{-1}`)}</span>` : `<span class="rk">${tex(T`\text{speed}=\ ?`)}</span>`);
+  }
+
+  if (sc.id === 'sgraph') {
+    const p = ps;
+    svg += `<g clip-path="url(#cp${is_})"><path d="${pathOf(G, p, s, 0, TMAX)}" fill="none" stroke="${COL.blue}" stroke-width="4.6" stroke-linejoin="round"/></g>`;
+    L(3.2, yPx(p, s(3.2)), -62, -24, tex(T`s(t)`), COL.blue, false);
+    const k = v(P.t);
+    if (P.wrong) {
+      const top = 25 / 3;
+      svg += `<line x1="${G.xPx(0)}" x2="${G.xPx(XMAX)}" y1="${yPx(p, top)}" y2="${yPx(p, top)}" stroke="${COL.coralg}" stroke-width="2.5" stroke-dasharray="7 6"/>`;
+      svg += tangent(G, p, is_, 5, COL.coralg, 5) + dot(G, p, 5, top, COL.coralg, 6);
+      L(5, yPx(p, top), -150, -12, tex(T`\text{highest: slope }0`), COL.coralg, true);
+    }
+    const onTop = P.wrong && Math.abs(P.t - 5) < 0.06;
+    if ((!predictPending || st.kind !== 'I') && !onTop) {
+      svg += tangent(G, p, is_, P.t, COL.sel, 4.4) + dot(G, p, P.t, s(P.t), COL.sel, 7);
+      L(P.t, yPx(p, s(P.t)), 78, k > 0 ? 36 : -36, tex(T`\text{slope }${N(k)}`), COL.sel, false);
+    }
+    if (st.kind !== 'I') svg += vline(G, p, P.t, COL.sel, 2, '6 5', .8) + handle(G, p, P.t);
+    const sh = !(st.predict && picked === null);
+    readout = `<span class="rk">${tex(T`t=${N(P.t)}\ \text{s}`)}</span><span class="rk">${tex(T`s(t)${eq(s(P.t))}\ \text{m}`)}</span><span class="rk">${tex(T`s'(t)=${N(k)}`)}</span>` + (sh ? `<span class="rk">${tex(T`\text{speed}=|s'(t)|=${N(Math.abs(k))}\ \text{m s}^{-1}`)}</span>` : `<span class="rk">${tex(T`\text{speed}=\ ?`)}</span>`);
+  }
+
+  if (sc.id === 'greatest') {
+    const c = cands(P.t1, P.t2), isI = st.kind === 'I';
+    // interval bands
+    G.panels.forEach(p => { svg += `<rect x="${G.xPx(c.lo)}" y="${p.top}" width="${Math.max(0, G.xPx(c.hi) - G.xPx(c.lo))}" height="${p.bot - p.top}" fill="${COL.blue}" opacity=".07"/>`; });
+    // curves: faint outside, bold inside
+    svg += `<g clip-path="url(#cp${is_})"><path d="${pathOf(G, ps, s, 0, TMAX)}" fill="none" stroke="${COL.blue}" stroke-width="3" opacity=".3"/><path d="${pathOf(G, ps, s, c.lo, Math.max(c.hi, c.lo + 0.001))}" fill="none" stroke="${COL.blue}" stroke-width="4.6" stroke-linecap="round"/></g>`;
+    svg += `<g clip-path="url(#cp${iv})"><path d="${pathOf(G, pv, v, 0, TMAX)}" fill="none" stroke="${COL.blue}" stroke-width="3" opacity=".3"/><path d="${pathOf(G, pv, v, c.lo, Math.max(c.hi, c.lo + 0.001))}" fill="none" stroke="${COL.blue}" stroke-width="4.6" stroke-linecap="round"/></g>`;
+    L(5.9, yPx(ps, s(5.9)), 0, -34, tex(T`s(t)`), COL.blue, false);
+    L(6.4, yPx(pv, v(6.4)), -64, 4, tex(T`v(t)`), COL.blue, false);
+    const reveal = !(st.predict && picked === null);
+    if (reveal && !isI || (isI && picked !== null)) {
+      c.L.forEach(x => {
+        const col = x.win ? COL.sel : '#6b6b6b';
+        svg += vline(G, ps, x.t, col, x.win ? 2.5 : 1.8, '6 5', 1) + vline(G, pv, x.t, col, x.win ? 2.5 : 1.8, '6 5', 1);
+        svg += dot(G, ps, x.t, s(x.t), x.win ? COL.sel : '#fff', 6) + dot(G, pv, x.t, x.v, x.win ? COL.sel : '#fff', 6);
+        if (x.win) {
+          svg += `<line x1="${G.xPx(x.t)}" x2="${G.xPx(x.t)}" y1="${yPx(pv, 0)}" y2="${yPx(pv, x.v)}" stroke="${COL.sel}" stroke-width="6" stroke-linecap="round"/>` + tangent(G, ps, is_, x.t, COL.sel, 4.4);
+          L(x.t, yPx(pv, x.v / 2), x.t > 5 ? -40 : 44, 0, tex(T`|v|=${N(x.sp)}`), COL.sel, false);
+          L(x.t, yPx(ps, s(x.t)), x.t > 5 ? -76 : 76, v(x.t) > 0 ? 30 : -30, tex(T`\text{slope }${N(x.v)}`), COL.sel, false);
+        }
+      });
+    }
+    if (P.wrong && !isI) {
+      c.vm.forEach(x => { svg += dot(G, pv, x.t, x.v, COL.coralg, 7); L(x.t, yPx(pv, x.v), 0, -30, tex(T`\text{greatest }v=${N(x.v)}`), COL.coralg, true); });
+    }
+    if (isI && picked !== null) {
+      const x = P.t, vv = v(x);
+      svg += vline(G, pv, x, COL.strip, 2.5, '', .9) + `<line x1="${G.xPx(x)}" x2="${G.xPx(x)}" y1="${yPx(pv, 0)}" y2="${yPx(pv, vv)}" stroke="${COL.strip}" stroke-width="6" stroke-linecap="round"/>` + dot(G, pv, x, vv, COL.strip, 6) + dot(G, ps, x, s(x), COL.strip, 6) + tangent(G, ps, is_, x, COL.strip, 3.4) + vline(G, ps, x, COL.strip, 2.5, '', .9);
+    }
+    if (!isI) { svg += handle(G, pv, c.lo) + (c.hi > c.lo ? handle(G, pv, c.hi) : ''); }
+    const w = c.win[0];
+    if (isI && picked === null) readout = `<span class="rk">${tex(T`0\le t\le 5`)}</span><span class="rk">${tex(T`\text{greatest speed}=\ ?`)}</span>`;
+    else if (isI) readout = `<span class="rk">${tex(T`t=${N(P.t)}\ \text{s}`)}</span><span class="rk">${tex(T`v(t)=${N(v(P.t))}`)}</span><span class="rk">${tex(T`|v(t)|=${N(Math.abs(v(P.t)))}\ \text{m s}^{-1}`)}</span>`;
+    else readout = `<span class="rk">${tex(T`${N(c.lo)}\le t\le ${N(c.hi)}`)}</span><span class="rk">${tex(T`\text{greatest speed}=${N(c.mx)}\ \text{m s}^{-1}\ \text{at }t=${N(w.t)}` + (c.win.length > 1 ? T`\ \text{and }t=${N(c.win[1].t)}` : ''))}</span>` + (P.wrong ? `<span class="rk" style="color:var(--coral)">${tex(T`\text{greatest }v=${N(c.mv)}\ \text{(not the speed)}`)}</span>` : `<span class="rk" style="color:var(--muted)">${tex(T`\text{greatest }v=${N(c.mv)}`)}</span>`);
+    // candidate chips
+    const chips = (isI && picked === null) ? '' : (isI ? '' : c.L.map(x => `<span class="chip${x.win ? ' win' : ''}">${tex(T`t=${N(x.t)}:\ |v|=${N(x.sp)}`)}<small>${x.why}</small></span>`).join(''));
+    if ($('chips').dataset.h !== chips) { $('chips').innerHTML = chips; $('chips').dataset.h = chips; }
+  } else if ($('chips').dataset.h) { $('chips').innerHTML = ''; $('chips').dataset.h = ''; }
+
+  // overlay: labels then leaders
+  const hasL = labels.length;
+  let lh = '';
+  labels.forEach((l, k) => { lh += `<div class="dl" data-k="${k}" style="left:${l.x + l.dx}px;top:${l.y + l.dy}px;color:${l.color}">${l.html}</div>`; });
+  wrap.innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="Graph">${svg}<g id="leaders"></g></svg>${lh}`;
+  if (hasL) {
+    const wr = wrap.getBoundingClientRect(); let lead = '';
+    wrap.querySelectorAll('.dl').forEach(div => {
+      const l = labels[+div.dataset.k], r = div.getBoundingClientRect();
+      const cx = r.left - wr.left + r.width / 2, cy = r.top - wr.top + r.height / 2, hw = r.width / 2, hh = r.height / 2;
+      const dx = l.x - cx, dy = l.y - cy; if (Math.hypot(dx, dy) < Math.max(hw, hh) + 4) return;
+      const k = Math.min(hw / Math.max(Math.abs(dx), 1e-6), hh / Math.max(Math.abs(dy), 1e-6));
+      const sx = cx + dx * k, sy = cy + dy * k;
+      lead += `<line x1="${sx}" y1="${sy}" x2="${l.x}" y2="${l.y}" stroke="#141414" stroke-width="2.5"/>`;
+      if (l.point) lead += `<circle cx="${l.x}" cy="${l.y}" r="5" fill="#141414"/>`;
+    });
+    wrap.querySelector('#leaders').innerHTML = lead;
+  }
+  // track + readout + sliders
+  $('trackwrap').style.display = st.track ? '' : 'none';
+  if (st.track) $('trackwrap').innerHTML = trackSVG(sc.id === 'greatest' && st.kind === 'I' && picked === null ? 0 : tc, $('trackwrap').clientWidth || W);
+  if ($('readout').dataset.h !== readout) { $('readout').innerHTML = readout; $('readout').dataset.h = readout; }
+  syncControls();
+  if (tab === 'working' || tab === 'casio') fillTab();
+  if (st.kind === 'I' && st.play) { const rp = $('replay'); if (rp) rp.hidden = !(playDone || (!raf && (!st.predict || picked !== null))); }
+}
+
+/* ---------- dragging on the graph ---------- */
+let drag = null;
+const gw = $('gwrap');
+function pointT(e) { const r = gw.getBoundingClientRect(); return G.tOf(e.clientX - r.left); }
+gw.addEventListener('pointerdown', e => {
+  const st = stopObj(); if (!G || !st.controls) return;
+  let t = Math.min(TMAX, Math.max(0, pointT(e)));
+  if (st.controls.includes('t')) drag = 't';
+  else drag = Math.abs(t - P.t1) <= Math.abs(t - P.t2) ? 't1' : 't2';
+  if (st.controls.includes('t1') && P.t1 === P.t2) drag = t < P.t1 ? 't1' : 't2';
+  gw.setPointerCapture(e.pointerId); stopPlay(); moveDrag(e);
+});
+gw.addEventListener('pointermove', e => { if (drag !== null) moveDrag(e); });
+gw.addEventListener('pointerup', () => { drag = null; });
+gw.addEventListener('pointercancel', () => { drag = null; });
+function moveDrag(e) {
+  const c = CTL[drag]; let t = Math.min(TMAX, Math.max(0, pointT(e))); t = Math.round(t / c.step) * c.step; P[drag] = t; sched();
+}
+/* keyboard: arrows move the active slider when the graph has focus is handled by the range inputs themselves */
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT') return;
+  if (e.key === 'ArrowRight') go(si + 1); else if (e.key === 'ArrowLeft') go(si - 1);
+});
+$('fs').onclick = () => { if (document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen && document.documentElement.requestFullscreen(); };
+new ResizeObserver(() => sched()).observe(gw);
+window.addEventListener('resize', sched);
+const q0 = new URLSearchParams(location.search).get('stop');
+go(q0 !== null && !isNaN(+q0) ? Math.min(STOPS.length - 1, Math.max(0, +q0)) : 0);
+</script>
+</body>
+</html>
