@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Concepts</title>
+    <meta name="description" content="One picture for each hard idea in the unit." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@500;700&display=swap" />
+  </head>
+  <body>
+    <div class="cpage">
+      <header class="ctop">
+        <div class="menus">
+          <label class="sel"><span class="sr">Unit</span><select id="unitSel" aria-label="Unit"></select></label>
+          <label class="sel"><span class="sr">Concept</span><select id="conceptSel" aria-label="Concept"></select></label>
+        </div>
+        <div class="cttl">
+          <span class="eyebrow" id="eyebrow"></span>
+          <h1 id="title"></h1>
+          <p class="idea" id="idea"></p>
+        </div>
+        <div class="tools">
+          <button class="btn icon" id="fsBtn" type="button" title="Full screen (F)" aria-label="Full screen">
+            <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 6V2h4M10 2h4v4M14 10v4h-4M6 14H2v-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg>
+          </button>
+          <button class="btn" id="resetBtn" type="button" title="Back to the start, predictions cleared">Reset</button>
+        </div>
+      </header>
+
+      <main class="cmain">
+        <section class="pic" aria-label="Picture">
+          <p class="stop-head" id="stopHead"></p>
+          <div class="track" id="track" hidden></div>
+          <div class="graph" id="graph"></div>
+          <p class="readout" id="readout" aria-live="polite"></p>
+          <div class="controls" id="controls"></div>
+        </section>
+        <aside class="panel" aria-label="What to notice, working, and calculator steps">
+          <div class="tabs" id="tabs" role="tablist"></div>
+          <div class="panel-body" id="panelBody"></div>
+        </aside>
+      </main>
+
+      <nav class="cbar" aria-label="Scenes and stops">
+        <button type="button" class="cb-arrow" data-adv="-1" aria-label="Back">‹</button>
+        <div class="cb-track" id="barTrack"></div>
+        <button type="button" class="cb-arrow" data-adv="1" aria-label="Next">›</button>
+        <span class="cb-count" id="barCount" aria-live="polite"></span>
+      </nav>
+    </div>
+    <script type="module" src="/src/concepts/main.js"></script>
+  </body>
+</html>

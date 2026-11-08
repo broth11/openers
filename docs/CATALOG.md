@@ -36,6 +36,7 @@ Everything the kit can already do. Read this before building a new opener, and a
 | Area under velocity | A v-t graph under the Motion track strip with the area to the t-axis shaded live (one colour above, one below), an area readout, the car hidden until the reveal, and a recap lab with two draggable cursors, a `v` / `|v|` toggle and exact area readouts. Deck kit v24 (graph item `area`, state `hide`, `areaFrom`, preset `areaLab`) | U12 L2 | `src/components/area-under-velocity/README.md` |
 | Ladder (a, v, s) | Three stacked graphs (a-t, v-t, s-t) on one cursor with live shaded areas (change in v, change in s), a two-car `lanes` strip, and a recap lab with v(0) and a sliders. Deck kit v25 (layout `ladder`, kind `lanes`, preset `ladderLab`, finds C and D) | U12 L3 | `src/components/ladder/README.md` |
 | Polynomial explorer | Degree 2 to 4, factored or standard form, draggable roots, repeated roots, end-behaviour arrows, turning points, recap cards | U5 L2 | `src/components/polynomial/README.md` |
+| Number-line track | A particle on a horizontal number line above a graph: direction arrow, out-and-back trail in rows, ghost start marker, odometer. Plain SVG, for concept visuals and SVG lessons | U12 concept: signed area | `src/components/number-line-track/README.md` |
 | Power family | `y = kx^n` for positive and negative n: doubling markers, ratio and product tests, asymptotes, recap cards | U5 L2 | `src/components/power-family/README.md` |
 
 ## Openers
@@ -51,6 +52,14 @@ Everything the kit can already do. Read this before building a new opener, and a
 | MAI HL U12 L2 | Displacement and distance from velocity: two motion scenes (the toy car reversed, Michael's ride) with a v-t graph and live shaded area, six questions, a Scene 1 wrap-up, a third scene that finds position and distance by hand and with the calculator (graph and working only), recap lab (deck lesson, 1 November 2026: `public/mai-hl/u12-l02-displacement-and-distance-from-velocity.html`) | Deck | Motion track, Area under velocity |
 | MAI HL U12 L3 | From acceleration back to position: two scenes (two cars with the same a, a fading push with a limiting velocity), two big-idea slides (how s, v and a connect), six questions (Q3 and Q5 find the constants of integration, with every substitution shown), recap lab that finds C and D (deck lesson, 2 November 2026: `public/mai-hl/u12-l03-from-acceleration-back-to-position.html`) | Deck | Motion track, Area under velocity, Ladder |
 | MAI HL U5 L2 | Cubic fitting, direct and inverse variation (legacy stepped) | SVG | Context stage, Polynomial explorer, Power family |
+
+## Concept visuals
+
+The concepts page (`concepts.html`, shell `src/concepts/main.js`, model in `docs/CONCEPTS.md`): Unit and Concept menus, the picture beside a Notice, Working, and Casio panel, and a bar of scenes and stops (1 I P S). Graph specs may use `axes.aspect: 'fill'` to stretch the horizontal unit to the box.
+
+| Concept | Title | Picture | Components |
+|---|---|---|---|
+| MAI HL U12 (L2) `signed-area` | Displacement or distance: signed area and \|v\| (prototype, 8 November 2026) | Track above a v-t graph, live signed area, fold to \|v\|, wrong-way toggle | Number-line track |
 
 ## Wanted next (from the syllabus survey, 2026-10-25)
 

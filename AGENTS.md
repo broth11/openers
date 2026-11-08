@@ -8,7 +8,8 @@ Before changing anything, read:
 2. `docs/OPENERS.md`: the method, what a scene contains, the house style, and the rules learned so far. These still apply inside a walk lesson.
 3. `docs/CATALOG.md`: what already exists. Reuse it before writing anything new.
 4. `docs/ENGINES.md`: the engine interface, and how to add JSXGraph or three.js.
-5. `docs/OPENERS-STEPPED.md`: legacy. Read it only to understand a lesson that still has a `beats` array (U5 L2).
+5. `docs/CONCEPTS.md`: **concept visuals** (decided 8 November 2026): one picture per hard idea, 3 to 5 minutes, a Unit and Concept menu on `concepts.html`. Read it before building any concept, and think per concept: it is a vocabulary, not a template.
+6. `docs/OPENERS-STEPPED.md`: legacy. Read it only to understand a lesson that still has a `beats` array (U5 L2).
 
 Working rules:
 
@@ -20,4 +21,5 @@ Working rules:
 - Run `npm run lint`, `npm run build`, and `node qa/check.mjs <lesson-key>` (with `npm run serve` running) before every commit. Fix failures; do not loosen the check.
 - Check every exact value with sympy before committing.
 - Student-facing text: no em dashes, Oxford commas, plain direct voice.
+- Concept visuals: modules in `src/concepts/<course>/`, checked with `node qa/concept-check.mjs <key>` and previewed with `npm run concept-artifact -- <key> "<Title>"`.
 - Do not add Desmos or any library loaded from a CDN at run time; everything must work offline and in a single-file artifact.

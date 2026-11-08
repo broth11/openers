@@ -10,7 +10,9 @@
     "serve": "vite preview --port 4173 --strictPort",
     "artifact": "node scripts/artifact.mjs",
     "check": "node qa/check.mjs",
-    "lint": "eslint src qa scripts"
+    "lint": "eslint src qa scripts",
+    "concept-artifact": "node scripts/concept-artifact.mjs",
+    "concept-check": "node qa/concept-check.mjs"
   },
   "dependencies": {
     "mathlive": "^0.109.2",
