@@ -124,6 +124,15 @@ Openers and deck lessons stay as they are. Their best scenes are mined: when a c
 
 `node qa/concept-check.mjs <key>` visits every stop at 1366×768, 1920×1080, and a 412-wide phone, and fails on: sideways scroll, any shift of the picture, readout, or controls while a slider sweeps, a scrolling Notice tab on a wide screen, a label outside the graph, a stop that looks different when reached by Back or a jump than by Next, free play that survives leaving the stop, a prediction whose answer shows before a choice, and a bar letter that does not fit.
 
+## Engines and house styles (comparison, 8 November 2026)
+
+The concepts page has two header switches, kept until Ben chooses:
+
+- **Graph:** the house SVG engine (default), JSXGraph, Function-Plot, or Plotly. Each library engine (`src/kit/engines/`) takes the same graph spec, so a concept module never changes. Only the house engine places labels clear of curves and edges; Function-Plot cannot drag points; Plotly adds about 1.5 MB gzipped and is loaded only when chosen.
+- **Style:** six house styles in `src/concepts/themes.js` (Haese classic, Chalkboard, Print minimal, Midnight, Graph paper, and the deck builder's 3Blue1Brown theme). Concept modules keep using the role colours from `src/kit/style.js`; the shell maps each role to the style's colour.
+
+URL options for links and previews: `concepts.html?engine=plotly&style=deck&stop=4&bare=1#<key>` (`bare` shows only the picture).
+
 ## Planned
 
 - **Real calculator screens** in the Casio tab: fx-CG50 screen captures taken on Ben's fx-CG Manager emulator, one per step that changes the screen. To be planned with Ben.

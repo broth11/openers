@@ -115,9 +115,31 @@ button, select, input { font: inherit; color: inherit; }
 .sg .sg-drag { cursor: grab; }
 .sg.dragging, .sg.dragging .sg-drag { cursor: grabbing; }
 .dg-ov { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
-.dl { position: absolute; left: 0; top: 0; white-space: nowrap; background: #fff; border: 1px solid #000; border-radius: 6px; padding: 1px 7px; font-family: var(--f-math); font-size: clamp(15px, 2.3vh, 21px); line-height: 1.35; font-weight: 600; will-change: transform; }
-.dl.plain { border-color: transparent; background: rgba(255, 255, 255, 0.85); }
+.dl { position: absolute; left: 0; top: 0; white-space: nowrap; background: var(--lbl-bg, #fff); border: 1px solid var(--lbl-border, #000); border-radius: var(--lbl-radius, 6px); padding: 1px 7px; font-family: var(--f-math); font-size: clamp(15px, 2.3vh, 21px); line-height: 1.35; font-weight: var(--lbl-weight, 600); will-change: transform; }
+.dl.plain { border-color: transparent; background: var(--lbl-plain, rgba(255, 255, 255, 0.85)); }
 .zoom-ctl { display: none; }
+.eng { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); font-weight: 600; }
+.eng-host { position: absolute; inset: 0; overflow: hidden; }
+.jxg-host { border: 0 !important; border-radius: 0; }
+.fplot-host { background: var(--fp-bg); }
+.fplot-host .function-plot { background: var(--fp-bg); }
+.fplot-host .function-plot text { font-family: 'STIX Two Text', serif; fill: var(--fp-ink); }
+.fplot-host .function-plot .tick text { font-size: 14px; fill: var(--fp-tick); font-family: var(--fp-tick-font); }
+.fplot-host .function-plot .graph text { font-size: 19px; font-weight: 600; }
+.fplot-host .function-plot .domain { stroke: var(--fp-ink); }
+.fplot-host .function-plot .origin { stroke: var(--fp-ink); opacity: 1; }
+.fplot-host .function-plot .tick line { stroke: var(--fp-grid); stroke-opacity: var(--fp-grid-op); stroke-dasharray: var(--fp-grid-dash); }
+.fplot-host .function-plot .canvas > rect, .fplot-host .function-plot .zoom-and-drag { fill: var(--fp-bg); }
+/* the picture card follows the house style */
+.pic { background: var(--pic-bg, var(--surface)); color: var(--pic-text, var(--ink)); }
+.pic .readout .ML__latex { color: inherit; }
+.pic[data-dark='true'] .sh-n { background: var(--pic-text); color: var(--pic-bg); }
+.pic[data-dark='true'] .ctl-l, .pic[data-dark='true'] .ctl-v { color: var(--pic-text); }
+/* bare mode (?bare=1): only the picture, for artboards on a design canvas */
+.bare .ctop, .bare .panel, .bare .cbar { display: none !important; }
+.bare.cpage { padding: 0; gap: 0; grid-template-rows: minmax(0, 1fr); }
+.bare .cmain { grid-template-columns: minmax(0, 1fr); }
+.bare .pic { border-radius: 0; box-shadow: none; }
 
 /* ---------- bottom bar: 1 I P S   2 I P S1 S2 */
 .cbar { min-width: 0; display: flex; align-items: center; gap: 8px; background: var(--surface); border-radius: 14px; padding: 6px 10px; }
@@ -139,7 +161,8 @@ button, select, input { font: inherit; color: inherit; }
   .menus { flex-direction: row; flex-wrap: wrap; width: 100%; order: 2; }
   .sel select { max-width: 100%; }
   .cttl { order: 1; }
-  .tools { order: 1; }
+  .tools { order: 1; flex-wrap: wrap; width: 100%; }
+  .eng select { max-width: 9.5em; }
   .cmain { grid-template-columns: minmax(0, 1fr); }
   .graph { min-height: 300px; flex: none; height: 46vh; }
   .readout { white-space: normal; height: 5.4em; align-items: flex-start; }

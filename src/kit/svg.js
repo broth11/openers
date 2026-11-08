@@ -102,9 +102,14 @@ export function makeSvgGraph(host, { renderLabel, onDrag }) {
     return n
   }
 
+  // An optional spec.theme (concept visuals) restyles the background, grid, axes, and ticks; without one the
+  // house defaults below are used unchanged.
+  const th = () => spec.theme || {}
   function grid(g) {
     const step = { x: spec.axes?.xStep || gridStep(view.ppu * view.aspect), y: spec.axes?.yStep || gridStep(view.ppu) }
-    const gx = el('g', { stroke: GRID, 'stroke-width': ROLES.grid.lineWidth, 'stroke-dasharray': '1.5 3.5', 'stroke-opacity': ROLES.grid.lineOpacity }, g)
+    const T = th()
+    const dash = T.gridDash === 'solid' ? null : T.gridDash === 'none' ? null : '1.5 3.5'
+    const gx = el('g', { stroke: T.grid || GRID, 'stroke-width': T.gridDash === 'none' ? 0 : (T.gridWidth ?? ROLES.grid.lineWidth), 'stroke-dasharray': dash, 'stroke-opacity': T.gridOpacity ?? ROLES.grid.lineOpacity }, g)
     for (let x = Math.ceil(view.left / step.x) * step.x; x <= view.right; x += step.x) if (x !== 0) el('line', { x1: X(x), y1: view.oy, x2: X(x), y2: view.h }, gx)
     for (let y = Math.ceil(view.bottom / step.y) * step.y; y <= view.top; y += step.y) if (y !== 0) el('line', { x1: view.ox, y1: Y(y), x2: view.w, y2: Y(y) }, gx)
     return step
@@ -118,24 +123,26 @@ export function makeSvgGraph(host, { renderLabel, onDrag }) {
     // an axis outside the graph's rectangle (beside a scene) is not drawn, nor are its numbers
     const showX = oy >= view.oy && oy <= view.h
     const showY = ox >= view.ox && ox <= view.w
-    const a = el('g', { stroke: AXIS, 'stroke-width': ROLES.axis.lineWidth, fill: 'none' }, g)
+    const T = th()
+    const a = el('g', { stroke: T.ink || AXIS, 'stroke-width': ROLES.axis.lineWidth, fill: 'none' }, g)
     if (showX) el('line', { x1: nonnegativeX ? ox : view.ox + 6, y1: oy, x2: view.w - 6, y2: oy, 'marker-start': nonnegativeX ? null : 'url(#ar)', 'marker-end': 'url(#ar)' }, a)
     if (showY) el('line', { x1: ox, y1: nonnegativeY ? oy : view.h - 6, x2: ox, y2: view.oy + 6, 'marker-start': nonnegativeY ? null : 'url(#ar)', 'marker-end': 'url(#ar)' }, a)
-    const t = el('g', { fill: TICK, 'font-family': 'STIX Two Text, Cambria Math, serif', 'font-size': 17 }, g)
-    const tk = el('g', { stroke: AXIS, 'stroke-width': 1.4 }, g)
+    const t = el('g', { fill: T.tick || TICK, 'font-family': T.tickFont || 'STIX Two Text, Cambria Math, serif', 'font-size': T.tickSize || 17 }, g)
+    const tk = el('g', { stroke: T.ink || AXIS, 'stroke-width': 1.4 }, g)
+    const halo = T.bg || '#fff'
     for (let x = Math.ceil(view.left / step.x) * step.x; x <= view.right; x += step.x) {
       if (!showX || x === 0 || X(x) < view.ox + 18 || X(x) > view.w - 38 || (nonnegativeX && x < 0)) continue
       el('line', { x1: X(x), y1: oy - 4, x2: X(x), y2: oy + 4 }, tk)
-      const n = el('text', { class: 'sg-tick', x: X(x), y: oy + 22, 'text-anchor': 'middle', 'paint-order': 'stroke', stroke: '#fff', 'stroke-width': 4 }, t)
+      const n = el('text', { class: 'sg-tick', x: X(x), y: oy + 22, 'text-anchor': 'middle', 'paint-order': 'stroke', stroke: halo, 'stroke-width': 4 }, t)
       n.textContent = minus(r2(x))
     }
     for (let y = Math.ceil(view.bottom / step.y) * step.y; y <= view.top; y += step.y) {
       if (!showY || y === 0 || Y(y) > view.h - 18 || Y(y) < view.oy + 38 || (nonnegativeY && y < 0)) continue
       el('line', { x1: ox - 4, y1: Y(y), x2: ox + 4, y2: Y(y) }, tk)
-      const n = el('text', { class: 'sg-tick', x: ox - 9, y: Y(y) + 6, 'text-anchor': 'end', 'paint-order': 'stroke', stroke: '#fff', 'stroke-width': 4 }, t)
+      const n = el('text', { class: 'sg-tick', x: ox - 9, y: Y(y) + 6, 'text-anchor': 'end', 'paint-order': 'stroke', stroke: halo, 'stroke-width': 4 }, t)
       n.textContent = minus(r2(y))
     }
-    const it = el('g', { fill: AXIS, 'font-family': 'STIX Two Text, Cambria Math, serif', 'font-size': 21, 'font-style': 'italic' }, g)
+    const it = el('g', { fill: T.ink || AXIS, 'font-family': 'STIX Two Text, Cambria Math, serif', 'font-size': 21, 'font-style': 'italic' }, g)
     el('text', { x: view.w - 10, y: oy - 12, 'text-anchor': 'end' }, it).textContent = spec.axes?.x || 'x'
     el('text', { x: ox + 12, y: view.oy + 22 }, it).textContent = spec.axes?.y || 'y'
   }
@@ -145,13 +152,13 @@ export function makeSvgGraph(host, { renderLabel, onDrag }) {
     svg.replaceChildren()
     const defs = el('defs', {}, svg)
     const m = el('marker', { id: 'ar', viewBox: '0 0 10 10', refX: 9, refY: 5, markerWidth: 9, markerHeight: 9, orient: 'auto-start-reverse', markerUnits: 'userSpaceOnUse' }, defs)
-    el('path', { d: 'M0,1 L10,5 L0,9 z', fill: AXIS }, m)
+    el('path', { d: 'M0,1 L10,5 L0,9 z', fill: th().ink || AXIS }, m)
     for (const c of new Set(spec.items.filter((i) => i.type === 'dim').map((i) => i.color || COLORS.sel))) {
       const id = 'dm' + c.slice(1)
       const mk = el('marker', { id, viewBox: '0 0 10 10', refX: 9, refY: 5, markerWidth: 8, markerHeight: 8, orient: 'auto-start-reverse', markerUnits: 'userSpaceOnUse' }, defs)
       el('path', { d: 'M0,1 L10,5 L0,9 z', fill: c }, mk)
     }
-    el('rect', { x: 0, y: 0, width: view.W, height: view.H, fill: '#fff' }, svg)
+    el('rect', { x: 0, y: 0, width: view.W, height: view.H, fill: th().bg || '#fff' }, svg)
     // everything mathematical is clipped to the graph's rectangle, so a scene beside it stays clean
     const clip = el('clipPath', { id: `${uid}-clip` }, defs)
     el('rect', { x: view.ox, y: view.oy, width: view.gw, height: view.gh }, clip)
@@ -168,7 +175,7 @@ export function makeSvgGraph(host, { renderLabel, onDrag }) {
     // Grid and axes are drawn inside the graph's rectangle by construction, never clipped:
     // WebKit paints a clipped group with opacity only in patches.
     const inside = X(0) >= view.ox && X(0) <= view.w && Y(0) >= view.oy && Y(0) <= view.h
-    if (inside) el('circle', { cx: X(0), cy: Y(0), r: ORIGIN.radius, fill: 'none', stroke: AXIS, 'stroke-width': ORIGIN.lineWidth }, svg)
+    if (inside) el('circle', { cx: X(0), cy: Y(0), r: ORIGIN.radius, fill: 'none', stroke: th().ink || AXIS, 'stroke-width': ORIGIN.lineWidth }, svg)
     const step = grid(el('g', {}, svg))
     // curves and shapes are clipped only when a scene shares the svg
     const clipped = view.scene ? { 'clip-path': `url(#${uid}-clip)` } : {}
@@ -365,7 +372,7 @@ export function makeSvgGraph(host, { renderLabel, onDrag }) {
       if (!next.zoom || JSON.stringify(next.bounds) !== JSON.stringify(want)) zoom = { s: 1, dx: 0, dy: 0 }
       zoomUi.hidden = !next.zoom
       svg.classList.toggle('zoomable', !!next.zoom)
-      spec = { items: next.items || [], labels: next.labels || [], axes: next.axes, scene: next.scene, zoom: next.zoom }
+      spec = { items: next.items || [], labels: next.labels || [], axes: next.axes, scene: next.scene, zoom: next.zoom, theme: next.theme }
       if (hadScene !== !!spec.scene) want = null
       svg.setAttribute('aria-label', next.description || 'Function graph')
       if (changedAxes || JSON.stringify(next.bounds) !== JSON.stringify(want)) {

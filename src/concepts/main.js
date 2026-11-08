@@ -13,6 +13,49 @@ import { md, tex } from '../kit/math.js'
 import { makeSvgGraph } from '../kit/svg.js'
 import { makeTrack } from '../components/number-line-track/index.js'
 import { CONCEPT_COURSES } from './units.js'
+import { THEMES, themedGraph, themedTrack } from './themes.js'
+
+// URL options for artboards and links: ?engine=plotly&style=chalk&stop=4&bare=1 (bare shows only the picture)
+const Q = new URLSearchParams(location.search)
+let style = Q.get('style') || (() => { try { return localStorage.getItem('concepts-style') } catch { return null } })() || 'haese'
+if (!THEMES[style]) style = 'haese'
+function applyStyle(name) {
+  style = name
+  const T = THEMES[name]
+  const pic = document.querySelector('.pic')
+  Object.entries({ '--pic-bg': T.card, '--pic-text': T.text, '--lbl-bg': T.label.bg, '--lbl-border': T.label.border,
+    '--lbl-radius': `${T.label.radius}px`, '--lbl-weight': T.label.weight, '--lbl-plain': T.label.bg === 'transparent' ? 'transparent' : T.label.bg })
+    .forEach(([k, v]) => pic.style.setProperty(k, v))
+  pic.dataset.dark = String(!!T.dark)
+  $('styleSel').value = name
+  if (!Q.get('style')) { try { localStorage.setItem('concepts-style', name) } catch { /* storage may be blocked */ } }
+  if (st) render()
+}
+
+// Graph engines for the picture pane. The house SVG engine is the default; the others are loaded only when
+// chosen in the header (comparison, 8 November 2026). Each takes the same graph spec.
+const ENGINES = {
+  svg: { name: 'House SVG', load: async () => makeSvgGraph },
+  jsxgraph: { name: 'JSXGraph', load: async () => (await import('../kit/engines/jsxgraph.js')).makeJsxGraph },
+  functionplot: { name: 'Function-Plot', load: async () => (await import('../kit/engines/functionplot.js')).makeFunctionPlotGraph },
+  plotly: { name: 'Plotly', load: async () => (await import('../kit/engines/plotly.js')).makePlotlyGraph },
+}
+let engine = Q.get('engine') || 'svg'
+if (!Q.get('engine')) { try { engine = localStorage.getItem('concepts-engine') || 'svg' } catch { /* storage may be blocked */ } }
+if (!ENGINES[engine]) engine = 'svg'
+let engineToken = 0
+async function setEngine(name) {
+  const token = ++engineToken
+  const make = await ENGINES[name].load()
+  if (token !== engineToken) return
+  engine = name
+  if (!Q.get('engine')) { try { localStorage.setItem('concepts-engine', name) } catch { /* storage may be blocked */ } }
+  if (graph) graph.destroy()
+  graph = make($('graph'), { renderLabel: md, onDrag })
+  $('graph').dataset.engine = name
+  $('engineSel').value = name
+  if (st) render()
+}
 
 const $ = (id) => document.getElementById(id)
 const pad = (n) => String(n).padStart(2, '0')
@@ -107,8 +150,7 @@ function open(c) {
   setHTML($('title'), md(c.title))
   setHTML($('idea'), md(c.idea || ''))
   fillConceptMenu()
-  if (graph) graph.destroy()
-  graph = makeSvgGraph($('graph'), { renderLabel: md, onDrag })
+  if (!graph) { graph = makeSvgGraph($('graph'), { renderLabel: md, onDrag }); $('graph').dataset.engine = 'svg' }
   buildBar()
   go(0, 'next') // opening a concept plays its first animation
 }
@@ -195,8 +237,9 @@ function render() {
   // picture
   const pic = scene.stage(c)
   $('track').hidden = !pic.track
-  if (pic.track) { if (!track) track = makeTrack($('track')); track.apply(pic.track) }
-  graph.apply(fillAspect(pic.graph))
+  const T = THEMES[style]
+  if (pic.track) { if (!track) track = makeTrack($('track')); track.apply(themedTrack(pic.track, T)) }
+  graph.apply(themedGraph(fillAspect(pic.graph), T))
   setHTML($('readout'), `<span>${md(scene.readout ? scene.readout(c) : '')}</span>`)
   // controls: only in the Playground
   const names = f.stop.kind === 'P' ? (typeof scene.controls === 'function' ? scene.controls(c) : scene.controls || []) : []
@@ -314,7 +357,16 @@ function route() {
   if (c !== C) open(c)
 }
 buildMenus()
+$('engineSel').innerHTML = Object.entries(ENGINES).map(([k, e]) => `<option value="${k}">${e.name}</option>`).join('')
+$('engineSel').value = engine
+$('engineSel').onchange = () => setEngine($('engineSel').value)
+$('styleSel').innerHTML = Object.entries(THEMES).map(([k, t]) => `<option value="${k}">${t.name}</option>`).join('')
+$('styleSel').onchange = () => applyStyle($('styleSel').value)
+if (Q.get('bare')) document.querySelector('.cpage').classList.add('bare')
+applyStyle(style)
 window.addEventListener('hashchange', route)
 route()
+if (Q.get('stop') && st) go(Number(Q.get('stop')), 'jump')
+if (engine !== 'svg') setEngine(engine)
 // for the layout check
-window.__concept = { go: (i, how = 'jump') => go(i, how), state: () => ({ i: st.i, n: FLAT.length, values: { ...st.values }, kind: FLAT[st.i].stop.kind }), stopAnim }
+window.__concept = { go: (i, how = 'jump') => go(i, how), setEngine, engine: () => engine, applyStyle, state: () => ({ i: st.i, n: FLAT.length, values: { ...st.values }, kind: FLAT[st.i].stop.kind }), stopAnim }
