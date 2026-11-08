@@ -7133,16 +7133,33 @@ body[data-style=ink] .sh-k{border-radius:2px;background:transparent;border:1px s
         <span class="cb-count" id="barCount" aria-live="polite"></span>
       </nav>
     </div>
+<style>
+/* House rule: no question buttons on Introduction, Playground or Summary stops. Questions live on the number card.
+   An animation that needs a press gets a Play button with a pulsing glow. */
+.pred{display:none !important}
+.xplay{font-size:16px;padding:6px 20px;border-color:#D97706 !important;animation:xglow 1.4s ease-in-out infinite}
+.xplay + .replay{display:none}
+@keyframes xglow{0%,100%{box-shadow:0 0 0 0 rgba(217,119,6,.65),1px 1px 0 #141414}50%{box-shadow:0 0 0 9px rgba(217,119,6,0),1px 1px 0 #141414}}
+@media (prefers-reduced-motion:reduce){.xplay{animation:none;box-shadow:0 0 0 4px rgba(217,119,6,.45)}}
+</style>
 <script>
-/* Explorer links: list the other explorers of the unit in the Concept menu and open them on choice. */
+/* Explorer links: list the other explorers of the unit in the Concept menu and open them on choice.
+   Play button: where the page poses a multiple-choice prediction, hide it and offer a glowing Play button that starts the animation. */
 (function () {
   var LINKS = [{ group: 'Lesson 3: From acceleration back to position', name: 'Speed on the s(t) and v(t) graphs', href: 'u12-l03-speed.html' }];
   function add() {
-    var sel = document.getElementById('conceptSel'); if (!sel || sel.querySelector('[data-xlink]')) return;
-    LINKS.forEach(function (l) {
+    var sel = document.getElementById('conceptSel');
+    if (sel && !sel.querySelector('[data-xlink]')) LINKS.forEach(function (l) {
       var g = document.createElement('optgroup'); g.label = l.group; g.setAttribute('data-xlink', '1');
       var o = document.createElement('option'); o.value = 'xlink:' + l.href; o.textContent = l.name; g.appendChild(o); sel.appendChild(g);
     });
+    var pred = document.querySelector('#panelBody .pred'), xp = document.querySelector('#panelBody .xplay');
+    if (xp && (!pred || pred.querySelector('.right, .wrong'))) xp.remove();
+    else if (pred && !xp && !pred.querySelector('.right, .wrong')) {
+      var b = document.createElement('button'); b.type = 'button'; b.className = 'replay xplay'; b.textContent = '\u25B6 Play';
+      b.onclick = function () { var c = document.querySelector('#panelBody .pred-c button'); if (c) c.click(); };
+      var first = document.querySelector('#panelBody .replay'); (first || pred).parentNode.insertBefore(b, first || pred);
+    }
   }
   document.addEventListener('change', function (e) {
     var t = e.target; if (t && t.id === 'conceptSel' && /^xlink:/.test(t.value)) { e.stopImmediatePropagation(); location.href = t.value.slice(6) + location.hash; }

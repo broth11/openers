@@ -227,6 +227,14 @@ body[data-style="ink"] .sh-k { border-radius: 2px; background: transparent; bord
 .ctl-r input[type="range"]::-moz-range-track{height:6px;border-radius:3px;background:var(--line,#141414);border:0}
 .ctl-r input[type="range"]::-moz-range-thumb{width:20px;height:20px;box-sizing:border-box;border-radius:50%;background:var(--sel);border:2.5px solid var(--line,#141414)}
 
+/* a Play button the student must press: large, and pulsing until pressed */
+.replay.play{font-size:16px;padding:6px 20px;border-color:var(--sel);background:#fff}
+.replay.glow{animation:xglow 1.4s ease-in-out infinite}
+@keyframes xglow{0%,100%{box-shadow:0 0 0 0 rgba(217,119,6,.65),1px 1px 0 var(--ink)}50%{box-shadow:0 0 0 9px rgba(217,119,6,0),1px 1px 0 var(--ink)}}
+@media (prefers-reduced-motion:reduce){.replay.glow{animation:none;box-shadow:0 0 0 4px rgba(217,119,6,.45)}}
+
+body[data-style="bold"] .replay.glow{border-color:var(--sel)}
+
 </style>
 </head>
 <body data-style="bold">
@@ -300,8 +308,7 @@ const SCENES = [
     { kind: 'Q', topic: 'Speed on the velocity graph', q: 'Velocity can be negative. Speed cannot. How does a velocity graph show speed?', f: T`a(t)=6-2t,\quad v(0)=-5\ \text{m s}^{-1}` },
     { kind: 'I', set: { t: 0, fold: 0, wrong: false }, track: true,
       caption: 'A particle moves along a line. Its velocity $v(t)$ is negative at first, so it moves left. The parts of the curve below the axis are about to flip up.',
-      predict: { q: 'At $t=0$ the velocity is $v(0)=-5\\ \\text{m s}^{-1}$. What is the particle\'s speed?', choices: [T`-5\ \text{m s}^{-1}`, T`5\ \text{m s}^{-1}`, T`0\ \text{m s}^{-1}`].map(x => '$' + x + '$'), correct: 1, a: 'Speed is the size of the velocity, so it is $5\\ \\text{m s}^{-1}$. The sign only tells you the direction (left). Watch the coral part flip: that is the graph of $|v(t)|$.' },
-      play: { param: 'fold', to: 1, seconds: 2.5 }, notice: 'Violet is $|v(t)|$. Anything below the axis is reflected above it.' },
+      after: 'Speed is the size of the velocity, so it is $5\\ \\text{m s}^{-1}$. The sign only tells you the direction (left). Watch the coral part flip: that is the graph of $|v(t)|$.', play: { param: 'fold', to: 1, seconds: 2.5 }, notice: 'Violet is $|v(t)|$. Anything below the axis is reflected above it.' },
     { kind: 'P', set: { fold: 1, wrong: false }, track: true, controls: ['t'],
       caption: 'Drag the orange cursor along the $t$-axis. The violet bracket is the distance from the axis to the curve.',
       look: ['Speed is the vertical distance from the $t$-axis to the curve, on whichever side the curve is.', 'At $t=1$ and $t=5$ the curve touches the axis. $v=0$ there, so the speed is $0$.', 'At $t=7$ the curve is much further from the axis than anywhere else. The particle is fastest there, and it is moving left.'],
@@ -321,8 +328,7 @@ const SCENES = [
     { kind: 'Q', topic: 'Speed on the position graph', q: 'The graph now shows position $s(t)$, not velocity. There is no $|v(t)|$ curve to read. Where is the speed?', f: T`v(t)=s'(t)` },
     { kind: 'I', set: { t: 0, wrong: false }, track: true,
       caption: 'The orange line is the tangent to $s(t)$. Its steepness is the speed. Whether it leans up or down is the direction.',
-      predict: { q: 'At the highest point of $s(t)$ the particle is as far right as it ever gets. How fast is it moving there?', choices: ['Its greatest speed', 'It is momentarily at rest', 'The same speed as at $t=0$'], correct: 1, a: 'The tangent at the top is flat, so the slope $s\'(t)=v(t)$ is $0$. The particle stops and turns round. Speed lives in the slope, not in the height.' },
-      play: { param: 't', from: 0, to: 7, seconds: 9 }, notice: 'Watch the tangent as it sweeps along.' },
+      after: 'The tangent at the top is flat, so the slope $s\'(t)=v(t)$ is $0$. The particle stops and turns round. Speed lives in the slope, not in the height.', play: { param: 't', from: 0, to: 7, seconds: 9 }, notice: 'Watch the tangent as it sweeps along.' },
     { kind: 'P', set: { wrong: false }, track: true, controls: ['t'],
       caption: 'Drag the orange cursor along the $t$-axis. The tangent shows the slope of $s(t)$, and the track above shows the particle.',
       look: ['The tangent leans down when the particle moves left, and up when it moves right.', 'The flatter the tangent, the slower the particle. A flat tangent means speed $0$.', 'Steepness counts in both directions. A tangent that falls steeply is as fast as one that rises steeply.'],
@@ -342,8 +348,7 @@ const SCENES = [
     { kind: 'Q', topic: 'Greatest speed', q: 'On a time interval, when is the particle moving fastest? Is that the same moment its velocity is greatest?', f: T`v(t)=-t^2+6t-5,\quad 0\le t\le 7` },
     { kind: 'I', set: { t1: 0, t2: 5, t: 0, wrong: false }, track: true,
       caption: 'Both graphs share one time axis. The cursor sweeps $0\\le t\\le 5$. Compare the distance of $v(t)$ from the axis with the steepness of $s(t)$.',
-      predict: { q: 'Over $0\\le t\\le 5$ the greatest velocity is $4\\ \\text{m s}^{-1}$, at $t=3$. What is the greatest speed?', choices: ['$4\\ \\text{m s}^{-1}$, also at $t=3$', '$5\\ \\text{m s}^{-1}$, at $t=0$', '$0\\ \\text{m s}^{-1}$'], correct: 1, a: 'At $t=0$, $v=-5$, so the speed is $5$. That beats $4$. A large negative velocity is a large speed in the other direction.' },
-      play: { param: 't', from: 0, to: 5, seconds: 6 }, notice: 'Orange marks the greatest speed. Grey marks the other candidates.' },
+      after: 'At $t=0$, $v=-5$, so the speed is $5$. That beats $4$. A large negative velocity is a large speed in the other direction.', play: { param: 't', from: 0, to: 5, seconds: 6 }, notice: 'Orange marks the greatest speed. Grey marks the other candidates.' },
     { kind: 'P', set: { wrong: false }, track: true, controls: ['t1', 't2'],
       caption: 'Drag the two orange handles to choose an interval. The candidates are the two ends and any time inside where $a(t)=0$.',
       look: ['The greatest speed is at an end of the interval, or at a time inside where $a(t)=0$. Nowhere else.', 'On $v(t)$ it is the point furthest from the $t$-axis. On $s(t)$ it is the steepest tangent, rising or falling.', 'Greatest velocity and greatest speed differ when the largest $|v|$ happens where $v$ is negative.'],
@@ -551,7 +556,6 @@ function go(i) {
   tab = 'notice';
   try { history.replaceState(null, '', '?stop=' + i + location.hash); } catch (e) {}
   buildAll();
-  if (st.play && !st.predict) startPlay(st.play);
 }
 function stopPlay() { if (raf) cancelAnimationFrame(raf); raf = null; }
 function startPlay(sp) {
@@ -616,15 +620,12 @@ function fillTab() {
   const st = stopObj(), body = $('panelBody'); let h = '';
   if (tab === 'notice') {
     h += `<p class="cap">${m(st.caption)}</p>`;
-    if (st.kind === 'I' && st.play && (playDone || (!raf && (!st.predict || picked !== null)))) h += `<button type="button" class="replay" data-replay="1">▶ Play again</button>`;
-    else if (st.kind === 'I' && st.play) h += `<button type="button" class="replay" data-replay="1" disabled>▶ Play again</button>`;
-    if (st.predict) {
-      h += `<div class="pred"><p class="pred-q">${m(st.predict.q)}</p><div class="pred-c">` + st.predict.choices.map((c, i) => {
-        let cls = ''; if (picked !== null) { cls = i === st.predict.correct ? 'right' : i === picked ? 'wrong' : 'dim'; }
-        return `<button type="button" data-pick="${i}" class="${cls}" aria-pressed="${picked === i}">${m(c)}</button>`;
-      }).join('') + `</div>` + (picked !== null ? `<p class="pred-a"><b>${picked === st.predict.correct ? 'Yes.' : 'Not quite.'}</b> ${m(st.predict.a)}</p>` : '') + `</div>`;
+    if (st.kind === 'I' && st.play) {
+      if (picked === null) h += `<button type="button" class="replay play glow" data-replay="1">▶ Play</button>`;
+      else h += `<button type="button" class="replay" data-replay="1"${raf ? ' disabled' : ''}>▶ Play again</button>`;
+      if (picked !== null && st.notice) h += `<p class="note">${m(st.notice)}</p>`;
+      if (playDone && st.after) h += `<p class="cap">${m(st.after)}</p>`;
     }
-    if (st.kind === 'I' && st.notice && (!st.predict || picked !== null)) h += `<p class="note">${m(st.notice)}</p>`;
     if (st.look) h += `<h3>Look for</h3><ol class="look">${st.look.map(x => `<li>${m(x)}</li>`).join('')}</ol>`;
     if (st.steps) h += `<h3>Try this</h3><ol class="try">${st.steps.map(x => `<li>${m(x)}</li>`).join('')}</ol>`;
     if (st.cards) h += st.cards.map(c => `<div class="card t-${c.tone}"><h4>${esc(c.title)}</h4><p>${tex(c.html)}</p></div>`).join('');
@@ -642,16 +643,9 @@ function fillTab() {
     h += `<div class="why"><p><b>What people do.</b> ${m(mk.what)}</p><p><b>Why it fails.</b> ${m(mk.why)}</p><p class="fix"><b>Do this instead.</b> ${m(mk.fix)}</p></div>`;
   }
   body.innerHTML = h;
-  body.querySelectorAll('[data-pick]').forEach(b => b.onclick = () => pick(+b.dataset.pick));
-  const rp = body.querySelector('[data-replay]'); if (rp) rp.onclick = () => { if (rp.disabled) return; Object.assign(P, st.set || {}); startPlay(st.play); fillTab(); };
+  const rp = body.querySelector('[data-replay]'); if (rp) rp.onclick = () => { if (rp.disabled) return; picked = true; Object.assign(P, st.set || {}); startPlay(st.play); fillTab(); sched(); };
   const mt = body.querySelector('[data-toggle]'); if (mt) mt.onclick = () => { P.wrong = !P.wrong; mt.setAttribute('aria-pressed', P.wrong); sched(); };
 }
-function pick(i) {
-  const st = stopObj(); if (picked !== null) return; picked = i;
-  if (st.play) { Object.assign(P, st.set || {}); startPlay(st.play); }
-  fillTab(); sched();
-}
-
 /* ================= the number line ================= */
 function trackSVG(tc, W, H) {
   const lo = -3, hi = 9, L = 40, R = W - 150, X = x => L + (x - lo) / (hi - lo) * (R - L), y = H * 0.66;
@@ -680,7 +674,7 @@ function render() {
   G = makeGeo(W, H, kinds, sc.ranges);
   const pv = G.panels.find(p => p.kind === 'v'), ps = G.panels.find(p => p.kind === 's');
   const iv = G.panels.indexOf(pv), is_ = G.panels.indexOf(ps);
-  const predictPending = st.predict && picked === null;
+  const predictPending = st.kind === 'I' && st.play && picked === null; // the first Play press starts the animation and reveals the answer
   const tc = tcur(P, st), animating = !!raf, labels = [];
   let layer = '', hs = '', readout = [];
   const L = (x, y, dx, dy, html, color, point) => labels.push({ x: G.xPx(x), y, dx, dy, html, color, point });
