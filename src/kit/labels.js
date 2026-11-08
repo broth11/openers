@@ -58,6 +58,24 @@ export function avoidPoints(shapes, toPx) {
   return { pts, dots }
 }
 
+// A callout's tail: a triangle from the box edge that faces the anchor to the anchor itself, drawn behind the box
+// (the leaders svg sits under the label boxes), so the box's border closes its base.
+function tail(r, p, stroke, fill, id) {
+  const half = 7
+  let base
+  if (p.y > r.b) base = [[clampX(p.x) - half, r.b - 2], [clampX(p.x) + half, r.b - 2]]
+  else if (p.y < r.t) base = [[clampX(p.x) - half, r.t + 2], [clampX(p.x) + half, r.t + 2]]
+  else if (p.x > r.r) base = [[r.r - 2, clampY(p.y) - half], [r.r - 2, clampY(p.y) + half]]
+  else base = [[r.l + 2, clampY(p.y) - half], [r.l + 2, clampY(p.y) + half]]
+  function clampX(x) { return Math.max(r.l + half + 6, Math.min(r.r - half - 6, x)) }
+  function clampY(y) { return Math.max(r.t + half + 4, Math.min(r.b - half - 4, y)) }
+  const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon')
+  const pts = [base[0], [p.x, p.y], base[1]].map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(' ')
+  for (const [key, value] of Object.entries({ points: pts, fill, stroke, 'stroke-width': 2, 'stroke-linejoin': 'round' })) poly.setAttribute(key, value)
+  poly.dataset.label = id
+  return poly
+}
+
 export function createLabeller(ov, renderLabel) {
   const labelEls = new Map()
   const leaders = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
@@ -101,6 +119,7 @@ export function createLabeller(ov, renderLabel) {
       }
       node.style.color = lb.color || '#0e2233'
       node.classList.toggle('plain', !!lb.plain)
+      node.classList.toggle('callout', !!lb.callout) // set before measuring: a callout's border and padding differ
       node.classList.toggle('rail-label', !!lb.rail)
       node.dataset.label = lb.id
       return node
@@ -144,7 +163,8 @@ export function createLabeller(ov, renderLabel) {
       if (out) continue
       const nw = node.offsetWidth
       const nh = node.offsetHeight
-      const gap = Math.max(nh * 0.25, 10)
+      // a callout (Big Ideas style: coloured border, tail to the thing it names) stands off its anchor
+      const gap = lb.callout ? Math.max(nh * 0.85, 26) : Math.max(nh * 0.25, 10)
       const pref = lb.pos || 'ne'
       const order = lb.fixed ? [pref] : lb.attached
         ? [pref, ...DIRS.slice(0, 8).filter((q) => q !== pref), ...DIRS.slice(8).filter((q) => q !== pref)]
@@ -153,7 +173,7 @@ export function createLabeller(ov, renderLabel) {
       for (const dir of positions.has(lb.id) ? [] : order) {
         const [l, t] = candidate(dir, p.x, p.y, nw, nh, gap)
         const r = { l, t, r: l + nw, b: t + nh }
-        const n = clash(r, lb.attached ? p : null)
+        const n = clash(r, lb.attached || lb.callout ? p : null)
         if (!best || n < best.n) best = { r, n }
         if (n === 0) break
       }
@@ -171,6 +191,7 @@ export function createLabeller(ov, renderLabel) {
           leaders.append(line)
         }
       }
+      if (lb.callout) leaders.append(tail(r, p, lb.color || '#0e2233', getComputedStyle(node).backgroundColor, lb.id))
       taken.push(r)
       for (const q of ticks) if (q.el && r.l < q.r + 4 && q.l < r.r + 4 && r.t < q.b + 4 && q.t < r.b + 4) q.el.style.visibility = 'hidden'
     }

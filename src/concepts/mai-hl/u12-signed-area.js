@@ -135,7 +135,10 @@ export default {
             ...graphBase,
             items: [...runs(0, t), ...vCurve(), ...cursor(t, 't')],
             labels: [
-              { id: 'v', x: 6.9, y: v(6.9), html: '$v=(t-2)(t-6)$', color: C.teal, pos: 'nw' },
+              { id: 'v', x: 6.75, y: v(6.75), html: '$v=(t-2)(t-6)$', color: C.teal, pos: 'nw', callout: true },
+              // the two turns, named once the cursor has passed them
+              ...(t >= 2 ? [{ id: 'turn2', x: 2, y: 0, html: '$v=0$: turns', color: C.ink, pos: 'ne', callout: true }] : []),
+              ...(t >= 6 ? [{ id: 'turn6', x: 6, y: 0, html: '$v=0$: turns', color: C.ink, pos: 'se', callout: true }] : []),
               ...parts.map(([a, b]) => {
                 const end = Math.min(t, b)
                 const area = signed(a, end)
@@ -213,8 +216,8 @@ export default {
               ...cursor(b, stop.kind === 'P' ? (p.t1 <= p.t2 ? 't2' : 't1') : null),
             ],
             labels: [
-              { id: 'v', x: 6.9, y: v(6.9), html: '$v$', color: C.teal, pos: 'se' },
-              ...(fold > 0.5 ? [{ id: 'abs', x: 4, y: 4 * fold, html: '$|v|$', color: C.strip, pos: 'n' }] : []),
+              { id: 'v', x: 6.8, y: v(6.8), html: '$v$', color: C.teal, pos: 'se', callout: true },
+              ...(fold > 0.5 ? [{ id: 'abs', x: 4.6, y: 4 - (4.6 - 4) ** 2 * fold, html: '$|v|$', color: C.strip, pos: 'ne', callout: true }] : []),
               ...(p.wrong && a < 6 && b > 2 ? [{ id: 'sub', x: (Math.max(a, 2) + Math.min(b, 6)) / 2, y: -2.7, html: 'subtracted', color: C.coral, plain: true, fixed: true }] : []),
             ],
           },

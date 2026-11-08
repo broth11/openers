@@ -128,10 +128,12 @@ Openers and deck lessons stay as they are. Their best scenes are mined: when a c
 
 The concepts page has two header switches, kept until Ben chooses:
 
-- **Graph:** the house SVG engine (default), JSXGraph, Function-Plot, or Plotly. Each library engine (`src/kit/engines/`) takes the same graph spec, so a concept module never changes. Only the house engine places labels clear of curves and edges; Function-Plot cannot drag points; Plotly adds about 1.5 MB gzipped and is loaded only when chosen.
+- **Graph:** the house SVG engine (default), JSXGraph, Function-Plot, or Plotly. Each library engine (`src/kit/engines/`) takes the same graph spec, so a concept module never changes. The house engine and JSXGraph share the label placer; Plotly and Function-Plot place labels where they are told; Function-Plot cannot drag points; Plotly adds about 1.5 MB gzipped and is loaded only when chosen.
 - **Style:** six house styles in `src/concepts/themes.js` (Haese classic, Chalkboard, Print minimal, Midnight, Graph paper, and the deck builder's 3Blue1Brown theme). Concept modules keep using the role colours from `src/kit/style.js`; the shell maps each role to the style's colour.
 
-URL options for links and previews: `concepts.html?engine=plotly&style=deck&stop=4&bare=1#<key>` (`bare` shows only the picture).
+- **Labels:** callouts (the default) or plain boxes. A label with `callout: true` is drawn Big Ideas style: a box with a border in the label's colour and a tail to the thing it names. The shared placer (`src/kit/labels.js`) keeps the box clear of curves, ticks, and other labels in both the house engine and JSXGraph. Use callouts for names (functions, special lines, named points), not for values inside a region or for anything that moves every frame.
+
+URL options for links and previews: `concepts.html?engine=jsxgraph&style=deck&labels=callout&stop=4&bare=1#<key>` (`bare` shows only the picture).
 
 ## Planned
 

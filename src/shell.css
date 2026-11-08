@@ -430,3 +430,6 @@ input.sel::-moz-range-thumb { border-color: #e8890c; }
 .controls.rows .ctl-top { flex-wrap: wrap; }
 .controls.rows .ctl-top .ctl { flex: 0 1 auto; max-width: none; }
 .controls.rows .ctl-bottom .ctl { flex: 1 1 0; max-width: 420px; }
+
+/* callout label (Big Ideas style): coloured border in the label's colour, filled box, tail drawn by kit/labels.js */
+.dl.callout { border: 2px solid currentColor; background: var(--callout-fill, #fff); border-radius: 8px; padding: 2px 9px; }

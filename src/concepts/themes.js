@@ -80,4 +80,6 @@ export function themedGraph(spec, th) {
     labels: (spec.labels || []).map((lb) => ({ ...lb, color: recolour(lb.color, th) })),
   }
 }
+// the fill of a callout box: the style's label fill, or its background where labels have none
+export const calloutFill = (th) => (th.label.bg && th.label.bg !== 'transparent' ? th.label.bg : th.bg)
 export const themedTrack = (spec, th) => ({ ...spec, theme: th })

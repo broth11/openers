@@ -4,13 +4,19 @@ import JXG from 'jsxgraph'
 import '../../../node_modules/jsxgraph/distrib/jsxgraph.css' // the package does not export its stylesheet
 import { COLORS } from '../style.js'
 import { polygonOf, curvePoints, xs, ys } from './shared.js'
+import { createLabeller, avoidPoints } from '../labels.js'
 
 let uid = 0
 export function makeJsxGraph(host, { renderLabel, onDrag }) {
   const div = document.createElement('div')
   div.id = `jxg-${++uid}`
   div.className = 'eng-host jxg-host'
-  host.append(div)
+  // labels are HTML boxes over the board, placed by the shared placer (kit/labels.js), as in the house engine
+  const ov = document.createElement('div')
+  ov.className = 'dg-ov jxg-ov'
+  host.append(div, ov)
+  const labeller = createLabeller(ov, renderLabel)
+  let lastSpec = null
   let board = null
   let axisLine = null
   let bounds = null
@@ -77,25 +83,39 @@ export function makeJsxGraph(host, { renderLabel, onDrag }) {
         }, (g) => { if (dragging !== key) g.setPosition(JXG.COORDS_BY_USER, [it.x, 0]) })
       }
     }
-    for (const lb of spec.labels || []) {
-      const off = { n: [0, 16], s: [0, -16], e: [12, 0], w: [-12, 0], ne: [10, 12], nw: [-10, 12], se: [10, -12], sw: [-10, -12] }[lb.pos || 'n'] || [0, 0]
-      const html = renderLabel(lb.html)
-      const L = spec.theme?.label || { bg: '#fff', border: '#000', radius: 6, weight: 600 }
-      const css = `font-family: STIX Two Text, serif; font-weight: ${L.weight}; padding: 1px 7px; border-radius: ${L.radius}px; white-space: nowrap; background: ${L.bg}; border: 1px solid ${lb.plain ? 'transparent' : L.border};`
-      keep(`label:${lb.id}`,
-        () => board.create('text', [lb.x, lb.y, html], { display: 'html', parse: false, useMathJax: false, useKatex: false, fixed: true, anchorX: 'middle', anchorY: 'middle', offset: off, strokeColor: lb.color, fontSize: 19, cssStyle: css, highlight: false }),
-        (t) => { t.setCoords(lb.x, lb.y); if (t.plaintext !== html) t.setText(html); t.setAttribute({ strokeColor: lb.color, offset: off, cssStyle: css }) })
-    }
     for (const [key, e] of objs) if (!e.seen) { board.removeObject(e.obj); objs.delete(key) }
     board.unsuspendUpdate()
+    lastSpec = spec
+    placeLabels()
   }
 
-  const ro = new ResizeObserver(() => { if (board) { board.resizeContainer(host.clientWidth, host.clientHeight, false, true); board.setBoundingBox([bounds.left, bounds.top, bounds.right, bounds.bottom], false); board.update() } })
+  function toPx(x, y) {
+    const c = new JXG.Coords(JXG.COORDS_BY_USER, [x, y], board)
+    return { x: c.scrCoords[1], y: c.scrCoords[2] }
+  }
+  function placeLabels() {
+    if (!board || !lastSpec) return
+    const shapes = []
+    for (const it of lastSpec.items) {
+      if (it.type === 'curve') shapes.push({ curve: it.f, t: it.t })
+      else if (it.type === 'line' && !it.ghost) shapes.push({ seg: [it.x1, it.y1, it.x2, it.y2] })
+      else if (it.type === 'area') { shapes.push({ curve: (t) => [t, it.hi(t)], t: [it.from, it.to] }, { curve: (t) => [t, it.lo(t)], t: [it.from, it.to] }) }
+      else if (it.type === 'points') for (const q of it.pts) shapes.push({ pt: q })
+      else if (it.type === 'handle') shapes.push({ pt: [it.x, it.y] })
+    }
+    const b = lastSpec.bounds
+    shapes.push({ seg: [b.left, 0, b.right, 0] }, { seg: [0, b.bottom, 0, b.top] })
+    const { pts, dots } = avoidPoints(shapes, toPx)
+    labeller.place({ labels: lastSpec.labels || [], toPx, w: host.clientWidth, h: host.clientHeight, pts, dots })
+  }
+
+  const ro = new ResizeObserver(() => { if (board) { board.resizeContainer(host.clientWidth, host.clientHeight, false, true); board.setBoundingBox([bounds.left, bounds.top, bounds.right, bounds.bottom], false); board.update(); placeLabels() } })
+  document.fonts?.ready.then(() => placeLabels())
   ro.observe(host)
   return {
     engine: 'jsxgraph',
     apply,
     clear() { if (board) { for (const e of objs.values()) board.removeObject(e.obj); objs.clear() } },
-    destroy() { ro.disconnect(); if (board) JXG.JSXGraph.freeBoard(board); div.remove() },
+    destroy() { ro.disconnect(); if (board) JXG.JSXGraph.freeBoard(board); div.remove(); ov.remove(); labeller.clear() },
   }
 }

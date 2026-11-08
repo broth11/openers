@@ -115,6 +115,7 @@ button, select, input { font: inherit; color: inherit; }
 .sg .sg-drag { cursor: grab; }
 .sg.dragging, .sg.dragging .sg-drag { cursor: grabbing; }
 .dg-ov { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.jxg-ov { z-index: 20; }
 .dl { position: absolute; left: 0; top: 0; white-space: nowrap; background: var(--lbl-bg, #fff); border: 1px solid var(--lbl-border, #000); border-radius: var(--lbl-radius, 6px); padding: 1px 7px; font-family: var(--f-math); font-size: clamp(15px, 2.3vh, 21px); line-height: 1.35; font-weight: var(--lbl-weight, 600); will-change: transform; }
 .dl.plain { border-color: transparent; background: var(--lbl-plain, rgba(255, 255, 255, 0.85)); }
 .zoom-ctl { display: none; }
@@ -171,3 +172,6 @@ button, select, input { font: inherit; color: inherit; }
   .cbar { position: sticky; bottom: 6px; }
   .cb-track { justify-content: flex-start; }
 }
+
+/* callout label (Big Ideas style): coloured border in the label's colour, filled box, tail drawn by kit/labels.js */
+.dl.callout { border: 2px solid currentColor; background: var(--callout-fill, #fff); border-radius: 8px; padding: 2px 9px; }
