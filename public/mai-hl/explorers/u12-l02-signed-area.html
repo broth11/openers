@@ -7133,4 +7133,22 @@ body[data-style=ink] .sh-k{border-radius:2px;background:transparent;border:1px s
         <span class="cb-count" id="barCount" aria-live="polite"></span>
       </nav>
     </div>
+<script>
+/* Explorer links: list the other explorers of the unit in the Concept menu and open them on choice. */
+(function () {
+  var LINKS = [{ group: 'Lesson 3: From acceleration back to position', name: 'Speed on the s(t) and v(t) graphs', href: 'u12-l03-speed.html' }];
+  function add() {
+    var sel = document.getElementById('conceptSel'); if (!sel || sel.querySelector('[data-xlink]')) return;
+    LINKS.forEach(function (l) {
+      var g = document.createElement('optgroup'); g.label = l.group; g.setAttribute('data-xlink', '1');
+      var o = document.createElement('option'); o.value = 'xlink:' + l.href; o.textContent = l.name; g.appendChild(o); sel.appendChild(g);
+    });
+  }
+  document.addEventListener('change', function (e) {
+    var t = e.target; if (t && t.id === 'conceptSel' && /^xlink:/.test(t.value)) { e.stopImmediatePropagation(); location.href = t.value.slice(6) + location.hash; }
+  }, true);
+  new MutationObserver(add).observe(document.documentElement, { childList: true, subtree: true });
+  add();
+})();
+</script>
 </body></html>

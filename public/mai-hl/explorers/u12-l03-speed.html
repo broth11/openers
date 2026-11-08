@@ -220,6 +220,13 @@ body[data-style="ink"] .sh-k { border-radius: 2px; background: transparent; bord
 .wb-m .katex-display>.katex{text-align:left}
 .dl .katex{font-size:1em}
 
+/* Safari and older WebKit need the prefixed form; the reference's build adds it, a cssText copy drops it */
+.sel select{-webkit-appearance:none}
+.ctl-r input[type="range"]{-webkit-appearance:none}
+.ctl-r input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none}
+.ctl-r input[type="range"]::-moz-range-track{height:6px;border-radius:3px;background:var(--line,#141414);border:0}
+.ctl-r input[type="range"]::-moz-range-thumb{width:20px;height:20px;box-sizing:border-box;border-radius:50%;background:var(--sel);border:2.5px solid var(--line,#141414)}
+
 </style>
 </head>
 <body data-style="bold">
@@ -227,7 +234,7 @@ body[data-style="ink"] .sh-k { border-radius: 2px; background: transparent; bord
   <header class="ctop">
     <div class="menus">
       <label class="sel"><span class="sr">Unit</span><select id="unitSel" aria-label="Unit"><option value="mai-hl|12">IB MAI HL · Unit 12: Kinematics</option></select></label>
-      <label class="sel"><span class="sr">Concept</span><select id="conceptSel" aria-label="Concept"><optgroup label="Lesson 3: From acceleration back to position"><option value="mai-hl-u12-speed">Speed on the s(t) and v(t) graphs</option></optgroup></select></label>
+      <label class="sel"><span class="sr">Concept</span><select id="conceptSel" aria-label="Concept"></select></label>
     </div>
     <div class="cttl">
       <span class="eyebrow" id="eyebrow">Unit 12 · Kinematics · Lesson 3</span>
@@ -801,6 +808,13 @@ document.addEventListener('keydown', e => {
 });
 $('fsBtn').onclick = () => { if (document.fullscreenElement) document.exitFullscreen(); else if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen(); };
 $('resetBtn').onclick = () => { Object.assign(P, PDEF); go(0); };
+/* the Concept menu lists every explorer in the unit; choosing another opens its page (same folder) */
+const EXPLORERS_IN_UNIT = [
+  { group: 'Lesson 2: Displacement and distance from velocity', name: 'Displacement or distance: signed area and |v|', href: 'u12-l02-signed-area.html' },
+  { group: 'Lesson 3: From acceleration back to position', name: 'Speed on the s(t) and v(t) graphs', href: 'u12-l03-speed.html', here: true }
+];
+$('conceptSel').innerHTML = EXPLORERS_IN_UNIT.map(e => `<optgroup label="${esc(e.group)}"><option value="${e.href}"${e.here ? ' selected' : ''}>${esc(e.name)}</option></optgroup>`).join('');
+$('conceptSel').addEventListener('change', e => { const h = e.target.value; if (h) location.href = h + location.hash; });
 $('idea').innerHTML = `Speed is ${tex('|v(t)|')}. On the ${tex('v(t)')} graph it is the distance from the axis. On the ${tex('s(t)')} graph it is the steepness.`;
 new ResizeObserver(() => sched()).observe($('graph'));
 window.addEventListener('resize', sched);
