@@ -178,7 +178,10 @@ export default {
             'By hand: split at the roots of $v$ inside the interval and add the sizes of the areas.',
           ],
           steps: ['Set $0\\le t\\le 7$: displacement $\\frac{7}{3}$, distance $\\frac{71}{3}$.', 'Set $6\\le t\\le 7$: no turn inside, so the two agree.', 'Switch on the common mistake and compare the two numbers under the graph.'],
-          mistake: 'wrong' },
+          mistake: { param: 'wrong',
+            what: 'For distance, they use $\\int v\\,dt$: the same integral as for displacement.',
+            why: 'Where $v<0$ the car moves back. The integral counts that coral area as negative, so the trip back is subtracted, not added.',
+            fix: 'Integrate $|v|$ (Abs on the calculator), or split at the roots of $v$ and add the sizes of the pieces.' } },
         { kind: 'S', caption: 'The whole trip: the car ends $\\frac{7}{3}$ m right of O, but the odometer reads $\\frac{71}{3}$ m.',
           set: { t1: 0, t2: 7, fold: 1, wrong: false },
           cards: [

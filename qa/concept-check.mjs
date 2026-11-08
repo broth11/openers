@@ -102,6 +102,30 @@ for (const [w, h] of sizes) {
     if (d.length) fail({ size, stop: i, check: 'looks different reached by a jump', differs: d })
   }
 
+  // nothing moves while a slider sweeps (a fraction in the readout must not push the picture or controls)
+  for (let i = 0; i < n; i++) {
+    if (forward[i].kind !== 'P') continue
+    await page.evaluate((j) => window.__concept.go(j, 'jump'), i)
+    await settle()
+    const shift = await page.evaluate(async () => {
+      const ids = ['graph', 'readout', 'controls', 'track']
+      const box = () => ids.map((id) => document.getElementById(id)?.getBoundingClientRect()).map((r) => r && [r.top, r.height, r.left, r.width])
+      const first = box()
+      let worst = 0
+      for (const inp of document.querySelectorAll('#controls input[type=range]')) {
+        const lo = Number(inp.min), hi = Number(inp.max)
+        for (let k = 0; k <= 40; k++) {
+          inp.value = lo + ((hi - lo) * k) / 40
+          inp.dispatchEvent(new Event('input', { bubbles: true }))
+          await new Promise((r) => requestAnimationFrame(r))
+          box().forEach((b, j) => { if (b && first[j]) b.forEach((x, m) => { worst = Math.max(worst, Math.abs(x - first[j][m])) }) })
+        }
+      }
+      return worst
+    })
+    if (shift > 0.5) fail({ size, stop: i, check: 'layout moved while a slider swept', px: Math.round(shift * 10) / 10 })
+  }
+
   // free play is disposable: move every slider in each Playground, leave, come back
   for (let i = 0; i < n; i++) {
     if (forward[i].kind !== 'P') continue
@@ -112,7 +136,11 @@ for (const [w, h] of sizes) {
       await page.locator('#controls input[type=range]').nth(s).evaluate((el) => { el.value = el.min; el.dispatchEvent(new Event('input', { bubbles: true })) })
     }
     const toggles = await page.locator('#panelBody .mistake').count()
-    if (toggles) await page.click('#panelBody .mistake')
+    if (toggles) {
+      await page.click('#panelBody .mistake')
+      const scrolls = await page.evaluate(() => { const pb = document.getElementById('panelBody'); return pb.scrollHeight > pb.clientHeight + 1 })
+      if (wide && scrolls) fail({ size, stop: i, check: 'Notice tab scrolls with the mistake on' })
+    }
     await page.evaluate((j) => { window.__concept.go(j + 1, 'jump'); window.__concept.go(j, 'jump') }, i)
     await settle()
     const d = same(forward[i].snap, await snapshot(page))

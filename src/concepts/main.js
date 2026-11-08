@@ -116,7 +116,9 @@ function open(c) {
 // ---------- navigation
 function go(i, how) {
   stopAnim()
+  const was = FLAT[st.i]?.si
   st.i = Math.max(0, Math.min(FLAT.length - 1, i))
+  if (FLAT[st.i].si !== was) st.tab = 'notice' // a new scene always opens on Notice
   st.values = valuesAt(st.i)
   const s = FLAT[st.i].stop
   const canPlay = s.play && how === 'next' && (!s.predict || st.picked[stopId(st.i)] != null)
@@ -195,7 +197,7 @@ function render() {
   $('track').hidden = !pic.track
   if (pic.track) { if (!track) track = makeTrack($('track')); track.apply(pic.track) }
   graph.apply(fillAspect(pic.graph))
-  setHTML($('readout'), md(scene.readout ? scene.readout(c) : ''))
+  setHTML($('readout'), `<span>${md(scene.readout ? scene.readout(c) : '')}</span>`)
   // controls: only in the Playground
   const names = f.stop.kind === 'P' ? (typeof scene.controls === 'function' ? scene.controls(c) : scene.controls || []) : []
   const controls = names.filter((n) => C.params[n] && !C.params[n].hidden && C.params[n].type !== 'toggle')
@@ -203,7 +205,6 @@ function render() {
   for (const inp of $('controls').querySelectorAll('input[type=range]')) {
     if (document.activeElement !== inp) inp.value = st.values[inp.dataset.p]
   }
-  $('controls').hidden = !controls.length
   // heading over the picture: scene and stop
   setHTML($('stopHead'), `<span class="sh-n">${f.si + 1}</span> ${md(scene.title)} <span class="sh-k k-${f.stop.kind}">${stopName(f.stop.kind)}</span>`)
   renderPanel(c)
@@ -246,8 +247,15 @@ function renderPanel(c) {
       html += '</div>'
     }
     if (s.play && (!s.predict || c.picked != null)) html += `<button type="button" class="replay" data-replay="1"${c.playing ? ' disabled' : ''}>▶ Play again</button>`
-    if (s.mistake) html += toggleHTML(s.mistake)
-    if (s.look?.length) html += `<h3>Look for</h3><ul class="look">${s.look.map((x) => `<li>${md(x, { wrap: true })}</li>`).join('')}</ul>`
+    const m = s.mistake ? (typeof s.mistake === 'string' ? { param: s.mistake } : s.mistake) : null
+    const explaining = !!(m?.what && st.values[m.param]) // with the mistake on, its explanation takes the place of Look for
+    if (m) {
+      html += toggleHTML(m.param)
+      if (explaining) {
+        html += `<div class="why"><p><b>What people do.</b> ${md(m.what, { wrap: true })}</p>${m.why ? `<p><b>Why it fails.</b> ${md(m.why, { wrap: true })}</p>` : ''}${m.fix ? `<p class="fix"><b>Do this instead.</b> ${md(m.fix, { wrap: true })}</p>` : ''}</div>`
+      }
+    }
+    if (s.look?.length && !explaining) html += `<h3>Look for</h3><ol class="look">${s.look.map((x) => `<li>${md(x, { wrap: true })}</li>`).join('')}</ol>`
     if (s.steps?.length) html += `<h3>Try this</h3><ol class="try">${s.steps.map((x) => `<li>${md(x, { wrap: true })}</li>`).join('')}</ol>`
     if (s.cards?.length) html += s.cards.map((cd) => `<div class="card t-${cd.tone || 'muted'}"><h4>${md(cd.title)}</h4><p>${md(cd.html, { wrap: true })}</p></div>`).join('')
     if (s.kind === 'S' && f.stop.set && 'wrong' in f.stop.set && f.stop.set.wrong) html += '<p class="flag">The picture shows the mistake.</p>'

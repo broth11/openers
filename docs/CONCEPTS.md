@@ -59,6 +59,8 @@ Every concept with a well-known mistake has a **wrong-way toggle** in P (and opt
   - **Working:** the algebra for this scene, exact first, then rounded.
   - **Casio:** fx-CG50 steps from the verified key log, grouped under goal headings (rules in `docs/OPENERS.md`).
 - The Notice tab never scrolls at 1366×768. If it would, cut words.
+- **Nothing moves when a value changes.** The readout is a fixed-height box, so a fraction (taller than a decimal) never pushes the graph or controls. Slider values have a fixed width. The check sweeps every slider and fails on a shift over 0.5 px.
+- A new scene always opens on the Notice tab. "Look for" and "Try this" are both numbered lists.
 - On a phone the picture stacks on top and the panel goes below.
 - House style as in `docs/OPENERS.md`: white graph, dotted teal grid, colours by role from `src/kit/style.js`, labels by the shared placer, no em dashes, Oxford commas.
 
@@ -97,7 +99,7 @@ export default {
 - `axes.aspect: 'fill'` stretches the horizontal unit so `bounds` fill the graph box at every screen size (a v-t graph over 7 seconds, say).
 - `stage` returns `graph`, an SVG engine spec (`docs/OPENERS.md`, Graph spec), and optional `track`, a number-line strip above it (`src/components/number-line-track/`). Other pictures are added as components when a concept first needs them.
 - A stop's `predict: { q, choices, correct, a }` adds the one prediction. `ctx.picked` is the chosen index or `null`; gate the give-away on it.
-- `mistake: '<param>'` on a stop shows that toggle param in the Notice tab. The stage reads `ctx.v.wrong`.
+- `mistake: { param, what, why, fix }` on a stop shows that toggle param in the Notice tab. Switched on, it also shows three short lines: **What people do** (the mistake in student words), **Why it fails** (pointing at what the picture now shows), and **Do this instead** (the method, including the calculator fix). The stage reads `ctx.v.wrong`. While the mistake is on, its explanation takes the place of Look for, so the Notice tab still never scrolls. The toggle carries the explanation; a Summary stop may then show the mistake as a preset image to land it.
 - `look`, `steps`, captions, and cards accept `$inline$` maths.
 - Register the unit in `src/concepts/units.js` if it is new.
 
@@ -120,7 +122,11 @@ Openers and deck lessons stay as they are. Their best scenes are mined: when a c
 
 ## Checking
 
-`node qa/concept-check.mjs <key>` visits every stop at 1366×768, 1920×1080, and a 412-wide phone, and fails on: sideways scroll, a scrolling Notice tab on a wide screen, a label outside the graph, a stop that looks different when reached by Back or a jump than by Next, free play that survives leaving the stop, a prediction whose answer shows before a choice, and a bar letter that does not fit.
+`node qa/concept-check.mjs <key>` visits every stop at 1366×768, 1920×1080, and a 412-wide phone, and fails on: sideways scroll, any shift of the picture, readout, or controls while a slider sweeps, a scrolling Notice tab on a wide screen, a label outside the graph, a stop that looks different when reached by Back or a jump than by Next, free play that survives leaving the stop, a prediction whose answer shows before a choice, and a bar letter that does not fit.
+
+## Planned
+
+- **Real calculator screens** in the Casio tab: fx-CG50 screen captures taken on Ben's fx-CG Manager emulator, one per step that changes the screen. To be planned with Ben.
 
 ## Pilot
 

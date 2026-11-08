@@ -42,12 +42,14 @@ button, select, input { font: inherit; color: inherit; }
 .track { flex: none; height: clamp(84px, 13vh, 116px); position: relative; }
 .track .nlt { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 .graph { flex: 1; min-height: 180px; position: relative; }
-.readout { margin: 0; min-height: 1.6em; font-size: clamp(14px, 2vh, 17px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.controls { flex: none; display: flex; flex-wrap: wrap; gap: 6px 28px; }
+/* the readout has a fixed box: a fraction (taller than a decimal) never changes the height of anything else */
+.readout { flex: none; margin: 0; height: 2.7em; display: flex; align-items: center; font-size: clamp(14px, 2vh, 17px); white-space: nowrap; overflow: hidden; font-variant-numeric: tabular-nums; }
+/* reserved on every stop (empty outside the Playground), so the picture keeps one size across stops */
+.controls { flex: none; height: 34px; display: flex; flex-wrap: nowrap; align-items: center; gap: 6px 28px; }
 .ctl { display: flex; align-items: center; gap: 10px; flex: 1 1 260px; min-width: 0; }
 .ctl-l { font-size: 14px; font-weight: 600; white-space: nowrap; }
 .ctl input[type=range] { flex: 1; min-width: 80px; accent-color: var(--sel); }
-.ctl-v { font-family: var(--f-mono); font-size: 14px; min-width: 6.5em; white-space: nowrap; }
+.ctl-v { flex: none; font-family: var(--f-mono); font-size: 14px; width: 7.5em; white-space: nowrap; }
 .seg { display: inline-flex; border: 2px solid var(--line); border-radius: 10px; overflow: hidden; }
 .seg button { border: 0; background: #fff; padding: 4px 10px; cursor: pointer; }
 .seg button[aria-pressed='true'] { background: var(--acc); color: #fff; }
@@ -61,7 +63,7 @@ button, select, input { font: inherit; color: inherit; }
 .cap { margin: 0 0 8px; font-weight: 500; }
 .look, .try { margin: 0; padding-left: 1.2em; }
 .look li, .try li { margin: 3px 0; }
-.look li::marker { color: var(--teal); }
+.look li::marker { color: var(--teal); font-weight: 700; }
 .try li::marker { color: var(--sel); font-weight: 700; }
 .card { border: 1px solid var(--line); border-left: 5px solid var(--k, var(--muted)); border-radius: 10px; padding: 6px 10px; margin-top: 8px; background: color-mix(in srgb, var(--k, var(--muted)) 5%, #fff); }
 .card h4 { margin: 0 0 2px; font-size: 14px; }
@@ -82,6 +84,10 @@ button, select, input { font: inherit; color: inherit; }
 .replay { border: 2px solid var(--line); background: #fff; border-radius: 999px; padding: 3px 14px; font-size: 13px; font-weight: 600; cursor: pointer; margin: 2px 0 6px; }
 .replay:hover { border-color: var(--acc); }
 .replay:disabled { opacity: 0.5; cursor: default; }
+.why { border: 1px solid color-mix(in srgb, var(--coral) 35%, #fff); border-radius: 10px; padding: 6px 10px; margin: 6px 0 2px; background: #fff; }
+.why p { margin: 3px 0; }
+.why b { color: var(--coral); }
+.why .fix b { color: var(--teal); }
 .mistake { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; border: 2px solid color-mix(in srgb, var(--coral) 45%, #fff); background: color-mix(in srgb, var(--coral) 6%, #fff); border-radius: 12px; padding: 7px 10px; margin: 8px 0 2px; cursor: pointer; font-weight: 600; }
 .mistake .sw { flex: none; width: 38px; height: 22px; border-radius: 999px; background: #c9d5df; position: relative; transition: background 0.15s; }
 .mistake .sw::after { content: ''; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: transform 0.15s; }
@@ -136,7 +142,8 @@ button, select, input { font: inherit; color: inherit; }
   .tools { order: 1; }
   .cmain { grid-template-columns: minmax(0, 1fr); }
   .graph { min-height: 300px; flex: none; height: 46vh; }
-  .readout { white-space: normal; }
+  .readout { white-space: normal; height: 5.4em; align-items: flex-start; }
+  .controls { height: auto; min-height: 34px; flex-wrap: wrap; }
   .panel-body { overflow: visible; }
   .cbar { position: sticky; bottom: 6px; }
   .cb-track { justify-content: flex-start; }
